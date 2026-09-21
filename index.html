@@ -700,21 +700,24 @@
 
         <div class="form-group">
           <div class="form-group-header">
-            <label class="form-label" for="tpl-edit-body">Email Body (HTML supported)</label>
+            <label class="form-label">Email Body</label>
             <div class="header-action-group">
-              <button type="button" class="btn-outline-small" id="btn-tpl-insert-link" title="Insert Step 1 Closed Testing Track URL tag">
-                + Step 1: {{link}} (Join)
-              </button>
-              <button type="button" class="btn-outline-small" id="btn-tpl-insert-direct-link" title="Insert Step 2 Direct Play Store URL tag">
-                + Step 2: {{direct_link}} (Download)
-              </button>
-              <button type="button" class="btn-outline-small" id="btn-tpl-insert-both-block" title="Insert formatted 2-step flow block">
-                + 2-Step Block
-              </button>
+              <button type="button" class="btn-tpl-format" id="btn-tpl-bold" title="Bold selected text" onmousedown="event.preventDefault(); document.execCommand('bold')"><strong>B</strong></button>
+              <button type="button" class="btn-tpl-format" id="btn-tpl-italic" title="Italic selected text" onmousedown="event.preventDefault(); document.execCommand('italic')"><em>I</em></button>
+              <button type="button" class="btn-outline-small" id="btn-tpl-insert-link" title="Insert Step 1 Join Tester URL tag">+ {{link}}</button>
+              <button type="button" class="btn-outline-small" id="btn-tpl-insert-direct-link" title="Insert Step 2 Play Store URL tag">+ {{direct_link}}</button>
+              <button type="button" class="btn-outline-small" id="btn-tpl-insert-both-block" title="Insert 2-step button block">+ 2-Step Buttons</button>
             </div>
           </div>
-          <textarea id="tpl-edit-body" class="form-control template-textarea" rows="7" placeholder="Type your invitation message... Use {{link}} for Step 1 (Join Tester) and {{direct_link}} for Step 2 (Play Store App)."></textarea>
-          <small class="field-hint">Tags <code>{{link}}</code> (Step 1: Join as Tester) and <code>{{direct_link}}</code> (Step 2: Download from Play Store) are automatically replaced.</small>
+          <!-- Hidden input to hold the final HTML body for saving -->
+          <input type="hidden" id="tpl-edit-body" />
+          <!-- WYSIWYG editor div — what the user actually types in -->
+          <div id="tpl-edit-body-editor"
+               class="form-control tpl-wysiwyg-editor"
+               contenteditable="true"
+               spellcheck="true"
+               data-placeholder="Type your message here. Use Enter for a new line. Select text and press B to bold it."></div>
+          <small class="field-hint"><code>{{link}}</code> = Step 1 Join link &middot; <code>{{direct_link}}</code> = Step 2 Play Store link &mdash; auto-replaced on send.</small>
         </div>
       </div>
 

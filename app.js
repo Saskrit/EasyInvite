@@ -298,7 +298,10 @@ const elements = {
   tplEditName: document.getElementById("tpl-edit-name"),
   tplEditDesc: document.getElementById("tpl-edit-desc"),
   tplEditSubject: document.getElementById("tpl-edit-subject"),
-  tplEditBody: document.getElementById("tpl-edit-body"),
+  tplEditBody: document.getElementById("tpl-edit-body"),       // hidden input (stores HTML for save)
+  tplBodyEditor: document.getElementById("tpl-edit-body-editor"), // visible WYSIWYG div
+  btnTplBold: document.getElementById("btn-tpl-bold"),
+  btnTplItalic: document.getElementById("btn-tpl-italic"),
   btnTplInsertLink: document.getElementById("btn-tpl-insert-link"),
   btnTplInsertDirectLink: document.getElementById("btn-tpl-insert-direct-link"),
   btnTplInsertBothBlock: document.getElementById("btn-tpl-insert-both-block"),
@@ -375,7 +378,7 @@ function setupEventListeners() {
       if (elements.templateModalTitle) elements.templateModalTitle.textContent = "Save as New Template";
       if (elements.tplEditName) elements.tplEditName.value = currentSubject ? "Template: " + currentSubject.substring(0, 20) : "My Custom Template";
       if (elements.tplEditSubject) elements.tplEditSubject.value = currentSubject;
-      if (elements.tplEditBody) elements.tplEditBody.value = currentHtml;
+      if (elements.tplBodyEditor) elements.tplBodyEditor.innerHTML = currentHtml;
     });
   }
 
@@ -638,40 +641,28 @@ function setupEventListeners() {
   }
   if (elements.btnTplInsertLink) {
     elements.btnTplInsertLink.addEventListener("click", () => {
-      if (elements.tplEditBody) {
-        const start = elements.tplEditBody.selectionStart || elements.tplEditBody.value.length;
-        const end = elements.tplEditBody.selectionEnd || elements.tplEditBody.value.length;
-        const val = elements.tplEditBody.value;
-        elements.tplEditBody.value = val.substring(0, start) + "{{link}}" + val.substring(end);
-        elements.tplEditBody.focus();
-        elements.tplEditBody.selectionStart = elements.tplEditBody.selectionEnd = start + 8;
+      if (elements.tplBodyEditor) {
+        elements.tplBodyEditor.focus();
+        document.execCommand("insertText", false, "{{link}}");
       }
     });
   }
 
   if (elements.btnTplInsertDirectLink) {
     elements.btnTplInsertDirectLink.addEventListener("click", () => {
-      if (elements.tplEditBody) {
-        const start = elements.tplEditBody.selectionStart || elements.tplEditBody.value.length;
-        const end = elements.tplEditBody.selectionEnd || elements.tplEditBody.value.length;
-        const val = elements.tplEditBody.value;
-        elements.tplEditBody.value = val.substring(0, start) + "{{direct_link}}" + val.substring(end);
-        elements.tplEditBody.focus();
-        elements.tplEditBody.selectionStart = elements.tplEditBody.selectionEnd = start + 15;
+      if (elements.tplBodyEditor) {
+        elements.tplBodyEditor.focus();
+        document.execCommand("insertText", false, "{{direct_link}}");
       }
     });
   }
 
   if (elements.btnTplInsertBothBlock) {
     elements.btnTplInsertBothBlock.addEventListener("click", () => {
-      if (elements.tplEditBody) {
-        const start = elements.tplEditBody.selectionStart || elements.tplEditBody.value.length;
-        const end = elements.tplEditBody.selectionEnd || elements.tplEditBody.value.length;
-        const val = elements.tplEditBody.value;
-        const block = `\n<p><strong>Step 1: Join as a Tester (Required First Step)</strong><br><a href="{{link}}">{{link}}</a></p>\n<p><strong>Step 2: Download the App on Google Play</strong><br><a href="{{direct_link}}">{{direct_link}}</a></p>\n`;
-        elements.tplEditBody.value = val.substring(0, start) + block + val.substring(end);
-        elements.tplEditBody.focus();
-        elements.tplEditBody.selectionStart = elements.tplEditBody.selectionEnd = start + block.length;
+      if (elements.tplBodyEditor) {
+        elements.tplBodyEditor.focus();
+        const block = `<table role="presentation" border="0" cellpadding="0" cellspacing="0" style="margin:16px 0 8px 0;"><tr><td style="padding-right:10px;"><table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn-cta"><tr><td><a href="{{link}}" target="_blank">1. JOIN AS A TESTER</a></td></tr></table></td><td><table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn-cta-green"><tr><td><a href="{{direct_link}}" target="_blank">2. DOWNLOAD ON PLAY STORE</a></td></tr></table></td></tr></table><p style="font-size:12px;color:#64748b;margin:4px 0 16px 0;">Step 1: Join test track &rarr; Step 2: Download on Google Play</p>`;
+        document.execCommand("insertHTML", false, block);
       }
     });
   }
@@ -877,7 +868,7 @@ function getResolvedSenderName() {
 // ==========================================================================
 // Template Selection & Insertion Logic
 // ==========================================================================
-function applyTemplate(templateId) {
+function applyTemplate(templateId, suppressToast = false) {
   currentTemplateId = templateId;
   const template = state.templates[templateId];
   if (!template) return;
@@ -911,7 +902,9 @@ function applyTemplate(templateId) {
     elements.messageEditor.innerHTML = formattedBody;
   }
 
-  showToast(`Applied template: "${template.name}"`, "info");
+  if (!suppressToast) {
+    showToast(`Applied template: "${template.name}"`, "info");
+  }
 }
 
 function updateEditorWithTestingLink(newUrl) {
@@ -1126,6 +1119,8 @@ function renderTemplatesGrid() {
 function openTemplateModal(templateId = null) {
   if (!elements.templateEditorModal) return;
 
+  const defaultBody = `<p>Hi there,</p><p>You're invited to test our closed beta on Google Play!</p><p>Download and join here:<br><a href="{{link}}" target="_blank">{{link}}</a></p><p>Thanks for your help testing!</p>`;
+
   if (templateId && state.templates[templateId]) {
     const t = state.templates[templateId];
     if (elements.templateModalTitle) elements.templateModalTitle.textContent = "Edit Template";
@@ -1133,21 +1128,14 @@ function openTemplateModal(templateId = null) {
     if (elements.tplEditName) elements.tplEditName.value = t.name;
     if (elements.tplEditDesc) elements.tplEditDesc.value = t.desc || "";
     if (elements.tplEditSubject) elements.tplEditSubject.value = t.subject || "";
-    if (elements.tplEditBody) elements.tplEditBody.value = t.body || "";
+    if (elements.tplBodyEditor) elements.tplBodyEditor.innerHTML = t.body || "";
   } else {
     if (elements.templateModalTitle) elements.templateModalTitle.textContent = "New Template";
     if (elements.tplEditId) elements.tplEditId.value = "";
     if (elements.tplEditName) elements.tplEditName.value = "";
     if (elements.tplEditDesc) elements.tplEditDesc.value = "";
-    if (elements.tplEditSubject) elements.tplEditSubject.value = "Closed testing invitation: Download our app on Google Play";
-    if (elements.tplEditBody) elements.tplEditBody.value = `<p>Hi there,</p>
-<p><br></p>
-<p>You're invited to test our closed beta on Google Play!</p>
-<p><br></p>
-<p>Download and join here:</p>
-<p><a href="{{link}}" class="editor-link" target="_blank">{{link}}</a></p>
-<p><br></p>
-<p>Thanks for your help testing!</p>`;
+    if (elements.tplEditSubject) elements.tplEditSubject.value = "You're invited to test our app on Google Play";
+    if (elements.tplBodyEditor) elements.tplBodyEditor.innerHTML = defaultBody;
   }
 
   elements.templateEditorModal.style.display = "flex";
@@ -1164,7 +1152,8 @@ function handleSaveTemplateFromModal() {
   const name = (elements.tplEditName && elements.tplEditName.value.trim()) || "";
   const desc = (elements.tplEditDesc && elements.tplEditDesc.value.trim()) || "";
   const subject = (elements.tplEditSubject && elements.tplEditSubject.value.trim()) || "";
-  const body = (elements.tplEditBody && elements.tplEditBody.value.trim()) || "";
+  // Read body from the WYSIWYG div
+  const body = (elements.tplBodyEditor && elements.tplBodyEditor.innerHTML.trim()) || "";
   const id = (elements.tplEditId && elements.tplEditId.value.trim()) || "";
 
   if (!name) {
@@ -1460,57 +1449,117 @@ function openEmailPreviewModal() {
   const recipientSample = state.recipients.length > 0 ? state.recipients[0] : "tester@example.com";
   const recipientCount = state.recipients.length;
 
+  const appNameVal = getResolvedAppName();
+  const senderNameVal = getResolvedSenderName() || "the developer";
+  const testingPlaceholder = state.playStoreLink || "{{link}}";
+  const directPlaceholder = state.directPlayLink || "{{direct_link}}";
+
   if (elements.previewFrom) {
-    elements.previewFrom.textContent = state.senderName 
-      ? `${state.senderName} <${state.senderEmail || "you@gmail.com"}>`
-      : `Developer <${state.senderEmail || "you@gmail.com"}>`;
+    elements.previewFrom.textContent = senderNameVal
+      ? `${senderNameVal} <${state.senderEmail || "you@gmail.com"}>`
+      : `<${state.senderEmail || "you@gmail.com"}>`;
   }
 
   if (elements.previewTo) {
-    elements.previewTo.textContent = recipientCount > 1 
-      ? `${recipientSample} (+${recipientCount - 1} more recipients)`
+    elements.previewTo.textContent = recipientCount > 1
+      ? `${recipientSample} (+${recipientCount - 1} more)`
       : recipientSample;
   }
 
-  const appNameVal = getResolvedAppName();
-  const senderNameVal = getResolvedSenderName();
-  const testingPlaceholder = state.playStoreLink || "{{link}}";
+  const rawSubject = (elements.emailSubject && elements.emailSubject.value) || "You're invited to test our app";
+  const resolvedSubject = rawSubject
+    .replaceAll("[App Name]", appNameVal).replaceAll("{{app_name}}", appNameVal)
+    .replaceAll("[Your Name]", senderNameVal).replaceAll("{{sender_name}}", senderNameVal);
 
   if (elements.previewSubject) {
-    let subj = (elements.emailSubject && elements.emailSubject.value) 
-      || "Please be a tester and download my app";
-    elements.previewSubject.textContent = subj
-      .replaceAll("[App Name]", appNameVal)
-      .replaceAll("{{app_name}}", appNameVal)
-      .replaceAll("[Your Name]", senderNameVal)
-      .replaceAll("{{sender_name}}", senderNameVal);
+    elements.previewSubject.textContent = resolvedSubject;
   }
 
-  if (elements.previewContentArea && elements.messageEditor) {
-    let htmlContent = elements.messageEditor.innerHTML
-      .replaceAll("[App Name]", appNameVal)
-      .replaceAll("{{app_name}}", appNameVal)
-      .replaceAll("[Your Name]", senderNameVal)
-      .replaceAll("{{sender_name}}", senderNameVal)
-      .replaceAll("[Google Play Testing Link]", testingPlaceholder);
+  // Build the email body with all placeholders resolved
+  const rawBody = elements.messageEditor ? elements.messageEditor.innerHTML : "";
+  const resolvedBody = rawBody
+    .replaceAll("{{app_name}}", appNameVal).replaceAll("[App Name]", appNameVal)
+    .replaceAll("{{sender_name}}", senderNameVal).replaceAll("[Your Name]", senderNameVal)
+    .replaceAll("{{link}}", testingPlaceholder).replaceAll("[Google Play Testing Link]", testingPlaceholder)
+    .replaceAll("{{direct_link}}", directPlaceholder);
 
-    elements.previewContentArea.innerHTML = htmlContent;
-  }
+  // Render in iframe with the same CSS used in the actual sent email
+  if (elements.previewContentArea) {
+    // Use an iframe so styles are isolated and match actual email
+    elements.previewContentArea.innerHTML = "";
+    const iframe = document.createElement("iframe");
+    iframe.style.cssText = "width:100%;border:none;display:block;min-height:400px;background:#f1f5f9;border-radius:8px;";
+    iframe.scrolling = "no";
+    elements.previewContentArea.appendChild(iframe);
 
-  if (elements.previewCtaButton) {
-    elements.previewCtaButton.href = state.playStoreLink || "#";
-  }
+    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+    const emailHtml = buildEmailPreviewHtml(resolvedBody, resolvedSubject, senderNameVal);
+    iframeDoc.open();
+    iframeDoc.write(emailHtml);
+    iframeDoc.close();
 
-  if (elements.previewCtaTesting) {
-    elements.previewCtaTesting.href = state.playStoreLink || "#";
-  }
-
-  if (elements.previewCtaDirect) {
-    elements.previewCtaDirect.href = state.directPlayLink || "#";
+    // Auto-resize iframe to content height
+    iframe.onload = () => {
+      try {
+        iframe.style.height = iframe.contentDocument.body.scrollHeight + 40 + "px";
+      } catch(e) {}
+    };
+    // Fallback resize after render
+    setTimeout(() => {
+      try { iframe.style.height = iframe.contentDocument.body.scrollHeight + 40 + "px"; } catch(e) {}
+    }, 150);
   }
 
   elements.emailPreviewModal.style.display = "flex";
 }
+
+/** Builds the same HTML email shell used by the server for actual sending */
+function buildEmailPreviewHtml(bodyHtml, subject, senderName) {
+  const escHtml = (s) => String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>${escHtml(subject)}</title>
+<style>
+  body,html{margin:0;padding:0;background:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;}
+  *{box-sizing:border-box;}
+  table{border-collapse:collapse;}
+  p{margin:0 0 16px 0;line-height:1.65;}
+  ol,ul{margin:8px 0 16px 0;padding-left:20px;line-height:1.7;}
+  li{margin-bottom:6px;}
+  a{color:#2563eb;}
+  strong{font-weight:700;}
+  .btn-cta a{display:inline-block;background-color:#2563eb;color:#ffffff!important;border:2px solid #2563eb;border-radius:8px;font-size:14px;font-weight:700;letter-spacing:.4px;padding:13px 28px;text-decoration:none!important;text-transform:uppercase;line-height:1;white-space:nowrap;}
+  .btn-cta-green a{display:inline-block;background-color:#16a34a;color:#ffffff!important;border:2px solid #16a34a;border-radius:8px;font-size:14px;font-weight:700;letter-spacing:.4px;padding:13px 28px;text-decoration:none!important;text-transform:uppercase;line-height:1;white-space:nowrap;}
+  .editor-link{color:#2563eb!important;word-break:break-all;}
+</style>
+</head>
+<body style="margin:0;padding:36px 16px;background:#f1f5f9;">
+  <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr><td align="center">
+      <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0"
+             style="max-width:600px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(15,23,42,.08),0 1px 4px rgba(15,23,42,.04);">
+        <tr><td style="background:linear-gradient(135deg,#2563eb 0%,#1d4ed8 50%,#1e40af 100%);height:5px;font-size:0;line-height:0;">&nbsp;</td></tr>
+        <tr><td style="padding:36px 40px 28px;font-size:15px;line-height:1.65;color:#1e293b;">
+          ${bodyHtml}
+        </td></tr>
+        <tr><td style="padding:20px 40px;background:#f8fafc;border-top:1px solid #e2e8f0;">
+          <p style="margin:0 0 6px 0;font-size:12px;color:#64748b;line-height:1.55;">
+            You received this invitation from <strong style="color:#475569;">${escHtml(senderName)}</strong> to participate in official closed testing on Google Play.
+          </p>
+          <p style="margin:0;font-size:11px;color:#94a3b8;line-height:1.5;">
+            If you did not expect this invitation, you can safely ignore this email.
+          </p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
 
 function closeEmailPreviewModal() {
   if (elements.emailPreviewModal) {
