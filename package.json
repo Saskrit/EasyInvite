@@ -5,16 +5,25 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "check": "node --check server.js && node --check app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Saskrit/EasyInvite.git"
   },
   "keywords": [
     "google-play",
     "closed-testing",
     "tester-outreach",
-    "invitation-manager"
+    "invitation-manager",
+    "gmail-smtp"
   ],
   "author": "Saskreet",
-  "license": "ISC",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "dotenv": "^18.0.1",
     "nodemailer": "^10.0.10"

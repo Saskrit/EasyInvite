@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "functions": {
+    "api/*.js": {
+      "maxDuration": 60
+    }
+  },
+  "rewrites": [
+    { "source": "/templates", "destination": "/templates.html" },
+    { "source": "/settings", "destination": "/settings.html" },
+    { "source": "/send-invite", "destination": "/index.html" },
+    { "source": "/send-invitation", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-XSS-Protection", "value": "1; mode=block" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
+    },
+    {
+      "source": "/(styles\\.css|app\\.js|easyinvite\\.png)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=86400, must-revalidate" }
+      ]
+    }
+  ]
+}

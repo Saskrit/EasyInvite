@@ -15,6 +15,7 @@ const DEFAULT_STATE = {
   appPassword: "",
   smtpOnline: true,
   smtpVerified: false,
+  currentTemplateId: "default",
   recipients: [],
   templates: {
     default: {
@@ -134,54 +135,88 @@ const DEFAULT_STATE = {
   }
 };
 
+// Version stamp for built-in templates.
+// Bump this string whenever DEFAULT_STATE.templates changes to force a reset.
+const BUILTIN_TPL_VERSION = "v3-dual-button";
+
 // Application State Initializer
 let state = loadState();
 
 function loadState() {
   try {
-    // Purge legacy mock data
-    localStorage.removeItem("bakibook_tester_state");
-    const saved = localStorage.getItem("easyinvite_state_v1");
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      const mergedTemplates = {
-        ...DEFAULT_STATE.templates,
-        ...(parsed.templates || {})
-      };
-      // Force-refresh built-in templates that don't have the new two-button layout
-      const builtInKeys = ['default', 'casual', 'detailed', 'thankyou'];
-      for (const key of builtInKeys) {
-        if (mergedTemplates[key] && !mergedTemplates[key].body.includes('btn-cta-green')) {
-          mergedTemplates[key] = DEFAULT_STATE.templates[key];
+    if (typeof localStorage !== "undefined") {
+      // Purge legacy mock data
+      localStorage.removeItem("bakibook_tester_state");
+      const saved = localStorage.getItem("easyinvite_state_v1");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+
+        // Separate user-created templates from built-in ones
+        const builtInKeys = new Set(['default', 'casual', 'detailed', 'thankyou']);
+        const savedBuiltinVersion = parsed._builtinTplVersion || "";
+        const needsReset = savedBuiltinVersion !== BUILTIN_TPL_VERSION;
+
+        // Always start with fresh built-in templates
+        const mergedTemplates = { ...DEFAULT_STATE.templates };
+
+        // Layer user-created (custom_*) templates on top — never reset those
+        for (const [key, tpl] of Object.entries(parsed.templates || {})) {
+          if (!builtInKeys.has(key)) {
+            mergedTemplates[key] = tpl; // preserve user-made templates
+          } else if (!needsReset) {
+            mergedTemplates[key] = tpl; // keep saved built-in only if version matches
+          }
         }
+
+        const newState = {
+          ...DEFAULT_STATE,
+          ...parsed,
+          appName: parsed.appName !== undefined ? parsed.appName : (DEFAULT_STATE.appName || ""),
+          playStoreLink: parsed.playStoreLink || "",
+          directPlayLink: parsed.directPlayLink || "",
+          packageName: parsed.packageName || "",
+          senderName: parsed.senderName !== undefined ? parsed.senderName : DEFAULT_STATE.senderName,
+          appPassword: parsed.appPassword || "",
+          smtpOnline: parsed.smtpOnline !== undefined ? parsed.smtpOnline : true,
+          smtpVerified: !!parsed.smtpVerified,
+          currentTemplateId: parsed.currentTemplateId || "default",
+          templates: mergedTemplates,
+          _builtinTplVersion: BUILTIN_TPL_VERSION, // write current version to state
+        };
+
+        if (needsReset) {
+          try {
+            localStorage.setItem("easyinvite_state_v1", JSON.stringify(newState));
+          } catch (e) {}
+        }
+
+        return newState;
       }
-      return {
-        ...DEFAULT_STATE,
-        ...parsed,
-        appName: parsed.appName !== undefined ? parsed.appName : (DEFAULT_STATE.appName || ""),
-        playStoreLink: parsed.playStoreLink || "",
-        directPlayLink: parsed.directPlayLink || "",
-        packageName: parsed.packageName || "",
-        senderName: parsed.senderName !== undefined ? parsed.senderName : DEFAULT_STATE.senderName,
-        appPassword: parsed.appPassword || "",
-        smtpOnline: parsed.smtpOnline !== undefined ? parsed.smtpOnline : true,
-        smtpVerified: !!parsed.smtpVerified,
-        templates: mergedTemplates
-      };
     }
   } catch (e) {
     console.warn("Could not parse saved state:", e);
   }
-  return JSON.parse(JSON.stringify(DEFAULT_STATE));
+  const freshState = { ...JSON.parse(JSON.stringify(DEFAULT_STATE)), _builtinTplVersion: BUILTIN_TPL_VERSION };
+  try {
+    if (typeof localStorage !== "undefined") {
+      localStorage.setItem("easyinvite_state_v1", JSON.stringify(freshState));
+    }
+  } catch (e) {}
+  return freshState;
 }
 
 function saveState() {
   try {
-    localStorage.setItem("easyinvite_state_v1", JSON.stringify(state));
+    if (typeof localStorage !== "undefined") {
+      // Always persist the current built-in version so migration knows what's cached
+      state._builtinTplVersion = BUILTIN_TPL_VERSION;
+      localStorage.setItem("easyinvite_state_v1", JSON.stringify(state));
+    }
   } catch (e) {
     console.error("Failed to save state:", e);
   }
 }
+
 
 // Global DOM references
 const elements = {
@@ -313,23 +348,71 @@ const elements = {
 let recipientInputMode = "chips";
 let currentTemplateId = "default";
 
+// Page Detection Helper
+function getCurrentPage() {
+  if (document.body && document.body.getAttribute("data-page")) {
+    return document.body.getAttribute("data-page");
+  }
+  const path = (window.location.pathname || "").toLowerCase();
+  if (path.includes("templates")) return "email-templates";
+  if (path.includes("settings")) return "settings";
+  return "send-invitation";
+}
+
 // ==========================================================================
 // Initialization
 // ==========================================================================
 document.addEventListener("DOMContentLoaded", () => {
-  renderRecipients();
-  renderTemplatesGrid();
-  loadSettingsIntoFields();
+  const activePage = getCurrentPage();
+  try {
+    sessionStorage.setItem("easyinvite_active_view", activePage);
+  } catch (e) {}
+
+  // Highlight active nav item matching the current page
+  elements.navButtons.forEach(btn => {
+    if (btn.getAttribute("data-view") === activePage) {
+      btn.classList.add("active");
+    } else {
+      btn.classList.remove("active");
+    }
+  });
+
+  // Render components specific to the current page
+  if (elements.tagsList || elements.recipientsTextarea) {
+    renderRecipients();
+  }
+  if (elements.fullTemplatesGrid) {
+    renderTemplatesGrid();
+  }
+  if (elements.settingPackageId || elements.settingSenderEmail || elements.settingAppName) {
+    loadSettingsIntoFields();
+  }
   updatePlayConfigStatus();
   updateSmtpUI(state.smtpOnline);
   setupEventListeners();
 
-  // Restore the last active view the user was on (persisted in sessionStorage)
-  const savedView = sessionStorage.getItem("easyinvite_active_view") || "send-invitation";
-  switchView(savedView);
+  // If there are multiple views on the same page (e.g. monolithic SPA mode), switchView
+  if (elements.views.length > 1) {
+    switchView(activePage);
+  } else if (elements.views.length === 1) {
+    elements.views[0].style.display = (activePage === "send-invitation") ? "flex" : "block";
+  }
 
-  // Silently populate the editor with the current template — no toast on load
-  applyTemplate(currentTemplateId, true);
+  // Restore currentTemplateId from state if present
+  if (state.currentTemplateId && state.templates[state.currentTemplateId]) {
+    currentTemplateId = state.currentTemplateId;
+  }
+
+  // Silently populate the editor with the current template — only if editor exists
+  if (elements.messageEditor) {
+    applyTemplate(currentTemplateId, true);
+  }
+
+  // Proactively clear any template toast flags so no toast ever appears on page load or refresh
+  try {
+    sessionStorage.removeItem("easyinvite_applied_toast");
+    localStorage.removeItem("easyinvite_applied_toast");
+  } catch (e) {}
 
   // Load any configured defaults or credentials from .env
   loadServerEnvConfig();
@@ -339,11 +422,18 @@ document.addEventListener("DOMContentLoaded", () => {
 // Event Listeners
 // ==========================================================================
 function setupEventListeners() {
-  // Navigation tabs
+  // Navigation tabs — support both multi-page standalone files and in-page SPA tabs
   elements.navButtons.forEach(btn => {
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", (e) => {
       const targetView = btn.getAttribute("data-view");
-      if (targetView) switchView(targetView);
+      const targetElem = targetView ? document.getElementById(`view-${targetView}`) : null;
+
+      // If multiple views exist in this document (SPA mode), prevent full page load and toggle in-place
+      if (targetElem && elements.views.length > 1) {
+        e.preventDefault();
+        switchView(targetView);
+      }
+      // Otherwise, the natural <a href="..."> browser navigation directs cleanly to the page file!
     });
   });
 
@@ -731,6 +821,27 @@ function setupEventListeners() {
 // View Routing / Tab Switching
 // ==========================================================================
 function switchView(viewKey) {
+  const pageFileMap = {
+    "send-invitation": "index.html",
+    "email-templates": "templates.html",
+    "settings": "settings.html"
+  };
+
+  const targetViewElem = document.getElementById(`view-${viewKey}`);
+  if (!targetViewElem) {
+    // If target view does not exist in the current page document, redirect to its dedicated file
+    const targetFile = pageFileMap[viewKey] || "index.html";
+    try {
+      sessionStorage.setItem("easyinvite_active_view", viewKey);
+    } catch (e) {}
+    window.location.href = targetFile;
+    return;
+  }
+
+  try {
+    sessionStorage.setItem("easyinvite_active_view", viewKey);
+  } catch (e) {}
+
   // Update nav active states
   elements.navButtons.forEach(btn => {
     if (btn.getAttribute("data-view") === viewKey) {
@@ -870,6 +981,8 @@ function getResolvedSenderName() {
 // ==========================================================================
 function applyTemplate(templateId, suppressToast = false) {
   currentTemplateId = templateId;
+  state.currentTemplateId = templateId;
+  saveState();
   const template = state.templates[templateId];
   if (!template) return;
 
@@ -901,14 +1014,10 @@ function applyTemplate(templateId, suppressToast = false) {
 
     elements.messageEditor.innerHTML = formattedBody;
   }
-
-  if (!suppressToast) {
-    showToast(`Applied template: "${template.name}"`, "info");
-  }
 }
 
 function updateEditorWithTestingLink(newUrl) {
-  applyTemplate(currentTemplateId);
+  applyTemplate(currentTemplateId, true);
 }
 
 // ==========================================================================
@@ -976,12 +1085,18 @@ async function handleSendInvitations() {
       .replaceAll("[Your Name]", senderNameVal)
       .replaceAll("{{sender_name}}", senderNameVal);
 
+    const pkgPlaceholder = state.packageName || "{{package_id}}";
+
     const finalHtml = html
       .replaceAll("[App Name]", appNameVal)
       .replaceAll("{{app_name}}", appNameVal)
       .replaceAll("[Your Name]", senderNameVal)
       .replaceAll("{{sender_name}}", senderNameVal)
-      .replaceAll("[Google Play Testing Link]", testingPlaceholder);
+      .replaceAll("[Google Play Testing Link]", testingPlaceholder)
+      .replaceAll("{{link}}", testingPlaceholder)
+      .replaceAll("{{testing_link}}", testingPlaceholder)
+      .replaceAll("{{direct_link}}", directPlaceholder)
+      .replaceAll("{{package_id}}", pkgPlaceholder);
 
     const res = await fetch("/api/send-email", {
       method: "POST",
@@ -1097,9 +1212,16 @@ function renderTemplatesGrid() {
 
     // Apply button
     card.querySelector(".btn-apply-tpl").addEventListener("click", () => {
-      applyTemplate(key);
-      switchView("send-invitation");
-      showToast(`Loaded template: "${t.name}" into editor`, "success");
+      state.currentTemplateId = key;
+      currentTemplateId = key;
+      saveState();
+
+      if (elements.messageEditor) {
+        applyTemplate(key, true);
+        switchView("send-invitation");
+      } else {
+        window.location.href = "index.html";
+      }
     });
 
     // Edit button
@@ -1207,7 +1329,7 @@ function handleDeleteTemplate(key) {
     const remainingKeys = Object.keys(state.templates);
     currentTemplateId = remainingKeys.length > 0 ? remainingKeys[0] : "";
     if (currentTemplateId) {
-      applyTemplate(currentTemplateId);
+      applyTemplate(currentTemplateId, true);
     }
   }
 
@@ -1312,7 +1434,7 @@ async function loadServerEnvConfig() {
       loadSettingsIntoFields();
       updatePlayConfigStatus();
       updateAppIdBadge();
-      applyTemplate(currentTemplateId);
+      applyTemplate(currentTemplateId, true); // silent — user didn't pick a template
     }
   } catch (err) {
     console.log("Could not load server .env configuration:", err);
@@ -1387,7 +1509,7 @@ function handleSaveSettings() {
   loadSettingsIntoFields(); // Re-render to update badge state
   updatePlayConfigStatus();
   updateSmtpUI(state.smtpOnline);
-  applyTemplate(currentTemplateId);
+  applyTemplate(currentTemplateId, true); // silent — settings save has its own toast
   showToast("All settings successfully saved!", "success");
 }
 
@@ -1547,12 +1669,19 @@ function buildEmailPreviewHtml(bodyHtml, subject, senderName) {
         </td></tr>
         <tr><td style="padding:20px 40px;background:#f8fafc;border-top:1px solid #e2e8f0;">
           <p style="margin:0 0 6px 0;font-size:12px;color:#64748b;line-height:1.55;">
-            You received this invitation from <strong style="color:#475569;">${escHtml(senderName)}</strong> to participate in official closed testing on Google Play.
+            You received this invitation from <strong style="color:#475569;">${escHtml(senderName)}</strong> to participate in official closed testing on Google Play. You were invited using your Google account.
           </p>
           <p style="margin:0;font-size:11px;color:#94a3b8;line-height:1.5;">
-            If you did not expect this invitation, you can safely ignore this email.
+            If you did not expect this invitation, you can safely ignore this email. You will not be enrolled unless you click the join link and follow the steps.
           </p>
         </td></tr>
+      </table>
+      <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px;">
+        <tr>
+          <td style="padding: 16px 8px 8px 8px; text-align: center; font-size: 11px; color: #94a3b8;">
+            Sent via <a href="https://github.com" style="color: #94a3b8; text-decoration: none;">EasyInvite</a> &middot; Google Play Closed Testing Outreach
+          </td>
+        </tr>
       </table>
     </td></tr>
   </table>
@@ -1749,7 +1878,7 @@ function handleSavePlayConfig() {
 
   saveState();
   updatePlayConfigStatus();
-  applyTemplate(currentTemplateId);
+  applyTemplate(currentTemplateId, true); // silent — Play config save has its own flow
 
   if (elements.previewCtaButton) {
     elements.previewCtaButton.href = state.playStoreLink || "#";
@@ -1961,9 +2090,9 @@ function showToast(message, type = "info") {
 
   setTimeout(() => {
     toast.style.opacity = "0";
-    toast.style.transform = "translateX(40px)";
-    toast.style.transition = "all 0.3s ease";
-    setTimeout(() => toast.remove(), 300);
+    toast.style.transform = "translateY(-20px)";
+    toast.style.transition = "all 0.25s ease";
+    setTimeout(() => toast.remove(), 260);
   }, 3200);
 }
 

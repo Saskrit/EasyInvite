@@ -115,6 +115,16 @@ const server = http.createServer(async (req, res) => {
 
   const urlPath = req.url.split('?')[0];
 
+  // API: Health Check (for Docker, Render, Railway, Kubernetes, etc.)
+  if (req.method === 'GET' && (urlPath === '/health' || urlPath === '/api/health')) {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({ 
+      status: 'ok', 
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString() 
+    }));
+  }
+
   // API: Get Configuration (from .env)
   if (req.method === 'GET' && urlPath === '/api/config') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -389,6 +399,24 @@ function wrapInDeliverableEmailShell(bodyHtml, subject, senderName) {
         ? `"${senderName.trim()}" <${senderEmail.trim()}>` 
         : senderEmail.trim();
 
+      // Fallback placeholder resolution using environment variables
+      const envAppName = process.env.APP_NAME || '';
+      const envTestingUrl = process.env.CLOSED_TESTING_URL || '';
+      const envPlayStoreUrl = process.env.PLAY_STORE_URL || '';
+      const envPackageId = process.env.APP_PACKAGE_ID || '';
+
+      html = html
+        .replaceAll('{{app_name}}', envAppName).replaceAll('[App Name]', envAppName)
+        .replaceAll('{{sender_name}}', senderName).replaceAll('[Your Name]', senderName)
+        .replaceAll('{{link}}', envTestingUrl).replaceAll('[Google Play Testing Link]', envTestingUrl)
+        .replaceAll('{{testing_link}}', envTestingUrl)
+        .replaceAll('{{direct_link}}', envPlayStoreUrl)
+        .replaceAll('{{package_id}}', envPackageId);
+
+      subject = subject
+        .replaceAll('{{app_name}}', envAppName).replaceAll('[App Name]', envAppName)
+        .replaceAll('{{sender_name}}', senderName).replaceAll('[Your Name]', senderName);
+
       // Anti-Spam Architecture:
       // 1. Synchronous Plain-Text alternative eliminates MIME_HTML_ONLY spam penalty
       const plainText = htmlToPlainText(html);
@@ -455,8 +483,16 @@ function wrapInDeliverableEmailShell(bodyHtml, subject, senderName) {
     }
   }
 
-  // Static File Serving — with path traversal protection
-  let requestedPath = urlPath === '/' ? 'index.html' : urlPath;
+  // Static File Serving — with clean route aliases and path traversal protection
+  let requestedPath = urlPath;
+  if (requestedPath === '/' || requestedPath === '/send-invite' || requestedPath === '/send-invitation') {
+    requestedPath = 'index.html';
+  } else if (requestedPath === '/templates' || requestedPath === '/email-templates') {
+    requestedPath = 'templates.html';
+  } else if (requestedPath === '/settings') {
+    requestedPath = 'settings.html';
+  }
+
   // Strip any ../ traversal attempts
   const safePath = path.normalize(requestedPath).replace(/^(\.\.[\/\\])+/, '');
   let filePath = path.join(__dirname, safePath);
@@ -480,15 +516,37 @@ function wrapInDeliverableEmailShell(bodyHtml, subject, senderName) {
         res.end('500 Internal Server Error');
       }
     } else {
+      const isDynamicAsset = ['.html', '.js', '.css'].includes(extname);
       res.writeHead(200, {
         'Content-Type': contentType,
-        'Cache-Control': extname === '.html' ? 'no-cache, no-store, must-revalidate' : 'public, max-age=86400'
+        'Cache-Control': isDynamicAsset ? 'no-cache, no-store, must-revalidate, max-age=0' : 'public, max-age=86400'
       });
       res.end(content, 'utf-8');
     }
   });
 });
 
-server.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
-});
+if (require.main === module) {
+  server.listen(PORT, '0.0.0.0', () => {
+    console.log(`EasyInvite server running at http://0.0.0.0:${PORT} (port ${PORT})`);
+  });
+
+  // Graceful shutdown handling for container and cloud environments
+  process.on('SIGTERM', () => {
+    console.log('SIGTERM signal received: closing HTTP server');
+    server.close(() => {
+      console.log('HTTP server closed');
+      process.exit(0);
+    });
+  });
+
+  process.on('SIGINT', () => {
+    console.log('SIGINT signal received: closing HTTP server');
+    server.close(() => {
+      console.log('HTTP server closed');
+      process.exit(0);
+    });
+  });
+}
+
+module.exports = server;

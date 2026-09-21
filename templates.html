@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Email Templates - EasyInvite</title>
+  <meta name="description" content="Manage and customize outreach email templates for Google Play closed testing." />
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/common.css?v=2.6" />
+  <link rel="stylesheet" href="css/templates.css?v=2.6" />
+
+  <!-- Google Fonts: Inter & Caveat -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body data-page="email-templates">
+  <!-- Toast Notification Container (Positioned at Top) -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <div class="app-container">
+    <!-- Left Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="brand">
+          <a href="index.html" style="display: block; text-decoration: none;">
+            <img src="easyinvite.png" alt="EasyInvite" class="brand-logo-img" />
+          </a>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="nav-menu">
+          <a href="index.html" class="nav-item" data-view="send-invitation">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+            </svg>
+            <span>Send Invitation</span>
+          </a>
+
+          <a href="templates.html" class="nav-item active" data-view="email-templates">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+              <polyline points="10 9 9 9 8 9"/>
+            </svg>
+            <span>Email Templates</span>
+          </a>
+
+          <a href="settings.html" class="nav-item" data-view="settings">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+            <span>Settings</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-smtp-status" id="sidebar-smtp-card" style="cursor: pointer;" title="Click to configure SMTP in Settings" onclick="window.location.href='settings.html'">
+          <div class="status-indicator-wrap">
+            <span class="status-indicator-dot online" id="sidebar-smtp-dot"></span>
+            <span class="status-indicator-label" id="sidebar-smtp-label">SMTP: Online</span>
+          </div>
+          <span class="sidebar-live-tag">LIVE</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <main class="main-wrapper">
+      <!-- VIEW: Email Templates -->
+      <section class="view-content active" id="view-email-templates">
+        <div class="card full-view-card">
+          <div class="view-header-row">
+            <div>
+              <h2 class="card-title">Email Templates</h2>
+              <p class="card-subtitle">Customize outreach messages with automatic Google Play link injection</p>
+            </div>
+            <button class="btn-primary" id="btn-create-template">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              New Template
+            </button>
+          </div>
+
+          <div class="templates-grid" id="full-templates-grid">
+            <!-- Dynamically rendered template cards -->
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- MODAL: Add / Edit Template -->
+  <div class="modal-backdrop" id="template-editor-modal" style="display: none;">
+    <div class="modal-card template-modal-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#2563eb" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+          <h3 id="template-modal-title">Edit Template</h3>
+        </div>
+        <button type="button" class="modal-close-btn" id="close-template-modal">&times;</button>
+      </div>
+
+      <div class="modal-body template-modal-body">
+        <input type="hidden" id="tpl-edit-id" value="" />
+
+        <div class="form-group">
+          <label class="form-label" for="tpl-edit-name">Template Name</label>
+          <input type="text" id="tpl-edit-name" class="form-control" placeholder="e.g. Weekend Tester Invitation" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="tpl-edit-desc">Description</label>
+          <input type="text" id="tpl-edit-desc" class="form-control" placeholder="Brief note about when to use this template" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="tpl-edit-subject">Email Subject</label>
+          <input type="text" id="tpl-edit-subject" class="form-control" placeholder="e.g. Please be a tester and download our app" required />
+        </div>
+
+        <div class="form-group">
+          <div class="form-group-header">
+            <label class="form-label">Email Body</label>
+            <div class="header-action-group">
+              <button type="button" class="btn-tpl-format" id="btn-tpl-bold" title="Bold selected text" onmousedown="event.preventDefault(); document.execCommand('bold')"><strong>B</strong></button>
+              <button type="button" class="btn-tpl-format" id="btn-tpl-italic" title="Italic selected text" onmousedown="event.preventDefault(); document.execCommand('italic')"><em>I</em></button>
+              <button type="button" class="btn-outline-small" id="btn-tpl-insert-link" title="Insert Step 1 Join Tester URL tag">+ {{link}}</button>
+              <button type="button" class="btn-outline-small" id="btn-tpl-insert-direct-link" title="Insert Step 2 Play Store URL tag">+ {{direct_link}}</button>
+              <button type="button" class="btn-outline-small" id="btn-tpl-insert-both-block" title="Insert 2-step button block">+ 2-Step Buttons</button>
+            </div>
+          </div>
+          <!-- Hidden input to hold the final HTML body for saving -->
+          <input type="hidden" id="tpl-edit-body" />
+          <!-- WYSIWYG editor div — what the user actually types in -->
+          <div id="tpl-edit-body-editor"
+               class="form-control tpl-wysiwyg-editor"
+               contenteditable="true"
+               spellcheck="true"
+               data-placeholder="Type your message here. Use Enter for a new line. Select text and press B to bold it."></div>
+          <small class="field-hint"><code>{{link}}</code> = Step 1 Join link &middot; <code>{{direct_link}}</code> = Step 2 Play Store link &mdash; auto-replaced on send.</small>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" id="close-template-modal-footer">Cancel</button>
+        <button type="button" class="btn-primary" id="btn-save-template-modal">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+            <polyline points="17 21 17 13 7 13 7 21"/>
+            <polyline points="7 3 7 8 15 8"/>
+          </svg>
+          Save Template
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js?v=2.6"></script>
+</body>
+</html>
