@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
+    "build": "echo 'Static assets ready'",
     "check": "node --check server.js && node --check app.js"
   },
   "repository": {
