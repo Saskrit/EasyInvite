@@ -1,0 +1,22 @@
+{
+  "name": "easyinvite",
+  "version": "1.0.0",
+  "description": "EasyInvite - Google Play Closed Testing Outreach & Invitation Dashboard",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "google-play",
+    "closed-testing",
+    "tester-outreach",
+    "invitation-manager"
+  ],
+  "author": "Saskreet",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^18.0.1",
+    "nodemailer": "^10.0.10"
+  }
+}

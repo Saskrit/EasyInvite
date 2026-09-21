@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EasyInvite - Google Play Closed Testing Outreach</title>
+  <meta name="description" content="Send Google Play closed testing invitations to testers seamlessly with EasyInvite." />
+  
+  <!-- Google Fonts: Inter & Caveat (for the handwritten style 'Share. Test. Improve.') -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-container">
+    <!-- Left Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="brand">
+          <img src="easyinvite.png" alt="EasyInvite" class="brand-logo-img" />
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="nav-menu">
+          <button class="nav-item active" data-view="send-invitation">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+            </svg>
+            <span>Send Invitation</span>
+          </button>
+
+          <button class="nav-item" data-view="email-templates">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+              <polyline points="10 9 9 9 8 9"/>
+            </svg>
+            <span>Email Templates</span>
+          </button>
+
+          <button class="nav-item" data-view="settings">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+            <span>Settings</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-smtp-status" id="sidebar-smtp-card" title="Click to configure SMTP in Settings">
+          <div class="status-indicator-wrap">
+            <span class="status-indicator-dot online" id="sidebar-smtp-dot"></span>
+            <span class="status-indicator-label" id="sidebar-smtp-label">SMTP: Online</span>
+          </div>
+          <span class="sidebar-live-tag">LIVE</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <main class="main-wrapper">
+      <!-- VIEW 1: Send Invitation -->
+      <section class="view-content active" id="view-send-invitation">
+        <!-- Main Invitation Card -->
+        <div class="card form-card">
+          <form id="invite-form" onsubmit="return false;">
+            <!-- Recipients Section -->
+            <div class="form-group form-group-recipients">
+              <div class="form-group-header">
+                <label for="recipients-input" class="form-label">
+                  Recipients 
+                  <span class="label-hint">(multiple emails supported)</span>
+                </label>
+                <div class="header-action-group">
+                  <button type="button" class="btn-outline-small" id="btn-import-csv">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="17 8 12 3 7 8"/>
+                      <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    Import CSV
+                  </button>
+                  <input type="file" id="csv-file-input" accept=".csv,.txt" style="display: none;" />
+                  <button type="button" class="btn-text-small" id="toggle-input-mode-btn">
+                    Switch to Chip View
+                  </button>
+                </div>
+              </div>
+
+              <!-- Mode A: Chips Container (for easy deletion & visual clarity) -->
+              <div class="tags-input-container" id="tags-input-container">
+                <div class="tags-list" id="tags-list">
+                  <!-- Dynamic chips added here -->
+                </div>
+                <input 
+                  type="email" 
+                  id="chip-inline-input" 
+                  class="chip-inline-input" 
+                  placeholder="Add email and press Enter or comma..." 
+                />
+              </div>
+
+              <!-- Mode B: Raw Textarea matching screenshot default placeholder -->
+              <div class="textarea-container" id="textarea-container" style="display: none;">
+                <textarea 
+                  id="recipients-textarea" 
+                  rows="2" 
+                  placeholder="Enter email addresses (one per line or separated by commas)&#10;example1@gmail.com&#10;example2@gmail.com"
+                ></textarea>
+              </div>
+
+              <div class="recipients-footer-hint">
+                <span id="recipient-count-text">0 recipients ready</span>
+                <span class="recipients-help-hint">Press Enter or comma to add emails</span>
+              </div>
+            </div>
+
+            <!-- Email Subject -->
+            <div class="form-group form-group-subject">
+              <label for="email-subject" class="form-label">Email Subject</label>
+              <input 
+                type="text" 
+                id="email-subject" 
+                class="form-control" 
+                value="Please be a tester and download my app" 
+                required 
+              />
+            </div>
+
+            <!-- Email Message -->
+            <div class="form-group form-group-editor">
+              <div class="form-group-header">
+                <label class="form-label">Email Message</label>
+                <div class="header-action-group">
+                  <button type="button" class="btn-app-id-pill" id="editor-app-id-badge" title="Google Play Configuration from Settings - Click to Edit">
+                    <span class="app-id-dot" id="editor-app-id-dot"></span>
+                    <span id="editor-app-id-text">App: Not Set</span>
+                  </button>
+                  <button type="button" class="btn-outline-small" id="btn-save-current-as-template" title="Save current message as a template">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                      <polyline points="17 21 17 13 7 13 7 21"/>
+                      <polyline points="7 3 7 8 15 8"/>
+                    </svg>
+                    Save as Template
+                  </button>
+                  <button type="button" class="btn-outline-small" id="btn-open-template-selector">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                      <line x1="9" y1="3" x2="9" y2="21"/>
+                    </svg>
+                    Templates
+                  </button>
+                </div>
+              </div>
+
+              <!-- WYSIWYG / Toolbar -->
+              <div class="editor-toolbar">
+                <div class="dropdown-styled">
+                  <select id="editor-style-select">
+                    <option value="p">Normal</option>
+                    <option value="h3">Heading</option>
+                    <option value="blockquote">Quote</option>
+                  </select>
+                </div>
+                <div class="toolbar-divider"></div>
+                <button type="button" class="toolbar-btn" data-action="bold" title="Bold (Ctrl+B)"><b>B</b></button>
+                <button type="button" class="toolbar-btn" data-action="italic" title="Italic (Ctrl+I)"><i>I</i></button>
+                <button type="button" class="toolbar-btn" data-action="underline" title="Underline (Ctrl+U)"><u>U</u></button>
+                <div class="toolbar-divider"></div>
+                <button type="button" class="toolbar-btn" data-action="createLink" title="Insert Custom Hyperlink">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                  </svg>
+                </button>
+                <button type="button" class="toolbar-btn" data-action="insertUnorderedList" title="Bullet List">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="8" y1="6" x2="21" y2="6"/>
+                    <line x1="8" y1="12" x2="21" y2="12"/>
+                    <line x1="8" y1="18" x2="21" y2="18"/>
+                    <line x1="3" y1="6" x2="3.01" y2="6"/>
+                    <line x1="3" y1="12" x2="3.01" y2="12"/>
+                    <line x1="3" y1="18" x2="3.01" y2="18"/>
+                  </svg>
+                </button>
+                <button type="button" class="toolbar-btn" data-action="insertOrderedList" title="Numbered List">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="10" y1="6" x2="21" y2="6"/>
+                    <line x1="10" y1="12" x2="21" y2="12"/>
+                    <line x1="10" y1="18" x2="21" y2="18"/>
+                    <path d="M4 6h1v4"/>
+                    <path d="M4 10h2"/>
+                    <path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/>
+                  </svg>
+                </button>
+                <div class="toolbar-divider"></div>
+
+                <!-- App Link Shortcuts Group -->
+                <div class="toolbar-right-group">
+                  <!-- App Link Type Dropdown -->
+                  <div class="app-link-dropdown-wrap" id="app-link-dropdown-wrap">
+                    <button type="button" class="toolbar-app-link-btn" id="btn-app-link-dropdown" title="Choose and insert App Link type from Settings">
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                      </svg>
+                      <span>+ Add App Link</span>
+                      <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" class="chevron-down-icon">
+                        <polyline points="6 9 12 15 18 9"/>
+                      </svg>
+                    </button>
+
+                    <!-- Dropdown Menu for Link Types -->
+                    <div class="app-link-menu" id="app-link-menu" style="display: none;">
+                      <div class="app-link-menu-header">
+                        <span class="menu-header-title">App Link Types</span>
+                        <span class="menu-header-app" id="menu-header-app-id">com.company.app</span>
+                      </div>
+
+                      <div class="app-link-menu-list">
+                        <!-- Option 1: Closed Testing Track Link -->
+                        <button type="button" class="app-link-option" id="opt-insert-testing-link">
+                          <div class="opt-icon opt-icon-testing">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            </svg>
+                          </div>
+                          <div class="opt-text">
+                            <span class="opt-title">Step 1: Join as a Tester (Track URL)</span>
+                            <span class="opt-desc" id="opt-testing-url-preview">https://play.google.com/apps/testing/...</span>
+                          </div>
+                          <span class="opt-badge opt-badge-optin">Step 1</span>
+                        </button>
+
+                        <!-- Option 2: Direct Play Store Listing Link -->
+                        <button type="button" class="app-link-option" id="opt-insert-direct-link">
+                          <div class="opt-icon opt-icon-store">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                              <line x1="3" y1="6" x2="21" y2="6"/>
+                              <path d="M16 10a4 4 0 0 1-8 0"/>
+                            </svg>
+                          </div>
+                          <div class="opt-text">
+                            <span class="opt-title">Step 2: Download App (Play Store Link)</span>
+                            <span class="opt-desc" id="opt-direct-url-preview">https://play.google.com/store/apps/details?id=...</span>
+                          </div>
+                          <span class="opt-badge opt-badge-store">Step 2</span>
+                        </button>
+
+                        <!-- Option 3: Both Links Block -->
+                        <button type="button" class="app-link-option" id="opt-insert-both-links">
+                          <div class="opt-icon opt-icon-both">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                              <line x1="8" y1="6" x2="21" y2="6"/>
+                              <line x1="8" y1="12" x2="21" y2="12"/>
+                              <line x1="8" y1="18" x2="21" y2="18"/>
+                            </svg>
+                          </div>
+                          <div class="opt-text">
+                            <span class="opt-title">Complete 2-Step Flow (Join + Download)</span>
+                            <span class="opt-desc">Formatted card with both Step 1 &amp; Step 2 links</span>
+                          </div>
+                          <span class="opt-badge opt-badge-combo">2 Steps</span>
+                        </button>
+
+                        <!-- Option 4: Join Test CTA Button -->
+                        <button type="button" class="app-link-option" id="opt-insert-cta-button">
+                          <div class="opt-icon opt-icon-cta">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                              <rect x="3" y="6" width="18" height="12" rx="2"/>
+                              <path d="M9 12h6"/>
+                              <path d="M12 9v6"/>
+                            </svg>
+                          </div>
+                          <div class="opt-text">
+                            <span class="opt-title">CTA Button: &ldquo;1. Join as a Tester&rdquo;</span>
+                            <span class="opt-desc">Blue action button for closed testing track</span>
+                          </div>
+                          <span class="opt-badge opt-badge-btn">Button</span>
+                        </button>
+
+                        <!-- Option 5: Download App CTA Button -->
+                        <button type="button" class="app-link-option" id="opt-insert-store-button">
+                          <div class="opt-icon opt-icon-store">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                              <polyline points="7 10 12 15 17 10"/>
+                              <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                          </div>
+                          <div class="opt-text">
+                            <span class="opt-title">CTA Button: &ldquo;2. Download on Play Store&rdquo;</span>
+                            <span class="opt-desc">Green action button for Play Store download</span>
+                          </div>
+                          <span class="opt-badge opt-badge-store">Button</span>
+                        </button>
+                      </div>
+
+                      <div class="app-link-menu-footer">
+                        <button type="button" class="btn-menu-settings" id="btn-menu-goto-settings">
+                          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                          </svg>
+                          Configure App Links in Settings &rarr;
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Quick 1-click shortcut buttons -->
+                  <button type="button" class="toolbar-quick-btn" id="btn-quick-testing-link" title="Step 1: Closed Testing Track Link (Join / Opt-in as a Tester)">
+                    + 1. Join Tester Link
+                  </button>
+                  <button type="button" class="toolbar-quick-btn" id="btn-quick-direct-link" title="Step 2: Direct Google Play Store Link (Download &amp; Install App)">
+                    + 2. Play Store Link
+                  </button>
+                  <button type="button" class="toolbar-quick-btn toolbar-quick-btn-highlight" id="btn-quick-both-links" title="Insert complete 2-step tester flow block">
+                    + 2-Step Flow
+                  </button>
+                </div>
+              </div>
+
+              <!-- Rich Content Area -->
+              <div class="message-editor" id="message-editor" contenteditable="true" spellcheck="true">
+                <p>Hi there,</p>
+                <p><br></p>
+                <p>I&rsquo;m inviting you to be one of the early testers of <strong>[App Name]</strong>.</p>
+                <p><br></p>
+                <p>Your help will be valuable in finding bugs, testing features, and improving the app before its wider release.</p>
+                <p><br></p>
+                <p><strong>How to join</strong></p>
+                <ol style="margin: 6px 0 12px 20px; padding: 0; line-height: 1.6;">
+                  <li>Click the <strong>Join the Test</strong> button below.</li>
+                  <li>Sign in with the Google account you want to use for testing.</li>
+                  <li>Tap &ldquo;Become a tester.&rdquo;</li>
+                  <li>Download the app from Google Play.</li>
+                  <li>Try the app and share any feedback you have.</li>
+                </ol>
+                <p><br></p>
+                <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="margin: 16px 0;">
+                  <tr>
+                    <td style="border-radius: 6px; background-color: #2563eb; text-align: center;">
+                      <a href="{{link}}" target="_blank" style="background-color: #2563eb; border: 1px solid #2563eb; border-radius: 6px; color: #ffffff; display: inline-block; font-size: 14px; font-weight: 700; padding: 12px 28px; text-decoration: none; text-transform: uppercase; letter-spacing: 0.5px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">JOIN THE TEST &rarr;</a>
+                    </td>
+                  </tr>
+                </table>
+                <p><br></p>
+                <p><strong>Testing Link:</strong><br>
+                <a href="{{link}}" class="editor-link" target="_blank">{{link}}</a></p>
+                <p><br></p>
+                <p>You don't need to pay anything to participate. It only takes a few minutes to join.</p>
+                <p><br></p>
+                <p>If you find any bugs or have suggestions, simply reply to this email and let me know.</p>
+                <p><br></p>
+                <p>Thank you for taking the time to help test <strong>[App Name]</strong>. Your feedback will help make the app better.</p>
+                <p><br></p>
+                <p>Best regards,<br>
+                <strong>[Your Name]</strong></p>
+              </div>
+            </div>
+
+            <!-- Form Bottom Actions -->
+            <div class="form-bottom-row">
+              <div class="send-meta-status-wrap">
+                <button type="button" class="smtp-badge online" id="invitation-smtp-badge" title="Click to manage SMTP in Settings">
+                  <span class="status-indicator-dot online" id="invitation-smtp-dot"></span>
+                  <span id="invitation-smtp-text">SMTP: Online (Live)</span>
+                </button>
+                <button type="button" class="deliverability-badge" id="btn-deliverability-info" title="Click to view why your emails will not go to Spam">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#047857" stroke-width="2.5">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    <path d="M9 12l2 2 4-4"/>
+                  </svg>
+                  <span>Anti-Spam: Inbox Ready (100%)</span>
+                </button>
+              </div>
+              <div class="action-buttons-group">
+                <button type="button" class="btn-preview-email" id="btn-preview-email">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                  Preview Email
+                </button>
+                <button type="submit" class="btn-primary-send" id="btn-send-invitation">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                  </svg>
+                  <span id="send-button-text">Send Invitation(s)</span>
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- VIEW 2: Email Templates -->
+      <section class="view-content" id="view-email-templates" style="display: none;">
+        <div class="card full-view-card">
+          <div class="view-header-row">
+            <div>
+              <h2 class="card-title">Email Templates</h2>
+              <p class="card-subtitle">Customize outreach messages with automatic Google Play link injection</p>
+            </div>
+            <button class="btn-primary" id="btn-create-template">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              New Template
+            </button>
+          </div>
+
+          <div class="templates-grid" id="full-templates-grid">
+            <!-- Dynamically rendered cards -->
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 5: Settings -->
+      <section class="view-content" id="view-settings" style="display: none;">
+        <div class="settings-layout">
+          <!-- CARD 1: Google Play Configuration -->
+          <div class="card play-config-card">
+            <div class="card-header-flex">
+              <div class="card-header-text">
+                <h2 class="card-title">Google Play Configuration</h2>
+                <p class="card-subtitle">Define your app identifier and official closed testing track URLs</p>
+              </div>
+              <span class="play-status-pill" id="play-config-status-pill">
+                <span class="status-indicator-dot" id="play-config-dot"></span>
+                <span id="play-config-status-text">Not Configured</span>
+              </span>
+            </div>
+
+            <div class="form-row-2col">
+              <div class="form-group">
+                <div class="form-group-header">
+                  <label class="form-label" for="setting-app-name">Application Name</label>
+                  <span class="label-hint">Display name</span>
+                </div>
+                <input type="text" id="setting-app-name" class="form-control" placeholder="e.g. BakiBook" />
+                <small class="field-hint">Used in emails as <code>[App Name]</code> or <code>{{app_name}}</code>.</small>
+              </div>
+              <div class="form-group">
+                <div class="form-group-header">
+                  <label class="form-label" for="setting-package-id">Application Package ID</label>
+                  <button type="button" class="btn-text-small" id="btn-auto-generate-urls">Auto-fill URLs</button>
+                </div>
+                <input type="text" id="setting-package-id" class="form-control" placeholder="e.g. com.company.app" />
+                <small class="field-hint">Auto-generates both official Google Play URLs below.</small>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="form-group-header">
+                <label class="form-label" for="setting-testing-url">
+                  <span class="step-badge step-1">Step 1</span> Closed Testing Web URL (Join / Opt-in Link)
+                </label>
+                <a href="#" target="_blank" class="btn-link-action" id="link-test-closed-url" style="display: none;" title="Open link in new tab to test">
+                  <span>Test Link ↗</span>
+                </a>
+              </div>
+              <input type="text" id="setting-testing-url" class="form-control" placeholder="https://play.google.com/apps/testing/com.company.app" />
+              <small class="field-hint">Testers <strong>must</strong> open this link first and click &ldquo;Become a tester&rdquo; to enroll in your closed test.</small>
+            </div>
+
+            <div class="form-group">
+              <div class="form-group-header">
+                <label class="form-label" for="setting-direct-url">
+                  <span class="step-badge step-2">Step 2</span> Play Store Direct Listing Link (Download App)
+                </label>
+                <a href="#" target="_blank" class="btn-link-action" id="link-test-direct-url" style="display: none;" title="Open link in new tab to test">
+                  <span>Test Link ↗</span>
+                </a>
+              </div>
+              <input type="text" id="setting-direct-url" class="form-control" placeholder="https://play.google.com/store/apps/details?id=com.company.app" />
+              <small class="field-hint">Once testers have joined in Step 1, they open this link to download and install the app from Google Play.</small>
+            </div>
+
+            <div class="form-bottom-actions space-between">
+              <button type="button" class="btn-secondary" id="btn-clear-play-config">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                </svg>
+                Clear
+              </button>
+              <button type="button" class="btn-primary" id="btn-save-play-config">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                  <polyline points="17 21 17 13 7 13 7 21"/>
+                  <polyline points="7 3 7 8 15 8"/>
+                </svg>
+                Save App Configuration
+              </button>
+            </div>
+          </div>
+
+          <!-- CARD 2: Sender & Email Service (SMTP) -->
+          <div class="card sender-config-card">
+            <div class="card-header-flex">
+              <div class="card-header-text">
+                <h2 class="card-title">Sender &amp; Email Service (SMTP)</h2>
+                <p class="card-subtitle">Configure your outgoing email address and Google App Password credentials</p>
+              </div>
+              <span class="smtp-live-pill online" id="setting-smtp-status-pill">
+                <span class="pulse-dot"></span>
+                <span id="setting-status-text">Online (Live)</span>
+              </span>
+            </div>
+
+            <div class="form-row-2col">
+              <div class="form-group">
+                <div class="form-group-header">
+                  <label class="form-label" for="setting-sender-name">
+                    Sender Name <span class="required-star" title="Required">*</span>
+                  </label>
+                  <span class="label-hint" id="sender-name-source-hint"></span>
+                </div>
+                <input type="text" id="setting-sender-name" class="form-control" placeholder="e.g. John Smith" autocomplete="name" />
+                <small class="field-error-msg" id="sender-name-error">Sender name is required before sending invitations.</small>
+                <small class="field-hint">The name testers see as the sender in their inbox. Set here or via <code>SENDER_NAME</code> in <code>.env</code>.</small>
+              </div>
+
+              <div class="form-group">
+                <div class="form-group-header">
+                  <label class="form-label" for="setting-sender-email">Sender Gmail / SMTP Email</label>
+                  <span class="label-hint">Google account</span>
+                </div>
+                <input type="email" id="setting-sender-email" class="form-control" placeholder="yourname@gmail.com" />
+                <small class="field-hint">The Gmail address used to create your Google App Password.</small>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="form-group-header">
+                <label class="form-label" for="setting-app-password">Google App Password (16 characters)</label>
+                <a href="https://myaccount.google.com/apppasswords" target="_blank" class="btn-link-action" title="Open Google App Passwords settings in browser">
+                  <span>Generate App Password ↗</span>
+                </a>
+              </div>
+              <input type="password" id="setting-app-password" class="form-control font-mono" placeholder="xxxx xxxx xxxx xxxx" value="" autocomplete="new-password" />
+              <small class="field-hint">Google App password for secure automated SMTP dispatch (loaded from <code>.env</code> or entered here).</small>
+            </div>
+
+            <div class="form-group">
+              <div class="form-group-header">
+                <label class="form-label">SMTP Dispatch Status</label>
+                <span class="label-hint">Live sending toggle</span>
+              </div>
+              <div class="segmented-control" id="smtp-segmented-control">
+                <button type="button" class="segment-btn active" id="btn-status-online" data-status="online">
+                  <span class="status-indicator-dot online"></span>
+                  <span>Online (Live Sending)</span>
+                </button>
+                <button type="button" class="segment-btn" id="btn-status-offline" data-status="offline">
+                  <span class="status-indicator-dot offline"></span>
+                  <span>Offline (Paused)</span>
+                </button>
+              </div>
+              <small class="field-hint" id="smtp-status-description" style="margin-top: 8px;">
+                Real &amp; Live: Invitations are sent directly to real recipients via your Gmail account.
+              </small>
+            </div>
+
+            <div class="form-bottom-actions space-between">
+              <button type="button" class="btn-secondary" id="btn-test-smtp">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                Test Connection
+              </button>
+              <button type="button" class="btn-primary" id="btn-save-settings">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                  <polyline points="17 21 17 13 7 13 7 21"/>
+                  <polyline points="7 3 7 8 15 8"/>
+                </svg>
+                Save Settings
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- MODAL: Email Preview (Shows rendered email exactly like Gmail recipient receives) -->
+  <div class="modal-backdrop" id="email-preview-modal" style="display: none;">
+    <div class="modal-card email-preview-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#2563eb" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+          <h3>Email Client Preview</h3>
+        </div>
+        <button class="modal-close-btn" id="close-preview-modal">&times;</button>
+      </div>
+
+      <div class="email-client-chrome">
+        <div class="email-header-meta">
+          <div class="email-meta-row">
+            <span class="meta-label">From:</span>
+            <span class="meta-value" id="preview-from">Developer &lt;you@gmail.com&gt;</span>
+          </div>
+          <div class="email-meta-row">
+            <span class="meta-label">To:</span>
+            <span class="meta-value" id="preview-to">tester@example.com</span>
+          </div>
+          <div class="email-meta-row">
+            <span class="meta-label">Subject:</span>
+            <span class="meta-value bold" id="preview-subject">Please be a tester and download my app</span>
+          </div>
+        </div>
+
+        <div class="email-rendered-body">
+          <div class="email-brand-banner">
+            <img src="easyinvite.png" alt="EasyInvite" class="email-logo-mini" />
+            <span>Closed Testing Invitation</span>
+          </div>
+
+          <div class="email-html-content" id="preview-content-area">
+            <!-- Injected dynamically -->
+          </div>
+
+          <div class="email-cta-container">
+            <div class="email-two-steps-cta">
+              <a href="#" target="_blank" class="email-cta-button cta-step-1" id="preview-cta-testing">
+                1. JOIN AS A TESTER
+              </a>
+              <a href="#" target="_blank" class="email-cta-button cta-step-2" id="preview-cta-direct">
+                2. DOWNLOAD ON PLAY STORE
+              </a>
+            </div>
+            <p class="email-cta-subtext">Step 1: Join test track &rarr; Step 2: Download on Google Play</p>
+          </div>
+
+          <div class="email-footer-notice">
+            <p>You received this invitation to participate in closed testing on Google Play Android.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" id="close-preview-modal-footer">Close</button>
+        <button class="btn-primary" id="btn-send-from-preview">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+          </svg>
+          Send Now
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Add / Edit Template -->
+  <div class="modal-backdrop" id="template-editor-modal" style="display: none;">
+    <div class="modal-card template-modal-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#2563eb" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+          <h3 id="template-modal-title">Edit Template</h3>
+        </div>
+        <button type="button" class="modal-close-btn" id="close-template-modal">&times;</button>
+      </div>
+
+      <div class="modal-body template-modal-body">
+        <input type="hidden" id="tpl-edit-id" value="" />
+
+        <div class="form-group">
+          <label class="form-label" for="tpl-edit-name">Template Name</label>
+          <input type="text" id="tpl-edit-name" class="form-control" placeholder="e.g. Weekend Tester Invitation" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="tpl-edit-desc">Description</label>
+          <input type="text" id="tpl-edit-desc" class="form-control" placeholder="Brief note about when to use this template" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="tpl-edit-subject">Email Subject</label>
+          <input type="text" id="tpl-edit-subject" class="form-control" placeholder="e.g. Please be a tester and download our app" required />
+        </div>
+
+        <div class="form-group">
+          <div class="form-group-header">
+            <label class="form-label" for="tpl-edit-body">Email Body (HTML supported)</label>
+            <div class="header-action-group">
+              <button type="button" class="btn-outline-small" id="btn-tpl-insert-link" title="Insert Step 1 Closed Testing Track URL tag">
+                + Step 1: {{link}} (Join)
+              </button>
+              <button type="button" class="btn-outline-small" id="btn-tpl-insert-direct-link" title="Insert Step 2 Direct Play Store URL tag">
+                + Step 2: {{direct_link}} (Download)
+              </button>
+              <button type="button" class="btn-outline-small" id="btn-tpl-insert-both-block" title="Insert formatted 2-step flow block">
+                + 2-Step Block
+              </button>
+            </div>
+          </div>
+          <textarea id="tpl-edit-body" class="form-control template-textarea" rows="7" placeholder="Type your invitation message... Use {{link}} for Step 1 (Join Tester) and {{direct_link}} for Step 2 (Play Store App)."></textarea>
+          <small class="field-hint">Tags <code>{{link}}</code> (Step 1: Join as Tester) and <code>{{direct_link}}</code> (Step 2: Download from Play Store) are automatically replaced.</small>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" id="close-template-modal-footer">Cancel</button>
+        <button type="button" class="btn-primary" id="btn-save-template-modal">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+            <polyline points="17 21 17 13 7 13 7 21"/>
+            <polyline points="7 3 7 8 15 8"/>
+          </svg>
+          Save Template
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Anti-Spam & Deliverability Guide -->
+  <div class="modal-backdrop" id="deliverability-modal" style="display: none;">
+    <div class="modal-card deliverability-modal-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#059669" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="M9 12l2 2 4-4"/>
+          </svg>
+          <h3>How EasyInvite Prevents Emails from Going to Spam</h3>
+        </div>
+        <button type="button" class="modal-close-btn" id="close-deliverability-modal">&times;</button>
+      </div>
+
+      <div class="modal-body deliverability-modal-body">
+        <div class="deliverability-score-card">
+          <div class="score-circle">100%</div>
+          <div class="score-info">
+            <h4>Optimal Inbox Placement</h4>
+            <p>Emails dispatched via EasyInvite are engineered to pass Google, Yahoo, and Microsoft spam filters with maximum trust.</p>
+          </div>
+        </div>
+
+        <div class="deliverability-factors-list">
+          <div class="factor-item">
+            <span class="factor-icon check">✓</span>
+            <div>
+              <strong>Authenticated via Gmail SMTP (SPF &amp; DKIM Pass 100%)</strong>
+              <p>Because you send directly through your Google Gmail account, Gmail automatically cryptographically signs every message with genuine Google DKIM (<code>d=gmail.com</code>). It is never sent through third-party unverified relay IPs.</p>
+            </div>
+          </div>
+
+          <div class="factor-item">
+            <span class="factor-icon check">✓</span>
+            <div>
+              <strong>Multipart MIME (HTML + Clean Plain-Text Alternative)</strong>
+              <p>Spam filters severely penalize HTML-only emails. EasyInvite automatically generates a synchronous plain-text version alongside the styled HTML message, eliminating the <code>MIME_HTML_ONLY</code> spam penalty.</p>
+            </div>
+          </div>
+
+          <div class="factor-item">
+            <span class="factor-icon check">✓</span>
+            <div>
+              <strong>Whitelisted Official Google Domains</strong>
+              <p>Your invitations link directly to official <code>play.google.com</code> testing tracks. Google&rsquo;s algorithms recognize their own domain and treat it as trusted, unlike shortened links (bit.ly, etc.).</p>
+            </div>
+          </div>
+
+          <div class="factor-item">
+            <span class="factor-icon check">✓</span>
+            <div>
+              <strong>Personal Direct Dispatch (Zero Disclosed CC/BCC Lists)</strong>
+              <p>Each tester receives an individual 1-on-1 email with <code>Precedence: personal</code> headers. There are no bulk CC lists or commercial headers that trigger the "Promotions" or "Junk" tab.</p>
+            </div>
+          </div>
+
+          <div class="factor-item">
+            <span class="factor-icon check">✓</span>
+            <div>
+              <strong>Staggered Pacing (Anti-Burst Throttle Protection)</strong>
+              <p>Emails are dispatched with a natural pacing delay between recipients, preventing Google&rsquo;s automated heuristic triggers from flagging sudden robotic bursts.</p>
+            </div>
+          </div>
+
+          <div class="factor-item">
+            <span class="factor-icon check">✓</span>
+            <div>
+              <strong>CAN-SPAM Compliant Legitimate Opt-Out Notice</strong>
+              <p>Every outgoing email includes a clean footer explaining why the recipient received the invitation and clarifying that they can simply ignore it if they don't wish to test.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="deliverability-tip-box">
+          <strong>💡 Developer Tip for New Tester Lists:</strong>
+          <p>If you are emailing someone for the very first time, ask them to check their <em>Updates</em> or <em>Spam</em> folder once and tap <strong>&ldquo;Report not spam&rdquo;</strong> or <strong>&ldquo;Move to Primary&rdquo;</strong>. Once marked, all your future testing invitations and updates will arrive directly in their Primary Inbox!</p>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-primary" id="close-deliverability-modal-btn">Got it, Thanks!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
