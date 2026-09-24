@@ -30,7 +30,7 @@ body[data-page="settings"] .main-wrapper::-webkit-scrollbar-thumb:hover {
 
 body[data-page="settings"] #view-settings {
   width: 100%;
-  max-width: 840px;
+  max-width: 1280px;
   margin: 0 auto;
   padding: 0;
   display: block;
@@ -39,15 +39,18 @@ body[data-page="settings"] #view-settings {
   overflow: visible;
 }
 
-/* Settings View Layout */
+
+/* Settings View Layout — Side-by-side two-column */
 .settings-layout {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: flex-start;
   gap: 24px;
   width: 100%;
   margin: 0 auto;
   padding: 4px 0 32px;
 }
+
 
 .play-config-card,
 .sender-config-card {
@@ -56,17 +59,20 @@ body[data-page="settings"] #view-settings {
   border-radius: var(--radius-lg);
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03), 0 2px 8px -2px rgba(15, 23, 42, 0.05);
   padding: 26px 30px;
-  width: 100%;
+  flex: 1 1 0;
+  min-width: 0;
   box-sizing: border-box;
 }
 
+
 .form-row-2col {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 18px;
   margin-bottom: 18px;
   align-items: start;
 }
+
 
 .form-row-2col .form-group {
   margin-bottom: 0;
@@ -79,6 +85,19 @@ body[data-page="settings"] #view-settings {
     margin-bottom: 16px;
   }
 }
+
+@media (max-width: 900px) {
+  .settings-layout {
+    flex-direction: column;
+  }
+
+  .play-config-card,
+  .sender-config-card {
+    flex: none;
+    width: 100%;
+  }
+}
+
 
 .form-bottom-actions {
   display: flex;

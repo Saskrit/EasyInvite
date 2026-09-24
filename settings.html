@@ -93,7 +93,7 @@
                   <span class="label-hint">Display name</span>
                 </div>
                 <input type="text" id="setting-app-name" class="form-control" placeholder="e.g. BakiBook" />
-                <small class="field-hint">Used in emails as <code>[App Name]</code> or <code>{{app_name}}</code>.</small>
+
               </div>
               <div class="form-group">
                 <div class="form-group-header">
@@ -101,7 +101,7 @@
                   <button type="button" class="btn-text-small" id="btn-auto-generate-urls">Auto-fill URLs</button>
                 </div>
                 <input type="text" id="setting-package-id" class="form-control" placeholder="e.g. com.company.app" />
-                <small class="field-hint">Auto-generates both official Google Play URLs below.</small>
+
               </div>
             </div>
 
@@ -115,7 +115,7 @@
                 </a>
               </div>
               <input type="text" id="setting-testing-url" class="form-control" placeholder="https://play.google.com/apps/testing/com.company.app" />
-              <small class="field-hint">Testers <strong>must</strong> open this link first and click &ldquo;Become a tester&rdquo; to enroll in your closed test.</small>
+
             </div>
 
             <div class="form-group">
@@ -128,7 +128,7 @@
                 </a>
               </div>
               <input type="text" id="setting-direct-url" class="form-control" placeholder="https://play.google.com/store/apps/details?id=com.company.app" />
-              <small class="field-hint">Once testers have joined in Step 1, they open this link to download and install the app from Google Play.</small>
+
             </div>
 
             <div class="form-bottom-actions space-between">
@@ -173,7 +173,6 @@
                 </div>
                 <input type="text" id="setting-sender-name" class="form-control" placeholder="e.g. John Smith" autocomplete="name" />
                 <small class="field-error-msg" id="sender-name-error">Sender name is required before sending invitations.</small>
-                <small class="field-hint">The name testers see as the sender in their inbox. Set here or via <code>SENDER_NAME</code> in <code>.env</code>.</small>
               </div>
 
               <div class="form-group">
@@ -182,7 +181,7 @@
                   <span class="label-hint">Google account</span>
                 </div>
                 <input type="email" id="setting-sender-email" class="form-control" placeholder="yourname@gmail.com" />
-                <small class="field-hint">The Gmail address used to create your Google App Password.</small>
+
               </div>
             </div>
 
@@ -194,7 +193,7 @@
                 </a>
               </div>
               <input type="password" id="setting-app-password" class="form-control font-mono" placeholder="xxxx xxxx xxxx xxxx" value="" autocomplete="new-password" />
-              <small class="field-hint">Google App password for secure automated SMTP dispatch (loaded from <code>.env</code> or entered here).</small>
+
             </div>
 
             <div class="form-group">
@@ -212,9 +211,7 @@
                   <span>Offline (Paused)</span>
                 </button>
               </div>
-              <small class="field-hint" id="smtp-status-description" style="margin-top: 8px;">
-                Real &amp; Live: Invitations are sent directly to real recipients via your Gmail account.
-              </small>
+
             </div>
 
             <div class="form-bottom-actions space-between">
