@@ -7,8 +7,8 @@
   <meta name="description" content="Choose a prepaid usage plan for Google Play Closed Testing outreach with EasyInvite." />
   
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/common.css?v=2.7" />
-  <link rel="stylesheet" href="css/billing.css?v=2.7" />
+  <link rel="stylesheet" href="css/common.css?v=3.0" />
+  <link rel="stylesheet" href="css/billing.css?v=3.0" />
 
   <!-- Google Fonts: Inter & Caveat -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -92,11 +92,33 @@
       <section class="view-content active" id="view-billing">
         <div class="billing-layout">
 
+          <!-- Logged-in User Account & Usage Banner -->
+          <div class="billing-user-banner" id="billing-user-banner" style="display: none;">
+            <div class="user-banner-left">
+              <div class="user-banner-avatar" id="banner-user-initials">U</div>
+              <div class="user-banner-info">
+                <h4 id="banner-user-name">Your Account</h4>
+                <p id="banner-user-email">user@example.com</p>
+              </div>
+            </div>
+            <div class="user-banner-metrics">
+              <div class="banner-metric-item">
+                <span class="banner-metric-label">Active Plan</span>
+                <span class="banner-metric-value" id="banner-active-plan" style="color: #2563eb;">Free Tier</span>
+              </div>
+              <div class="banner-metric-item">
+                <span class="banner-metric-label">Send Quota</span>
+                <span class="banner-metric-value" id="banner-sends-left">5 / 5⚡ left</span>
+              </div>
+            </div>
+          </div>
+
           <!-- Pricing Plans Section -->
           <div id="plans-section">
             <div class="pricing-header">
-              <h2>Simple Prepaid Plans</h2>
-              <p>No recurring subscriptions. Pay once via bank transfer, top up whenever you need, or get Lifetime unlimited outreach.</p>
+              <span class="pricing-eyebrow">PREPAID &amp; LIFETIME USAGE</span>
+              <h1>Simple, Transparent Pricing</h1>
+              <p>No recurring subscriptions or hidden fees. Pay once via bank transfer, top up whenever you need, or get Lifetime unlimited outreach.</p>
             </div>
 
             <!-- Horizontal Free Plan -->
@@ -117,23 +139,23 @@
               <div class="plan-horizontal-features">
                 <ul class="plan-features-list horizontal-grid">
                   <li class="plan-feature-item">
-                    <span class="feature-check">✓</span>
+                    <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
                     <span><strong>5 Send Actions Total</strong></span>
                   </li>
                   <li class="plan-feature-item">
-                    <span class="feature-check">✓</span>
+                    <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
                     <span>Unlimited recipients per send</span>
                   </li>
                   <li class="plan-feature-item">
-                    <span class="feature-check">✓</span>
+                    <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
                     <span>No account or signup needed</span>
                   </li>
                   <li class="plan-feature-item">
-                    <span class="feature-check">✓</span>
+                    <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
                     <span>Configure App &amp; SMTP in form</span>
                   </li>
                   <li class="plan-feature-item">
-                    <span class="feature-check" style="color: #94a3b8;">&ndash;</span>
+                    <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#94a3b8" stroke-width="2.5"><line x1="5" y1="10" x2="15" y2="10"/></svg>
                     <span style="color: #94a3b8;">No saved templates or settings</span>
                   </li>
                 </ul>
@@ -166,25 +188,26 @@
                     <span class="plan-amount">100</span>
                     <span class="plan-billing-type">/ month</span>
                   </div>
+                  <div class="plan-quota-pill">50 Send Actions</div>
                   <ul class="plan-features-list">
                     <li class="plan-feature-item">
-                      <span class="feature-check">✓</span>
+                      <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
                       <span><strong>50 Send Actions</strong></span>
                     </li>
                     <li class="plan-feature-item">
-                      <span class="feature-check">✓</span>
+                      <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
                       <span>Unlimited recipients per send</span>
                     </li>
                     <li class="plan-feature-item">
-                      <span class="feature-check">✓</span>
+                      <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
                       <span>User saved login account</span>
                     </li>
                     <li class="plan-feature-item">
-                      <span class="feature-check">✓</span>
+                      <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
                       <span>Saved settings &amp; credentials</span>
                     </li>
                     <li class="plan-feature-item">
-                      <span class="feature-check">✓</span>
+                      <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
                       <span>Multi-device sync</span>
                     </li>
                   </ul>
@@ -205,25 +228,26 @@
                     <span class="plan-amount">200</span>
                     <span class="plan-billing-type">/ month</span>
                   </div>
+                  <div class="plan-quota-pill featured">100 Send Actions</div>
                   <ul class="plan-features-list">
                     <li class="plan-feature-item">
-                      <span class="feature-check">✓</span>
+                      <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
                       <span><strong>100 Send Actions</strong></span>
                     </li>
                     <li class="plan-feature-item">
-                      <span class="feature-check">✓</span>
+                      <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
                       <span>Unlimited recipients per send</span>
                     </li>
                     <li class="plan-feature-item">
-                      <span class="feature-check">✓</span>
+                      <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
                       <span>Saved login &amp; settings data</span>
                     </li>
                     <li class="plan-feature-item">
-                      <span class="feature-check">✓</span>
+                      <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
                       <span><strong>Can use preset email templates</strong></span>
                     </li>
                     <li class="plan-feature-item">
-                      <span class="feature-check">✓</span>
+                      <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
                       <span>Priority deliverability shell</span>
                     </li>
                   </ul>
@@ -243,25 +267,26 @@
                     <span class="plan-amount">300</span>
                     <span class="plan-billing-type">/ month</span>
                   </div>
+                  <div class="plan-quota-pill">300 Send Actions</div>
                   <ul class="plan-features-list">
                     <li class="plan-feature-item">
-                      <span class="feature-check">✓</span>
+                      <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
                       <span><strong>300 Send Actions</strong></span>
                     </li>
                     <li class="plan-feature-item">
-                      <span class="feature-check">✓</span>
+                      <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
                       <span>Unlimited recipients per send</span>
                     </li>
                     <li class="plan-feature-item">
-                      <span class="feature-check">✓</span>
+                      <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
                       <span>Saved login &amp; settings data</span>
                     </li>
                     <li class="plan-feature-item">
-                      <span class="feature-check">✓</span>
+                      <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
                       <span>Can use preset email templates</span>
                     </li>
                     <li class="plan-feature-item">
-                      <span class="feature-check">✓</span>
+                      <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
                       <span><strong>Make &amp; save own templates</strong></span>
                     </li>
                   </ul>
@@ -282,25 +307,26 @@
                     <span class="plan-amount">1,000</span>
                     <span class="plan-billing-type">/ once lifetime</span>
                   </div>
+                  <div class="plan-quota-pill lifetime">Unlimited Sends</div>
                   <ul class="plan-features-list">
                     <li class="plan-feature-item">
-                      <span class="feature-check">✓</span>
+                      <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
                       <span><strong>Unlimited Send Actions</strong></span>
                     </li>
                     <li class="plan-feature-item">
-                      <span class="feature-check">✓</span>
+                      <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
                       <span>Never expires</span>
                     </li>
                     <li class="plan-feature-item">
-                      <span class="feature-check">✓</span>
+                      <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
                       <span>All email templates + create own</span>
                     </li>
                     <li class="plan-feature-item">
-                      <span class="feature-check">✓</span>
+                      <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
                       <span>Saved login &amp; settings data</span>
                     </li>
                     <li class="plan-feature-item">
-                      <span class="feature-check">✓</span>
+                      <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
                       <span>VIP priority support</span>
                     </li>
                   </ul>
@@ -313,60 +339,63 @@
           </div>
 
           <!-- Section: Active Payment Verification Details (Shown when payment is PENDING) -->
-          <div class="pending-payment-card" id="pending-payment-section" style="display: none; margin-top: 32px; background: #ffffff; border: 1px solid #fed7aa; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 10px rgba(245, 158, 11, 0.08);">
-            <div class="pending-payment-header" style="display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; background: #fffaf0; border-bottom: 1px solid #fed7aa; flex-wrap: wrap; gap: 10px;">
-              <div style="display: flex; align-items: center; gap: 10px;">
-                <span style="width: 10px; height: 10px; border-radius: 50%; background: #f59e0b; display: inline-block;"></span>
-                <h3 style="margin: 0; font-size: 1.12rem; font-weight: 700; color: #0f172a;">Active Order &amp; Payment Verification</h3>
+          <div class="pending-payment-card" id="pending-payment-section" style="display: none;">
+            <div class="pending-payment-header">
+              <div class="pending-payment-title-wrap">
+                <span style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; display: inline-block;"></span>
+                <h3>Active Order &amp; Payment Verification</h3>
               </div>
-              <span class="status-badge PENDING" id="pending-status-badge" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a; padding: 4px 12px; border-radius: 20px; font-size: 0.76rem; font-weight: 700; letter-spacing: 0.5px;">
+              <span class="pending-status-badge" id="pending-status-badge">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                 PAYMENT PENDING · AWAITING ADMIN APPROVAL
               </span>
             </div>
 
-            <div class="pending-payment-body" style="padding: 24px;">
-              <div style="margin-bottom: 22px; padding: 14px 18px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; font-size: 0.88rem; color: #92400e; line-height: 1.55;">
+            <div class="pending-payment-body">
+              <div class="pending-alert-box">
                 <strong style="color: #78350f;">Account Status: Free Version (Payment Pending)</strong><br />
                 Your manual bank transfer payment proof is currently under review by our administration team. Until approval, your account remains active on the <strong>Free tier</strong>. Once approved, your chosen plan benefits and send balance will activate automatically.
               </div>
 
-              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 22px; background: #f8fafc; padding: 18px; border-radius: 10px; border: 1px solid #e2e8f0;">
-                <div>
-                  <span style="font-size: 0.74rem; text-transform: uppercase; color: #64748b; font-weight: 700; display: block; margin-bottom: 4px;">Selected Plan</span>
-                  <strong id="pending-plan-name" style="font-size: 1.05rem; color: #2563eb;">-</strong>
+              <div class="pending-details-grid">
+                <div class="pending-detail-item">
+                  <span class="label">Selected Plan</span>
+                  <div class="val" id="pending-plan-name" style="color: #2563eb;">-</div>
                 </div>
-                <div>
-                  <span style="font-size: 0.74rem; text-transform: uppercase; color: #64748b; font-weight: 700; display: block; margin-bottom: 4px;">Payable Amount</span>
-                  <strong id="pending-amount" style="font-size: 1.05rem; color: #0f172a;">-</strong>
+                <div class="pending-detail-item">
+                  <span class="label">Payable Amount</span>
+                  <div class="val" id="pending-amount">-</div>
                 </div>
-                <div>
-                  <span style="font-size: 0.74rem; text-transform: uppercase; color: #64748b; font-weight: 700; display: block; margin-bottom: 4px;">Reference / Txn #</span>
-                  <code id="pending-ref-num" style="font-size: 0.95rem; font-weight: 700; background: #ffffff; padding: 4px 8px; border-radius: 4px; border: 1px solid #cbd5e1; color: #b45309;">-</code>
+                <div class="pending-detail-item">
+                  <span class="label">Reference / Txn #</span>
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <code id="pending-ref-num" style="font-size: 0.92rem; font-weight: 700; background: #ffffff; padding: 3px 6px; border-radius: 4px; border: 1px solid #cbd5e1; color: #b45309;">-</code>
+                    <button type="button" class="btn-copy-mini" onclick="copyPendingRef()" title="Copy Reference ID">
+                      <span id="copy-pending-ref-text">Copy</span>
+                    </button>
+                  </div>
                 </div>
-                <div>
-                  <span style="font-size: 0.74rem; text-transform: uppercase; color: #64748b; font-weight: 700; display: block; margin-bottom: 4px;">Payment Destination</span>
-                  <span id="pending-bank" style="font-size: 0.92rem; color: #334155; font-weight: 600;">Global IME Bank</span>
+                <div class="pending-detail-item">
+                  <span class="label">Payment Destination</span>
+                  <div class="val" id="pending-bank">Global IME Bank</div>
                 </div>
-                <div>
-                  <span style="font-size: 0.74rem; text-transform: uppercase; color: #64748b; font-weight: 700; display: block; margin-bottom: 4px;">Date Submitted</span>
-                  <span id="pending-date" style="font-size: 0.88rem; color: #64748b;">-</span>
+                <div class="pending-detail-item">
+                  <span class="label">Date Submitted</span>
+                  <div class="val" id="pending-date" style="font-size: 0.85rem; color: #64748b;">-</div>
                 </div>
               </div>
 
               <!-- Payment Screenshot Proof Container -->
-              <div id="pending-screenshot-container" style="border-top: 1px solid #e2e8f0; padding-top: 18px;">
-                <span style="font-size: 0.76rem; text-transform: uppercase; color: #64748b; font-weight: 700; display: block; margin-bottom: 10px;">Submitted Payment Proof Screenshot</span>
-                <div style="display: flex; align-items: flex-start; gap: 20px; flex-wrap: wrap;">
-                  <img id="pending-screenshot-img" src="" alt="Payment Proof" style="max-height: 150px; max-width: 260px; border-radius: 8px; border: 1px solid #cbd5e1; cursor: pointer; object-fit: contain; background: #f8fafc;" onclick="window.open(this.src, '_blank')" title="Click to open screenshot in new tab" />
-                  <div style="flex: 1; min-width: 200px;">
-                    <a id="pending-screenshot-link" href="#" target="_blank" class="btn-outline-small" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; font-weight: 600; color: #2563eb; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px;">
-                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                      Open Full Size Proof
-                    </a>
-                    <p style="margin: 8px 0 0; font-size: 0.82rem; color: #64748b; line-height: 1.5;">
-                      Your uploaded receipt screenshot has been safely delivered to our verification queue. An administrator will verify the bank funds shortly.
-                    </p>
-                  </div>
+              <div id="pending-screenshot-container" class="pending-proof-row">
+                <img id="pending-screenshot-img" src="" alt="Payment Proof" class="pending-thumb-img" onclick="window.open(this.src, '_blank')" title="Click to view full screenshot in new tab" />
+                <div style="flex: 1; min-width: 220px;">
+                  <a id="pending-screenshot-link" href="#" target="_blank" class="btn-outline-small" style="text-decoration: none;">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    Open Full Receipt
+                  </a>
+                  <p style="margin: 8px 0 0; font-size: 0.82rem; color: #64748b; line-height: 1.5;">
+                    Your uploaded receipt screenshot has been safely delivered to our verification queue. An administrator will verify the bank funds shortly.
+                  </p>
                 </div>
               </div>
             </div>
@@ -443,7 +472,13 @@
           </div>
           <div class="bank-row">
             <span class="label">Account Number:</span>
-            <span class="val" id="bank-acc-number">01234567890123</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="val" id="bank-acc-number" style="font-family: monospace; font-size: 0.95rem; font-weight: 700; letter-spacing: 0.5px;">01234567890123</span>
+              <button type="button" class="btn-copy-mini" onclick="copyAccountNumber()" id="btn-copy-acc" title="Copy account number">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                <span id="copy-acc-text">Copy</span>
+              </button>
+            </div>
           </div>
           <div class="bank-row">
             <span class="label">Branch:</span>
@@ -472,22 +507,34 @@
 
           <div class="form-group">
             <label class="form-label" for="payment-screenshot">
-              Payment Screenshot <span style="color: #ef4444;">*</span>
+              Payment Screenshot / Receipt <span style="color: #ef4444;">*</span>
             </label>
-            <input 
-              type="file" 
-              id="payment-screenshot" 
-              class="form-control" 
-              accept="image/png, image/jpeg, image/webp" 
-              required
-              onchange="handleScreenshotPreview(event)"
-            />
-            <div id="screenshot-preview-wrap" style="display: none; margin-top: 10px;">
-              <img id="screenshot-preview-img" src="" alt="Screenshot Preview" style="max-height: 120px; border-radius: 6px; border: 1px solid #cbd5e1;" />
+            <div class="upload-dropzone" onclick="document.getElementById('payment-screenshot').click()">
+              <input 
+                type="file" 
+                id="payment-screenshot" 
+                accept="image/png, image/jpeg, image/webp" 
+                required
+                style="position: absolute; width: 0; height: 0; opacity: 0; pointer-events: none;"
+                onchange="handleScreenshotPreview(event)"
+              />
+              <div id="dropzone-empty-state">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#64748b" stroke-width="1.8" style="margin-bottom: 6px;">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                <div style="font-size: 0.88rem; font-weight: 600; color: #1e293b;">Click to upload bank transfer receipt</div>
+                <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 2px;">PNG, JPG, or WEBP (Max 5MB)</div>
+              </div>
+              <div id="screenshot-preview-wrap" style="display: none; margin-top: 6px;">
+                <img id="screenshot-preview-img" src="" alt="Screenshot Preview" style="max-height: 120px; border-radius: 6px; border: 1px solid #cbd5e1; object-fit: contain;" />
+                <div style="font-size: 0.76rem; color: #2563eb; font-weight: 600; margin-top: 4px;">Click to change image</div>
+              </div>
             </div>
           </div>
 
-          <div class="modal-footer" style="padding: 16px 0 0; margin-top: 20px; border-top: 1px solid #e2e8f0;">
+          <div class="modal-footer" style="padding: 16px 0 0; margin-top: 20px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 10px;">
             <button type="button" class="btn-secondary" onclick="closePaymentModal()">Cancel</button>
             <button type="submit" class="btn-primary" id="btn-submit-payment">
               Submit Payment for Verification
@@ -531,10 +578,12 @@
 
     async function loadBillingData() {
       const token = localStorage.getItem('easyinvite_auth_token');
+      const userBanner = document.getElementById('billing-user-banner');
       const historyCard = document.getElementById('billing-history-section');
       const pendingSection = document.getElementById('pending-payment-section');
 
       if (!token) {
+        if (userBanner) userBanner.style.display = 'none';
         if (historyCard) historyCard.style.display = 'none';
         if (pendingSection) pendingSection.style.display = 'none';
         updatePlanButtons('guest');
@@ -550,6 +599,28 @@
         if (data.success) {
           const payments = data.payments || [];
           const usage = data.usage || {};
+
+          // 0. Update User Status Banner at top
+          if (userBanner) {
+            userBanner.style.display = 'flex';
+            let storedUser = {};
+            try { storedUser = JSON.parse(localStorage.getItem('easyinvite_user') || '{}'); } catch(e){}
+            const nameEl = document.getElementById('banner-user-name');
+            const emailEl = document.getElementById('banner-user-email');
+            const initialEl = document.getElementById('banner-user-initials');
+            const planEl = document.getElementById('banner-active-plan');
+            const sendsEl = document.getElementById('banner-sends-left');
+
+            if (nameEl) nameEl.textContent = storedUser.name || 'Account';
+            if (emailEl) emailEl.textContent = storedUser.email || '';
+            if (initialEl) initialEl.textContent = (storedUser.name || 'U').charAt(0).toUpperCase();
+
+            const planNameFormatted = usage.isLifetime ? 'Lifetime Deal' : (usage.planId && usage.planId !== 'free' ? `${usage.planId.toUpperCase()} PLAN` : 'FREE TIER');
+            if (planEl) planEl.textContent = planNameFormatted;
+
+            const sendsFormatted = usage.isLifetime ? 'Unlimited ⚡' : `${usage.sendsRemaining ?? 5}⚡ sends left`;
+            if (sendsEl) sendsEl.textContent = sendsFormatted;
+          }
 
           // 1. Check for any active PENDING payment
           const pendingPayment = payments.find(p => p.status === 'PENDING');
@@ -569,7 +640,7 @@
             const ssWrap = document.getElementById('pending-screenshot-container');
 
             if (pendingPayment.screenshot_path) {
-              if (ssWrap) ssWrap.style.display = 'block';
+              if (ssWrap) ssWrap.style.display = 'flex';
               if (ssImg) ssImg.src = pendingPayment.screenshot_path;
               if (ssLink) ssLink.href = pendingPayment.screenshot_path;
             } else {
@@ -798,7 +869,11 @@
       document.getElementById('modal-amount').textContent = `NPR ${amount}`;
       document.getElementById('payment-reference').value = '';
       document.getElementById('payment-screenshot').value = '';
-      document.getElementById('screenshot-preview-wrap').style.display = 'none';
+      
+      const emptyState = document.getElementById('dropzone-empty-state');
+      const previewWrap = document.getElementById('screenshot-preview-wrap');
+      if (emptyState) emptyState.style.display = 'block';
+      if (previewWrap) previewWrap.style.display = 'none';
       screenshotBase64 = null;
 
       document.getElementById('payment-modal').style.display = 'flex';
@@ -808,11 +883,41 @@
       document.getElementById('payment-modal').style.display = 'none';
     }
 
+    function copyAccountNumber() {
+      const accNumber = '01234567890123';
+      navigator.clipboard.writeText(accNumber).then(() => {
+        const textSpan = document.getElementById('copy-acc-text');
+        if (textSpan) textSpan.textContent = 'Copied!';
+        setTimeout(() => {
+          if (textSpan) textSpan.textContent = 'Copy';
+        }, 2000);
+      }).catch(() => {
+        showToast('Account number: 01234567890123', 'info');
+      });
+    }
+
+    function copyPendingRef() {
+      const refEl = document.getElementById('pending-ref-num');
+      const text = refEl ? refEl.textContent.trim() : '';
+      if (!text || text === '-') return;
+      navigator.clipboard.writeText(text).then(() => {
+        const textSpan = document.getElementById('copy-pending-ref-text');
+        if (textSpan) textSpan.textContent = 'Copied!';
+        setTimeout(() => {
+          if (textSpan) textSpan.textContent = 'Copy';
+        }, 2000);
+      });
+    }
+
     function handleScreenshotPreview(event) {
       const file = event.target.files[0];
+      const emptyState = document.getElementById('dropzone-empty-state');
+      const previewWrap = document.getElementById('screenshot-preview-wrap');
+
       if (!file) {
         screenshotBase64 = null;
-        document.getElementById('screenshot-preview-wrap').style.display = 'none';
+        if (previewWrap) previewWrap.style.display = 'none';
+        if (emptyState) emptyState.style.display = 'block';
         return;
       }
 
@@ -820,7 +925,8 @@
       reader.onload = (e) => {
         screenshotBase64 = e.target.result;
         document.getElementById('screenshot-preview-img').src = screenshotBase64;
-        document.getElementById('screenshot-preview-wrap').style.display = 'block';
+        if (emptyState) emptyState.style.display = 'none';
+        if (previewWrap) previewWrap.style.display = 'block';
       };
       reader.readAsDataURL(file);
     }
