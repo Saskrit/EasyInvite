@@ -109,7 +109,7 @@
                   <label class="form-label" for="setting-app-name">Application Name</label>
                   <span class="label-hint">Display name</span>
                 </div>
-                <input type="text" id="setting-app-name" class="form-control" placeholder="e.g. BakiBook" />
+                <input type="text" id="setting-app-name" name="app_display_name_safe" class="form-control" placeholder="e.g. BakiBook" autocomplete="off" spellcheck="false" />
 
               </div>
               <div class="form-group">
@@ -117,7 +117,7 @@
                   <label class="form-label" for="setting-package-id">Application Package ID</label>
                   <button type="button" class="btn-text-small" id="btn-auto-generate-urls">Auto-fill URLs</button>
                 </div>
-                <input type="text" id="setting-package-id" class="form-control" placeholder="e.g. com.company.app" />
+                <input type="text" id="setting-package-id" name="app_package_id_safe" class="form-control" placeholder="e.g. com.company.app" autocomplete="off" spellcheck="false" />
 
               </div>
             </div>
@@ -131,7 +131,7 @@
                   <span>Test Link ↗</span>
                 </a>
               </div>
-              <input type="text" id="setting-testing-url" class="form-control" placeholder="https://play.google.com/apps/testing/com.company.app" />
+              <input type="text" id="setting-testing-url" name="app_testing_url_safe" class="form-control" placeholder="https://play.google.com/apps/testing/com.company.app" autocomplete="off" spellcheck="false" />
 
             </div>
 
@@ -144,7 +144,7 @@
                   <span>Test Link ↗</span>
                 </a>
               </div>
-              <input type="text" id="setting-direct-url" class="form-control" placeholder="https://play.google.com/store/apps/details?id=com.company.app" />
+              <input type="text" id="setting-direct-url" name="app_direct_url_safe" class="form-control" placeholder="https://play.google.com/store/apps/details?id=com.company.app" autocomplete="off" spellcheck="false" />
 
             </div>
 
@@ -188,7 +188,7 @@
                   </label>
                   <span class="label-hint" id="sender-name-source-hint"></span>
                 </div>
-                <input type="text" id="setting-sender-name" class="form-control" placeholder="e.g. John Smith" autocomplete="name" />
+                <input type="text" id="setting-sender-name" name="sender_display_name_safe" class="form-control" placeholder="e.g. John Smith" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-form-type="other" />
                 <small class="field-error-msg" id="sender-name-error">Sender name is required before sending invitations.</small>
               </div>
 
@@ -197,7 +197,7 @@
                   <label class="form-label" for="setting-sender-email">Sender Gmail / SMTP Email</label>
                   <span class="label-hint">Google account</span>
                 </div>
-                <input type="email" id="setting-sender-email" class="form-control" placeholder="yourname@gmail.com" />
+                <input type="email" id="setting-sender-email" name="sender_smtp_email_safe" class="form-control" placeholder="yourname@gmail.com" autocomplete="off" spellcheck="false" data-lpignore="true" />
 
               </div>
             </div>
@@ -254,6 +254,6 @@
     </main>
   </div>
 
-  <script src="app.js?v=2.9"></script>
+  <script src="app.js?v=3.0"></script>
 </body>
 </html>

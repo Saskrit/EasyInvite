@@ -530,7 +530,7 @@ function ensureAuthModal() {
         <form id="auth-register-form" onsubmit="submitRegister(event)" style="display: none;">
           <div class="form-group">
             <label class="form-label" for="register-name">Full Name</label>
-            <input type="text" id="register-name" class="form-control" placeholder="John Doe" required autocomplete="name" />
+            <input type="text" id="register-name" class="form-control" placeholder="John Doe" required autocomplete="off" spellcheck="false" />
           </div>
           <div class="form-group">
             <label class="form-label" for="register-email">Email Address</label>
@@ -1177,6 +1177,19 @@ function setupEventListeners() {
 
   if (elements.btnSaveSettings) {
     elements.btnSaveSettings.addEventListener("click", handleSaveSettings);
+  }
+
+  // Settings View: Sender Name Input Safety & Live Error Clearing
+  if (elements.settingSenderName) {
+    elements.settingSenderName.addEventListener("input", () => {
+      clearSenderNameError();
+    });
+    elements.settingSenderName.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        handleSaveSettings();
+      }
+    });
   }
 
   // SMTP Online / Offline Segmented Control
