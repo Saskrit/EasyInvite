@@ -143,78 +143,162 @@ const BUILTIN_TPL_VERSION = "v3-dual-button";
 let state = loadState();
 
 function loadState() {
+  const isAuth = typeof localStorage !== "undefined" && !!localStorage.getItem("easyinvite_auth_token");
+
   try {
     if (typeof localStorage !== "undefined") {
       // Purge legacy mock data
       localStorage.removeItem("bakibook_tester_state");
       const saved = localStorage.getItem("easyinvite_state_v1");
-      if (saved) {
-        const parsed = JSON.parse(saved);
+      let parsed = saved ? JSON.parse(saved) : {};
 
-        // Separate user-created templates from built-in ones
-        const builtInKeys = new Set(['default', 'casual', 'detailed', 'thankyou']);
-        const savedBuiltinVersion = parsed._builtinTplVersion || "";
-        const needsReset = savedBuiltinVersion !== BUILTIN_TPL_VERSION;
-
-        // Always start with fresh built-in templates
-        const mergedTemplates = { ...DEFAULT_STATE.templates };
-
-        // Layer user-created (custom_*) templates on top — never reset those
-        for (const [key, tpl] of Object.entries(parsed.templates || {})) {
-          if (!builtInKeys.has(key)) {
-            mergedTemplates[key] = tpl; // preserve user-made templates
-          } else if (!needsReset) {
-            mergedTemplates[key] = tpl; // keep saved built-in only if version matches
+      // For free/guest users, settings must be removed when the website is closed.
+      // We check sessionStorage for edits during the current active session.
+      // If sessionStorage is empty (e.g. freshly opened after closing), Google Play config and SMTP are cleared!
+      if (!isAuth) {
+        let guestSessionConfig = null;
+        try {
+          if (typeof sessionStorage !== "undefined") {
+            const sess = sessionStorage.getItem("easyinvite_guest_session_config");
+            if (sess) guestSessionConfig = JSON.parse(sess);
           }
-        }
+        } catch (_) {}
 
-        const newState = {
-          ...DEFAULT_STATE,
-          ...parsed,
-          appName: parsed.appName !== undefined ? parsed.appName : (DEFAULT_STATE.appName || ""),
-          playStoreLink: parsed.playStoreLink || "",
-          directPlayLink: parsed.directPlayLink || "",
-          packageName: parsed.packageName || "",
-          senderName: parsed.senderName !== undefined ? parsed.senderName : DEFAULT_STATE.senderName,
-          appPassword: parsed.appPassword || "",
-          smtpOnline: parsed.smtpOnline !== undefined ? parsed.smtpOnline : true,
-          smtpVerified: !!parsed.smtpVerified,
-          currentTemplateId: parsed.currentTemplateId || "default",
-          templates: mergedTemplates,
-          _builtinTplVersion: BUILTIN_TPL_VERSION, // write current version to state
+        const guestConfig = guestSessionConfig || {
+          appName: "",
+          playStoreLink: "",
+          directPlayLink: "",
+          packageName: "",
+          senderName: "",
+          senderEmail: "",
+          appPassword: "",
+          smtpVerified: false
         };
 
-        if (needsReset) {
-          try {
-            localStorage.setItem("easyinvite_state_v1", JSON.stringify(newState));
-          } catch (e) {}
-        }
-
-        return newState;
+        parsed = {
+          ...parsed,
+          ...guestConfig
+        };
       }
+
+      // Separate user-created templates from built-in ones
+      const builtInKeys = new Set(['default', 'casual', 'detailed', 'thankyou']);
+      const savedBuiltinVersion = parsed._builtinTplVersion || "";
+      const needsReset = savedBuiltinVersion !== BUILTIN_TPL_VERSION;
+
+      // Always start with fresh built-in templates
+      const mergedTemplates = { ...DEFAULT_STATE.templates };
+
+      // Layer user-created (custom_*) templates on top — never reset those
+      for (const [key, tpl] of Object.entries(parsed.templates || {})) {
+        if (!builtInKeys.has(key)) {
+          mergedTemplates[key] = tpl; // preserve user-made templates
+        } else if (!needsReset) {
+          mergedTemplates[key] = tpl; // keep saved built-in only if version matches
+        }
+      }
+
+      const newState = {
+        ...DEFAULT_STATE,
+        ...parsed,
+        appName: parsed.appName !== undefined ? parsed.appName : "",
+        playStoreLink: parsed.playStoreLink || "",
+        directPlayLink: parsed.directPlayLink || "",
+        packageName: parsed.packageName || "",
+        senderName: parsed.senderName !== undefined ? parsed.senderName : "",
+        senderEmail: parsed.senderEmail || "",
+        appPassword: parsed.appPassword || "",
+        smtpOnline: parsed.smtpOnline !== undefined ? parsed.smtpOnline : true,
+        smtpVerified: !!parsed.smtpVerified,
+        currentTemplateId: parsed.currentTemplateId || "default",
+        templates: mergedTemplates,
+        _builtinTplVersion: BUILTIN_TPL_VERSION,
+      };
+
+      if (needsReset && isAuth) {
+        try {
+          localStorage.setItem("easyinvite_state_v1", JSON.stringify(newState));
+        } catch (e) {}
+      }
+
+      return newState;
     }
   } catch (e) {
     console.warn("Could not parse saved state:", e);
   }
   const freshState = { ...JSON.parse(JSON.stringify(DEFAULT_STATE)), _builtinTplVersion: BUILTIN_TPL_VERSION };
-  try {
-    if (typeof localStorage !== "undefined") {
-      localStorage.setItem("easyinvite_state_v1", JSON.stringify(freshState));
-    }
-  } catch (e) {}
   return freshState;
 }
 
 function saveState() {
   try {
-    if (typeof localStorage !== "undefined") {
-      // Always persist the current built-in version so migration knows what's cached
-      state._builtinTplVersion = BUILTIN_TPL_VERSION;
-      localStorage.setItem("easyinvite_state_v1", JSON.stringify(state));
+    const isAuth = typeof localStorage !== "undefined" && !!localStorage.getItem("easyinvite_auth_token");
+    state._builtinTplVersion = BUILTIN_TPL_VERSION;
+
+    if (!isAuth) {
+      // For Free / Guest users, save configuration in sessionStorage for current tab session ONLY.
+      // When the website is closed, sessionStorage is automatically deleted by the browser.
+      if (typeof sessionStorage !== "undefined") {
+        const guestConfig = {
+          appName: state.appName || "",
+          packageName: state.packageName || "",
+          playStoreLink: state.playStoreLink || "",
+          directPlayLink: state.directPlayLink || "",
+          senderName: state.senderName || "",
+          senderEmail: state.senderEmail || "",
+          appPassword: state.appPassword || "",
+          smtpVerified: !!state.smtpVerified
+        };
+        sessionStorage.setItem("easyinvite_guest_session_config", JSON.stringify(guestConfig));
+      }
+
+      // In localStorage, do NOT store guest Google Play config or SMTP credentials
+      if (typeof localStorage !== "undefined") {
+        const sanitizedState = {
+          ...state,
+          appName: "",
+          packageName: "",
+          playStoreLink: "",
+          directPlayLink: "",
+          senderName: "",
+          senderEmail: "",
+          appPassword: "",
+          smtpVerified: false
+        };
+        localStorage.setItem("easyinvite_state_v1", JSON.stringify(sanitizedState));
+      }
+    } else {
+      // Authenticated users: persist settings across sessions in localStorage & sync with DB
+      if (typeof localStorage !== "undefined") {
+        localStorage.setItem("easyinvite_state_v1", JSON.stringify(state));
+      }
     }
   } catch (e) {
     console.error("Failed to save state:", e);
   }
+}
+
+// Ensure guest user settings are completely wiped if window unloads
+if (typeof window !== "undefined") {
+  window.addEventListener('beforeunload', () => {
+    try {
+      if (typeof localStorage !== "undefined" && !localStorage.getItem("easyinvite_auth_token")) {
+        const saved = localStorage.getItem("easyinvite_state_v1");
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          parsed.appName = "";
+          parsed.packageName = "";
+          parsed.playStoreLink = "";
+          parsed.directPlayLink = "";
+          parsed.senderName = "";
+          parsed.senderEmail = "";
+          parsed.appPassword = "";
+          parsed.smtpVerified = false;
+          localStorage.setItem("easyinvite_state_v1", JSON.stringify(parsed));
+        }
+      }
+    } catch (_) {}
+  });
 }
 
 
@@ -506,17 +590,32 @@ function renderSidebarUserSection() {
   if (currentUser) {
     const initial = (currentUser.name ? currentUser.name[0] : 'U').toUpperCase();
     const isAdmin = currentUser.role === 'admin';
+    const hasPending = currentUserUsage && currentUserUsage.hasPendingPayment;
     const isLifetime = currentUserUsage && currentUserUsage.isLifetime;
-    const planId = (currentUserUsage && currentUserUsage.planId) ? currentUserUsage.planId.toLowerCase() : 'starter';
-    const planLabel = isAdmin ? 'Admin' : (planId.charAt(0).toUpperCase() + planId.slice(1) + ' Plan');
-    const balanceText = isLifetime
-      ? 'Unlimited (Lifetime)'
-      : (currentUserUsage ? `${currentUserUsage.sendsRemaining} Sends left` : 'Loading balance...');
+    const planId = (currentUserUsage && currentUserUsage.planId) ? currentUserUsage.planId.toLowerCase() : 'free';
+
+    let planLabel = 'Free Plan';
+    if (isAdmin) {
+      planLabel = 'Admin';
+    } else if (hasPending) {
+      planLabel = 'Free · Payment Pending ⏳';
+    } else if (planId && planId !== 'free') {
+      planLabel = planId.charAt(0).toUpperCase() + planId.slice(1) + ' Plan';
+    }
+
+    let balanceText = '0 Sends left';
+    if (isLifetime) {
+      balanceText = 'Unlimited (Lifetime)';
+    } else if (hasPending) {
+      balanceText = 'Free Tier (Payment Pending)';
+    } else if (currentUserUsage) {
+      balanceText = `${currentUserUsage.sendsRemaining} Sends left`;
+    }
 
     const balancePillHtml = isAdmin ? '' : `
-      <a href="billing.html" class="user-balance-pill ${isLifetime ? 'lifetime' : ''}" title="View plans & buy sends">
+      <a href="billing.html" class="user-balance-pill ${isLifetime ? 'lifetime' : ''} ${hasPending ? 'pending' : ''}" title="View plans & order status">
         <span>⚡ ${balanceText}</span>
-        <span style="font-size: 0.72rem; opacity: 0.8;">${isLifetime ? 'Lifetime &rarr;' : 'Top up &rarr;'}</span>
+        <span style="font-size: 0.72rem; opacity: 0.8;">${hasPending ? 'Pending &rarr;' : (isLifetime ? 'Lifetime &rarr;' : 'Top up &rarr;')}</span>
       </a>
     `;
 
@@ -548,16 +647,15 @@ function renderSidebarUserSection() {
     const guestRemaining = Math.max(0, 5 - guestSends);
     container.innerHTML = `
       <div class="sidebar-user-card" style="padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
           <span style="font-size: 0.78rem; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 5px;">
             <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
             Free Guest Plan
           </span>
-          <span style="font-size: 0.72rem; color: #64748b; font-weight: 600;">${guestRemaining} / 5 left</span>
+          <span style="font-size: 0.74rem; color: #2563eb; font-weight: 700;">${guestRemaining}/5⚡ left</span>
         </div>
-        <a href="billing.html" class="user-balance-pill" style="margin-bottom: 8px;" title="View prepaid plans">
-          <span>⚡ Free: ${guestRemaining} sends left</span>
-          <span style="font-size: 0.72rem; opacity: 0.8;">Upgrade &rarr;</span>
+        <a href="billing.html" class="btn-sidebar-upgrade" title="View prepaid plans & upgrade">
+          Upgrade
         </a>
         <button type="button" class="btn-sidebar-login" style="margin: 0; padding: 8px 12px; font-size: 0.82rem;" onclick="showAuthModal('signin')">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
@@ -655,6 +753,76 @@ function ensureAuthModal() {
 
         <!-- FORM 2: Register -->
         <form id="auth-register-form" onsubmit="submitRegister(event)" style="display: none;">
+          <!-- 1. Plan Section (FIRST) -->
+          <div id="modal-plan-container">
+            <!-- State A: Chosen Plan Banner (shown when guest user already chose a plan) -->
+            <div id="modal-chosen-plan-banner" class="auth-chosen-plan-banner" style="display: none;">
+              <div class="auth-chosen-plan-info">
+                <span class="auth-chosen-plan-tag">Selected Plan</span>
+                <div class="auth-chosen-plan-title" id="modal-chosen-plan-title">Growth Plan</div>
+                <div class="auth-chosen-plan-sub" id="modal-chosen-plan-sub">NPR 200/mo · 100 send actions</div>
+              </div>
+              <button type="button" class="auth-chosen-plan-change" onclick="enableModalPlanSelection()">Change Plan</button>
+            </div>
+
+            <!-- State B: Choose Plan Picker (shown when guest user has not chosen a plan yet) -->
+            <div id="modal-plan-picker-group" class="auth-input-group">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label class="auth-label" style="margin: 0;">Choose Your Plan <span style="color: #ef4444;">*</span></label>
+                <a href="billing.html" target="_blank" style="font-size: 0.72rem; color: #2563eb; text-decoration: none; font-weight: 600;">View plan details &rarr;</a>
+              </div>
+              <div class="auth-plan-picker" id="modal-register-plan-picker">
+                <label class="auth-plan-card">
+                  <input type="radio" name="modal-register-plan" value="starter" class="auth-plan-radio" />
+                  <div class="auth-plan-content">
+                    <div class="auth-plan-top">
+                      <span class="auth-plan-name">Starter</span>
+                      <span class="auth-plan-price">NPR 100/mo</span>
+                    </div>
+                    <div class="auth-plan-sub">50 send actions · Saved settings</div>
+                  </div>
+                </label>
+
+                <label class="auth-plan-card selected">
+                  <input type="radio" name="modal-register-plan" value="growth" checked class="auth-plan-radio" />
+                  <div class="auth-plan-content">
+                    <div class="auth-plan-top">
+                      <span class="auth-plan-name">Growth <span class="auth-plan-badge">Popular</span></span>
+                      <span class="auth-plan-price">NPR 200/mo</span>
+                    </div>
+                    <div class="auth-plan-sub">100 send actions · Use email templates</div>
+                  </div>
+                </label>
+
+                <label class="auth-plan-card">
+                  <input type="radio" name="modal-register-plan" value="pro" class="auth-plan-radio" />
+                  <div class="auth-plan-content">
+                    <div class="auth-plan-top">
+                      <span class="auth-plan-name">Pro</span>
+                      <span class="auth-plan-price">NPR 300/mo</span>
+                    </div>
+                    <div class="auth-plan-sub">300 send actions · Make own templates</div>
+                  </div>
+                </label>
+
+                <label class="auth-plan-card">
+                  <input type="radio" name="modal-register-plan" value="lifetime" class="auth-plan-radio" />
+                  <div class="auth-plan-content">
+                    <div class="auth-plan-top">
+                      <span class="auth-plan-name">Lifetime Deal</span>
+                      <span class="auth-plan-price">NPR 1,000</span>
+                    </div>
+                    <div class="auth-plan-sub">Unlimited sends forever · All features</div>
+                  </div>
+                </label>
+              </div>
+              <div style="margin-top: 6px; font-size: 0.74rem; color: #64748b;">
+                Want to test without signing up? <a href="index.html" onclick="closeAuthModal();" style="color: #2563eb; font-weight: 600;">Use Free Guest Mode (5 free sends)</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Full Name -->
           <div class="auth-input-group">
             <label class="auth-label" for="register-name">Full Name</label>
             <div class="auth-input-wrap">
@@ -668,6 +836,7 @@ function ensureAuthModal() {
             </div>
           </div>
 
+          <!-- 3. Email Address -->
           <div class="auth-input-group">
             <label class="auth-label" for="register-email">Email Address</label>
             <div class="auth-input-wrap">
@@ -681,6 +850,7 @@ function ensureAuthModal() {
             </div>
           </div>
 
+          <!-- 4. Password -->
           <div class="auth-input-group">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
               <label class="auth-label" for="register-password" style="margin: 0;">Password</label>
@@ -697,61 +867,6 @@ function ensureAuthModal() {
               <button type="button" class="auth-pw-toggle" onclick="togglePasswordVisibility('register-password', this)" title="Show/Hide password">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
-            </div>
-          </div>
-
-          <div class="auth-input-group">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-              <label class="auth-label" style="margin: 0;">Choose Your Plan <span style="color: #ef4444;">*</span></label>
-              <a href="billing.html" target="_blank" style="font-size: 0.72rem; color: #2563eb; text-decoration: none; font-weight: 600;">View plan details &rarr;</a>
-            </div>
-            <div class="auth-plan-picker" id="modal-register-plan-picker">
-              <label class="auth-plan-card">
-                <input type="radio" name="modal-register-plan" value="starter" class="auth-plan-radio" />
-                <div class="auth-plan-content">
-                  <div class="auth-plan-top">
-                    <span class="auth-plan-name">Starter</span>
-                    <span class="auth-plan-price">NPR 100/mo</span>
-                  </div>
-                  <div class="auth-plan-sub">50 send actions · Saved settings</div>
-                </div>
-              </label>
-
-              <label class="auth-plan-card selected">
-                <input type="radio" name="modal-register-plan" value="growth" checked class="auth-plan-radio" />
-                <div class="auth-plan-content">
-                  <div class="auth-plan-top">
-                    <span class="auth-plan-name">Growth <span class="auth-plan-badge">Popular</span></span>
-                    <span class="auth-plan-price">NPR 200/mo</span>
-                  </div>
-                  <div class="auth-plan-sub">100 send actions · Use email templates</div>
-                </div>
-              </label>
-
-              <label class="auth-plan-card">
-                <input type="radio" name="modal-register-plan" value="pro" class="auth-plan-radio" />
-                <div class="auth-plan-content">
-                  <div class="auth-plan-top">
-                    <span class="auth-plan-name">Pro</span>
-                    <span class="auth-plan-price">NPR 300/mo</span>
-                  </div>
-                  <div class="auth-plan-sub">300 send actions · Make own templates</div>
-                </div>
-              </label>
-
-              <label class="auth-plan-card">
-                <input type="radio" name="modal-register-plan" value="lifetime" class="auth-plan-radio" />
-                <div class="auth-plan-content">
-                  <div class="auth-plan-top">
-                    <span class="auth-plan-name">Lifetime Deal</span>
-                    <span class="auth-plan-price">NPR 1,000</span>
-                  </div>
-                  <div class="auth-plan-sub">Unlimited sends forever · All features</div>
-                </div>
-              </label>
-            </div>
-            <div style="margin-top: 6px; font-size: 0.74rem; color: #64748b;">
-              Want to test without signing up? <a href="index.html" onclick="closeAuthModal();" style="color: #2563eb; font-weight: 600;">Use Free Guest Mode (5 free sends)</a>
             </div>
           </div>
 
@@ -790,7 +905,6 @@ function ensureAuthModal() {
               style="font-family: 'JetBrains Mono', monospace, sans-serif; font-size: 1.8rem; font-weight: 700; letter-spacing: 16px; text-align: center; padding-left: 20px; height: 56px; border: 2px solid #cbd5e1; border-radius: 10px;"
               oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 4);"
             />
-            <div id="modal-dev-verify-helper" style="margin-top: 10px; font-size: 0.8rem; text-align: center;"></div>
           </div>
 
           <button type="submit" class="btn-auth-submit" id="btn-submit-verify">
@@ -846,19 +960,64 @@ function clearAuthAlert() {
   }
 }
 
+const AUTH_PLAN_METADATA = {
+  starter: { name: 'Starter Plan', price: 'NPR 100/mo', sub: '50 send actions · Saved settings' },
+  growth: { name: 'Growth Plan', price: 'NPR 200/mo', sub: '100 send actions · Use email templates' },
+  pro: { name: 'Pro Plan', price: 'NPR 300/mo', sub: '300 send actions · Make own templates' },
+  lifetime: { name: 'Lifetime Deal', price: 'NPR 1,000 once', sub: 'Unlimited sends forever · All features' }
+};
+
+let modalChosenPlan = null;
+
+function setModalSelectedPlan(planId, isExplicitlyChosen = false) {
+  const normalized = (planId || 'growth').toLowerCase();
+  modalChosenPlan = isExplicitlyChosen ? normalized : null;
+
+  const radio = document.querySelector(`input[name="modal-register-plan"][value="${normalized}"]`);
+  if (radio) {
+    radio.checked = true;
+    document.querySelectorAll('#modal-register-plan-picker .auth-plan-card').forEach(c => c.classList.remove('selected'));
+    if (radio.closest('.auth-plan-card')) {
+      radio.closest('.auth-plan-card').classList.add('selected');
+    }
+  }
+
+  const banner = document.getElementById('modal-chosen-plan-banner');
+  const pickerGroup = document.getElementById('modal-plan-picker-group');
+  const title = document.getElementById('modal-chosen-plan-title');
+  const sub = document.getElementById('modal-chosen-plan-sub');
+
+  if (isExplicitlyChosen && AUTH_PLAN_METADATA[normalized]) {
+    // Guest already chose plan: show his chosen plan and NO "choose your plan" picker
+    if (banner) {
+      banner.style.display = 'flex';
+      if (title) title.textContent = AUTH_PLAN_METADATA[normalized].name;
+      if (sub) sub.textContent = `${AUTH_PLAN_METADATA[normalized].price} · ${AUTH_PLAN_METADATA[normalized].sub}`;
+    }
+    if (pickerGroup) pickerGroup.style.display = 'none';
+  } else {
+    // Guest has not chosen plan: first show option to choose plan and view plan details
+    if (banner) banner.style.display = 'none';
+    if (pickerGroup) pickerGroup.style.display = 'block';
+  }
+}
+
+function enableModalPlanSelection() {
+  modalChosenPlan = null;
+  const banner = document.getElementById('modal-chosen-plan-banner');
+  const pickerGroup = document.getElementById('modal-plan-picker-group');
+  if (banner) banner.style.display = 'none';
+  if (pickerGroup) pickerGroup.style.display = 'block';
+}
+
 function showAuthModal(tab = 'signin', preselectedPlan = null) {
   ensureAuthModal();
   clearAuthAlert();
   switchAuthTab(tab);
   if (preselectedPlan) {
-    const radio = document.querySelector(`input[name="modal-register-plan"][value="${preselectedPlan}"]`);
-    if (radio) {
-      radio.checked = true;
-      document.querySelectorAll('#modal-register-plan-picker .auth-plan-card').forEach(c => c.classList.remove('selected'));
-      if (radio.closest('.auth-plan-card')) {
-        radio.closest('.auth-plan-card').classList.add('selected');
-      }
-    }
+    setModalSelectedPlan(preselectedPlan, true);
+  } else {
+    setModalSelectedPlan(null, false);
   }
   document.getElementById("auth-modal").style.display = "flex";
 }
@@ -943,14 +1102,8 @@ async function submitSignIn(e) {
       showToast(`Welcome back, ${currentUser.name}!`, "success");
       await initAuth();
     } else if (data.requiresVerification) {
-      showToast("Please verify your email address.", "info");
-      document.getElementById("verify-email-prompt").textContent = `We sent a verification link to ${email}.`;
-      if (data.devVerificationToken) {
-        document.getElementById("verify-token-input").value = data.devVerificationToken;
-        document.getElementById("dev-verify-helper").innerHTML = `
-          <strong>Quick verification:</strong> <a href="/verify-email?token=${data.devVerificationToken}" target="_blank" style="color: #2563eb; font-weight: 600;">Click here to verify</a>
-        `;
-      }
+      showToast("Please enter the 4-digit code sent to your email.", "info");
+      document.getElementById("verify-email-prompt").textContent = `We sent a 4-digit verification code to ${email}.`;
       switchAuthTab("verify");
     } else {
       const errMsg = data.error || "Login failed.";
@@ -975,7 +1128,7 @@ async function submitRegister(e) {
   const btn = document.getElementById("btn-submit-register");
 
   const selectedPlanEl = document.querySelector('input[name="modal-register-plan"]:checked');
-  const planId = selectedPlanEl ? selectedPlanEl.value : 'starter';
+  const planId = modalChosenPlan || (selectedPlanEl ? selectedPlanEl.value : 'growth');
 
   if (!name) {
     showAuthAlert("Please enter your full name.", "error");
@@ -1003,18 +1156,8 @@ async function submitRegister(e) {
 
     if (data.success) {
       authRegisteredEmail = email;
-      showToast("Account created! Please enter the 4-digit code.", "success");
-      document.getElementById("verify-email-prompt").textContent = `We sent a 4-digit verification code to ${email}.`;
-      const code = data.devVerificationCode || data.devVerificationToken;
-      if (code) {
-        document.getElementById("modal-dev-verify-helper").innerHTML = `
-          <div style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; color: #1e40af; font-size: 0.8rem;">
-            <span>Dev Code:</span>
-            <strong style="font-size: 1.15rem; letter-spacing: 4px; font-family: monospace;">${code}</strong>
-            <button type="button" onclick="autoFillModalCode('${code}')" style="padding: 2px 8px; border: 1px solid #3b82f6; background: #ffffff; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: 600; color: #2563eb;">Auto-fill</button>
-          </div>
-        `;
-      }
+      showToast("Account created! Please enter the 4-digit code sent to your email.", "success");
+      document.getElementById("verify-email-prompt").textContent = `We sent a 4-digit verification code to ${email}. Please check your inbox and spam folder.`;
       switchAuthTab("verify");
       setTimeout(() => {
         const input = document.getElementById("modal-verify-code-input");
@@ -1036,14 +1179,6 @@ async function submitRegister(e) {
 
 let authRegisteredEmail = '';
 
-function autoFillModalCode(code) {
-  const input = document.getElementById("modal-verify-code-input");
-  if (input) {
-    input.value = code;
-    input.focus();
-  }
-}
-
 async function handleResendAuthModalCode() {
   if (!authRegisteredEmail) {
     showAuthAlert("Email address missing. Please register again.", "error");
@@ -1062,17 +1197,7 @@ async function handleResendAuthModalCode() {
     });
     const data = await res.json();
     if (data.success) {
-      showToast("A new 4-digit code was sent!", "success");
-      const code = data.devVerificationCode || data.devVerificationToken;
-      if (code) {
-        document.getElementById("modal-dev-verify-helper").innerHTML = `
-          <div style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; color: #1e40af; font-size: 0.8rem;">
-            <span>Dev Code:</span>
-            <strong style="font-size: 1.15rem; letter-spacing: 4px; font-family: monospace;">${code}</strong>
-            <button type="button" onclick="autoFillModalCode('${code}')" style="padding: 2px 8px; border: 1px solid #3b82f6; background: #ffffff; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: 600; color: #2563eb;">Auto-fill</button>
-          </div>
-        `;
-      }
+      showToast("A new 4-digit verification code was sent to your email!", "success");
     } else {
       showAuthAlert(data.error || "Failed to resend code.", "error");
     }
@@ -1112,9 +1237,25 @@ async function submitVerification(e) {
       if (data.token) {
         localStorage.setItem("easyinvite_auth_token", data.token);
       }
+      if (data.user) {
+        currentUser = data.user;
+        localStorage.setItem("easyinvite_user", JSON.stringify(data.user));
+      }
       closeAuthModal();
       showToast("Account activated successfully! You are now logged in.", "success");
       await initAuth();
+
+      const chosenPlan = (data.user && data.user.plan_id) || data.chosenPlan || modalChosenPlan || 'free';
+      if (chosenPlan && chosenPlan !== 'free') {
+        const currentPage = getCurrentPage();
+        if (currentPage === 'billing' || window.location.pathname.includes('billing')) {
+          if (typeof openPaymentModalForPlanId === 'function') {
+            openPaymentModalForPlanId(chosenPlan);
+          }
+        } else {
+          window.location.href = `billing.html?openPayment=${encodeURIComponent(chosenPlan)}`;
+        }
+      }
     } else {
       const errMsg = data.error || "Invalid 4-digit code. Please check and try again.";
       showAuthAlert(errMsg, "error");

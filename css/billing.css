@@ -42,25 +42,174 @@ body[data-page="billing"] .pricing-header p {
   line-height: 1.5;
 }
 
-/* Pricing Grid - 5 Plan Layout with balanced responsive widths (Zero Gradient) */
+/* Horizontal Free Plan */
+body[data-page="billing"] .plan-card-horizontal {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 16px;
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 14px rgba(15, 23, 42, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+body[data-page="billing"] .plan-card-horizontal:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -6px rgba(15, 23, 42, 0.08);
+  border-color: #94a3b8;
+}
+
+body[data-page="billing"] .plan-horizontal-left {
+  flex: 1.2;
+  min-width: 240px;
+}
+
+body[data-page="billing"] .plan-badge-guest {
+  display: inline-block;
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+body[data-page="billing"] .plan-horizontal-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+body[data-page="billing"] .plan-horizontal-title-row .plan-name {
+  margin: 0;
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+body[data-page="billing"] .plan-price-wrap.horizontal {
+  margin: 0;
+  padding: 0;
+  border: none;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+body[data-page="billing"] .plan-horizontal-left .plan-desc {
+  margin: 0;
+  min-height: auto;
+  font-size: 0.86rem;
+  color: #64748b;
+  line-height: 1.45;
+}
+
+body[data-page="billing"] .plan-horizontal-features {
+  flex: 1.8;
+  border-left: 1px solid #f1f5f9;
+  border-right: 1px solid #f1f5f9;
+  padding: 0 24px;
+}
+
+body[data-page="billing"] .plan-features-list.horizontal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+body[data-page="billing"] .plan-horizontal-action {
+  flex: 0 0 auto;
+}
+
+body[data-page="billing"] .btn-free-horizontal {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #0f172a;
+  color: #ffffff;
+  border: 1px solid #0f172a;
+  padding: 12px 22px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+body[data-page="billing"] .btn-free-horizontal:hover {
+  background: #1e293b;
+  border-color: #1e293b;
+  color: #ffffff;
+}
+
+/* Subheading Divider */
+body[data-page="billing"] .pricing-subheading {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 8px 0 24px;
+  color: #64748b;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+body[data-page="billing"] .pricing-subheading .subheading-line {
+  flex: 1;
+  height: 1px;
+  background: #e2e8f0;
+}
+
+/* Pricing Grid - 4 Plan Vertical Layout (Starter, Growth, Pro, Lifetime) */
+body[data-page="billing"] .pricing-grid-4,
 body[data-page="billing"] .pricing-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
   width: 100%;
 }
 
-@media (min-width: 1280px) {
+@media (max-width: 1100px) {
+  body[data-page="billing"] .pricing-grid-4,
   body[data-page="billing"] .pricing-grid {
-    grid-template-columns: repeat(5, 1fr);
-    gap: 16px;
-  }
-}
-
-@media (max-width: 1140px) {
-  body[data-page="billing"] .pricing-grid {
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 18px;
+  }
+  body[data-page="billing"] .plan-card-horizontal {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+  }
+  body[data-page="billing"] .plan-horizontal-features {
+    border-left: none;
+    border-right: none;
+    border-top: 1px solid #f1f5f9;
+    border-bottom: 1px solid #f1f5f9;
+    padding: 14px 0;
+    width: 100%;
+  }
+  body[data-page="billing"] .plan-horizontal-action {
+    width: 100%;
+  }
+  body[data-page="billing"] .btn-free-horizontal {
+    width: 100%;
   }
 }
 
@@ -68,9 +217,13 @@ body[data-page="billing"] .pricing-grid {
   body[data-page="billing"] .main-wrapper {
     padding: 20px 16px 60px;
   }
+  body[data-page="billing"] .pricing-grid-4,
   body[data-page="billing"] .pricing-grid {
     grid-template-columns: 1fr;
     gap: 16px;
+  }
+  body[data-page="billing"] .plan-features-list.horizontal-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -392,3 +545,32 @@ body[data-page="billing"] .bank-qr-img {
   padding: 6px;
   background: #ffffff;
 }
+
+/* Active Pending Payment Card Styles */
+body[data-page="billing"] .pending-payment-card {
+  background: #ffffff;
+  border: 1px solid #fed7aa;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.08);
+}
+
+body[data-page="billing"] .btn-plan-select.current-plan {
+  background: #0f172a !important;
+  border-color: #0f172a !important;
+  color: #ffffff !important;
+  cursor: default !important;
+  opacity: 0.95;
+  box-shadow: none !important;
+}
+
+body[data-page="billing"] .plan-card.is-current-plan {
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25) !important;
+}
+
+body[data-page="billing"] .plan-card-horizontal.is-current-plan {
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25) !important;
+}
+

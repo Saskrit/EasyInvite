@@ -99,45 +99,63 @@
               <p>No recurring subscriptions. Pay once via bank transfer, top up whenever you need, or get Lifetime unlimited outreach.</p>
             </div>
 
-            <div class="pricing-grid">
-              <!-- Plan 1: Free (Guest) -->
-              <div class="plan-card" id="plan-card-free">
-                <div class="plan-header">
-                  <h3 class="plan-name">Free</h3>
-                  <p class="plan-desc">Send up to 5 times without an account. Configure app &amp; SMTP directly.</p>
-                  <div class="plan-price-wrap">
+            <!-- Horizontal Free Plan -->
+            <div class="plan-card-horizontal" id="plan-card-free">
+              <div class="plan-horizontal-left">
+                <span class="plan-badge-guest">Free Guest Tier · No Signup Required</span>
+                <div class="plan-horizontal-title-row">
+                  <h3 class="plan-name">Free Plan</h3>
+                  <div class="plan-price-wrap horizontal">
                     <span class="plan-currency">NPR</span>
                     <span class="plan-amount">0</span>
-                    <span class="plan-billing-type">/ free guest</span>
+                    <span class="plan-billing-type">/ guest session</span>
                   </div>
-                  <ul class="plan-features-list">
-                    <li class="plan-feature-item">
-                      <span class="feature-check">✓</span>
-                      <span><strong>5 Send Actions Total</strong></span>
-                    </li>
-                    <li class="plan-feature-item">
-                      <span class="feature-check">✓</span>
-                      <span>Unlimited recipients per send</span>
-                    </li>
-                    <li class="plan-feature-item">
-                      <span class="feature-check">✓</span>
-                      <span>No account or signup needed</span>
-                    </li>
-                    <li class="plan-feature-item">
-                      <span class="feature-check">✓</span>
-                      <span>Configure App &amp; SMTP in form</span>
-                    </li>
-                    <li class="plan-feature-item">
-                      <span class="feature-check" style="color: #94a3b8;">&ndash;</span>
-                      <span style="color: #94a3b8;">No saved templates or settings</span>
-                    </li>
-                  </ul>
                 </div>
-                <a href="index.html" class="btn-plan-select" style="text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; background: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1;">
-                  Start Free as Guest
-                </a>
+                <p class="plan-desc">Send up to 5 times without an account. Configure App name, package ID &amp; SMTP directly in the form.</p>
               </div>
 
+              <div class="plan-horizontal-features">
+                <ul class="plan-features-list horizontal-grid">
+                  <li class="plan-feature-item">
+                    <span class="feature-check">✓</span>
+                    <span><strong>5 Send Actions Total</strong></span>
+                  </li>
+                  <li class="plan-feature-item">
+                    <span class="feature-check">✓</span>
+                    <span>Unlimited recipients per send</span>
+                  </li>
+                  <li class="plan-feature-item">
+                    <span class="feature-check">✓</span>
+                    <span>No account or signup needed</span>
+                  </li>
+                  <li class="plan-feature-item">
+                    <span class="feature-check">✓</span>
+                    <span>Configure App &amp; SMTP in form</span>
+                  </li>
+                  <li class="plan-feature-item">
+                    <span class="feature-check" style="color: #94a3b8;">&ndash;</span>
+                    <span style="color: #94a3b8;">No saved templates or settings</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="plan-horizontal-action">
+                <a href="index.html" class="btn-plan-select btn-free-horizontal" id="btn-select-free">
+                  <span>Start Free as Guest</span>
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                </a>
+              </div>
+            </div>
+
+            <!-- Subheading Divider between Free and Account Plans -->
+            <div class="pricing-subheading">
+              <div class="subheading-line"></div>
+              <span>Or Choose An Account Plan With Saved Settings &amp; Templates</span>
+              <div class="subheading-line"></div>
+            </div>
+
+            <!-- 4 Vertical Account Plans -->
+            <div class="pricing-grid-4">
               <!-- Plan 2: Starter -->
               <div class="plan-card" id="plan-card-starter">
                 <div class="plan-header">
@@ -171,7 +189,7 @@
                     </li>
                   </ul>
                 </div>
-                <button type="button" class="btn-plan-select" onclick="handleChoosePlan('starter', 'Starter', 100, 50, false)">
+                <button type="button" class="btn-plan-select" id="btn-select-starter" onclick="handleChoosePlan('starter', 'Starter', 100, 50, false)">
                   Choose Starter
                 </button>
               </div>
@@ -210,7 +228,7 @@
                     </li>
                   </ul>
                 </div>
-                <button type="button" class="btn-plan-select" onclick="handleChoosePlan('growth', 'Growth', 200, 100, false)">
+                <button type="button" class="btn-plan-select" id="btn-select-growth" onclick="handleChoosePlan('growth', 'Growth', 200, 100, false)">
                   Choose Growth
                 </button>
               </div>
@@ -248,7 +266,7 @@
                     </li>
                   </ul>
                 </div>
-                <button type="button" class="btn-plan-select" onclick="handleChoosePlan('pro', 'Pro', 300, 300, false)">
+                <button type="button" class="btn-plan-select" id="btn-select-pro" onclick="handleChoosePlan('pro', 'Pro', 300, 300, false)">
                   Choose Pro
                 </button>
               </div>
@@ -287,9 +305,69 @@
                     </li>
                   </ul>
                 </div>
-                <button type="button" class="btn-plan-select" onclick="handleChoosePlan('lifetime', 'Lifetime', 1000, -1, true)">
+                <button type="button" class="btn-plan-select" id="btn-select-lifetime" onclick="handleChoosePlan('lifetime', 'Lifetime', 1000, -1, true)">
                   Get Lifetime Access
                 </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section: Active Payment Verification Details (Shown when payment is PENDING) -->
+          <div class="pending-payment-card" id="pending-payment-section" style="display: none; margin-top: 32px; background: #ffffff; border: 1px solid #fed7aa; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 10px rgba(245, 158, 11, 0.08);">
+            <div class="pending-payment-header" style="display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; background: #fffaf0; border-bottom: 1px solid #fed7aa; flex-wrap: wrap; gap: 10px;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="width: 10px; height: 10px; border-radius: 50%; background: #f59e0b; display: inline-block;"></span>
+                <h3 style="margin: 0; font-size: 1.12rem; font-weight: 700; color: #0f172a;">Active Order &amp; Payment Verification</h3>
+              </div>
+              <span class="status-badge PENDING" id="pending-status-badge" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a; padding: 4px 12px; border-radius: 20px; font-size: 0.76rem; font-weight: 700; letter-spacing: 0.5px;">
+                PAYMENT PENDING · AWAITING ADMIN APPROVAL
+              </span>
+            </div>
+
+            <div class="pending-payment-body" style="padding: 24px;">
+              <div style="margin-bottom: 22px; padding: 14px 18px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; font-size: 0.88rem; color: #92400e; line-height: 1.55;">
+                <strong style="color: #78350f;">Account Status: Free Version (Payment Pending)</strong><br />
+                Your manual bank transfer payment proof is currently under review by our administration team. Until approval, your account remains active on the <strong>Free tier</strong>. Once approved, your chosen plan benefits and send balance will activate automatically.
+              </div>
+
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 22px; background: #f8fafc; padding: 18px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                <div>
+                  <span style="font-size: 0.74rem; text-transform: uppercase; color: #64748b; font-weight: 700; display: block; margin-bottom: 4px;">Selected Plan</span>
+                  <strong id="pending-plan-name" style="font-size: 1.05rem; color: #2563eb;">-</strong>
+                </div>
+                <div>
+                  <span style="font-size: 0.74rem; text-transform: uppercase; color: #64748b; font-weight: 700; display: block; margin-bottom: 4px;">Payable Amount</span>
+                  <strong id="pending-amount" style="font-size: 1.05rem; color: #0f172a;">-</strong>
+                </div>
+                <div>
+                  <span style="font-size: 0.74rem; text-transform: uppercase; color: #64748b; font-weight: 700; display: block; margin-bottom: 4px;">Reference / Txn #</span>
+                  <code id="pending-ref-num" style="font-size: 0.95rem; font-weight: 700; background: #ffffff; padding: 4px 8px; border-radius: 4px; border: 1px solid #cbd5e1; color: #b45309;">-</code>
+                </div>
+                <div>
+                  <span style="font-size: 0.74rem; text-transform: uppercase; color: #64748b; font-weight: 700; display: block; margin-bottom: 4px;">Payment Destination</span>
+                  <span id="pending-bank" style="font-size: 0.92rem; color: #334155; font-weight: 600;">Global IME Bank</span>
+                </div>
+                <div>
+                  <span style="font-size: 0.74rem; text-transform: uppercase; color: #64748b; font-weight: 700; display: block; margin-bottom: 4px;">Date Submitted</span>
+                  <span id="pending-date" style="font-size: 0.88rem; color: #64748b;">-</span>
+                </div>
+              </div>
+
+              <!-- Payment Screenshot Proof Container -->
+              <div id="pending-screenshot-container" style="border-top: 1px solid #e2e8f0; padding-top: 18px;">
+                <span style="font-size: 0.76rem; text-transform: uppercase; color: #64748b; font-weight: 700; display: block; margin-bottom: 10px;">Submitted Payment Proof Screenshot</span>
+                <div style="display: flex; align-items: flex-start; gap: 20px; flex-wrap: wrap;">
+                  <img id="pending-screenshot-img" src="" alt="Payment Proof" style="max-height: 150px; max-width: 260px; border-radius: 8px; border: 1px solid #cbd5e1; cursor: pointer; object-fit: contain; background: #f8fafc;" onclick="window.open(this.src, '_blank')" title="Click to open screenshot in new tab" />
+                  <div style="flex: 1; min-width: 200px;">
+                    <a id="pending-screenshot-link" href="#" target="_blank" class="btn-outline-small" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; font-weight: 600; color: #2563eb; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px;">
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                      Open Full Size Proof
+                    </a>
+                    <p style="margin: 8px 0 0; font-size: 0.82rem; color: #64748b; line-height: 1.5;">
+                      Your uploaded receipt screenshot has been safely delivered to our verification queue. An administrator will verify the bank funds shortly.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -394,13 +472,14 @@
 
           <div class="form-group">
             <label class="form-label" for="payment-screenshot">
-              Payment Screenshot <span style="color: #94a3b8; font-weight: normal;">(Optional)</span>
+              Payment Screenshot <span style="color: #ef4444;">*</span>
             </label>
             <input 
               type="file" 
               id="payment-screenshot" 
               class="form-control" 
               accept="image/png, image/jpeg, image/webp" 
+              required
               onchange="handleScreenshotPreview(event)"
             />
             <div id="screenshot-preview-wrap" style="display: none; margin-top: 10px;">
@@ -424,15 +503,41 @@
     let selectedPlanData = null;
     let screenshotBase64 = null;
 
+    const PLAN_SPECS = {
+      starter: { name: 'Starter', amount: 100, sends: 50, isLifetime: false },
+      growth: { name: 'Growth', amount: 200, sends: 100, isLifetime: false },
+      pro: { name: 'Pro', amount: 300, sends: 300, isLifetime: false },
+      lifetime: { name: 'Lifetime', amount: 1000, sends: -1, isLifetime: true }
+    };
+
+    function openPaymentModalForPlanId(planId) {
+      const normalized = (planId || '').toLowerCase();
+      const spec = PLAN_SPECS[normalized] || PLAN_SPECS.growth;
+      openPaymentModal(normalized, spec.name, spec.amount, spec.sends, spec.isLifetime);
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       loadBillingData();
+
+      // Automatically open payment modal if redirected with ?openPayment={planId}
+      const urlParams = new URLSearchParams(window.location.search);
+      const openPaymentPlan = urlParams.get('openPayment');
+      if (openPaymentPlan && openPaymentPlan !== 'free') {
+        setTimeout(() => {
+          openPaymentModalForPlanId(openPaymentPlan);
+        }, 200);
+      }
     });
 
     async function loadBillingData() {
       const token = localStorage.getItem('easyinvite_auth_token');
       const historyCard = document.getElementById('billing-history-section');
+      const pendingSection = document.getElementById('pending-payment-section');
+
       if (!token) {
         if (historyCard) historyCard.style.display = 'none';
+        if (pendingSection) pendingSection.style.display = 'none';
+        updatePlanButtons('guest');
         return;
       }
 
@@ -444,8 +549,38 @@
 
         if (data.success) {
           const payments = data.payments || [];
+          const usage = data.usage || {};
+
+          // 1. Check for any active PENDING payment
+          const pendingPayment = payments.find(p => p.status === 'PENDING');
+          if (pendingPayment && pendingSection) {
+            pendingSection.style.display = 'block';
+            document.getElementById('pending-plan-name').textContent = (pendingPayment.plan_name || pendingPayment.plan_id || 'Plan').toUpperCase() + ' PLAN';
+            document.getElementById('pending-amount').textContent = `NPR ${pendingPayment.amount_npr}`;
+            document.getElementById('pending-ref-num').textContent = pendingPayment.reference_number || '-';
+            document.getElementById('pending-bank').textContent = pendingPayment.bank_name || 'Global IME Bank';
+            document.getElementById('pending-date').textContent = new Date(pendingPayment.created_at).toLocaleString(undefined, {
+              dateStyle: 'medium',
+              timeStyle: 'short'
+            });
+
+            const ssImg = document.getElementById('pending-screenshot-img');
+            const ssLink = document.getElementById('pending-screenshot-link');
+            const ssWrap = document.getElementById('pending-screenshot-container');
+
+            if (pendingPayment.screenshot_path) {
+              if (ssWrap) ssWrap.style.display = 'block';
+              if (ssImg) ssImg.src = pendingPayment.screenshot_path;
+              if (ssLink) ssLink.href = pendingPayment.screenshot_path;
+            } else {
+              if (ssWrap) ssWrap.style.display = 'none';
+            }
+          } else if (pendingSection) {
+            pendingSection.style.display = 'none';
+          }
+
+          // 2. Render Order & Payment History Table
           if (historyCard) {
-            // Only after the payment, payment and order history page should be displayed
             if (payments.length > 0) {
               historyCard.style.display = 'block';
               renderPaymentsTable(payments);
@@ -453,9 +588,141 @@
               historyCard.style.display = 'none';
             }
           }
+
+          // 3. Update Plan Buttons: "Current Plan" instead of "Choose {Plan}"
+          // Note: Until admin approval, user account still remains in Free version.
+          let activePlan = 'free';
+          if (usage.isLifetime) {
+            activePlan = 'lifetime';
+          } else if (usage.planId && usage.planId !== 'free') {
+            activePlan = usage.planId.toLowerCase();
+          }
+
+          updatePlanButtons(activePlan);
         }
       } catch (err) {
         console.error('Failed to load billing history:', err);
+      }
+    }
+
+    function updatePlanButtons(activePlan) {
+      // Clear current plan class from all cards
+      ['free', 'starter', 'growth', 'pro', 'lifetime'].forEach(id => {
+        const card = document.getElementById(`plan-card-${id}`);
+        if (card) card.classList.remove('is-current-plan');
+      });
+
+      const freeCard = document.getElementById('plan-card-free');
+      const freeActionWrap = freeCard ? freeCard.querySelector('.plan-horizontal-action') : null;
+      const starterBtn = document.getElementById('btn-select-starter');
+      const growthBtn = document.getElementById('btn-select-growth');
+      const proBtn = document.getElementById('btn-select-pro');
+      const lifetimeBtn = document.getElementById('btn-select-lifetime');
+
+      if (activePlan === 'guest') {
+        if (freeActionWrap) {
+          freeActionWrap.innerHTML = `
+            <a href="index.html" class="btn-plan-select btn-free-horizontal" id="btn-select-free">
+              <span>Start Free as Guest</span>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </a>
+          `;
+        }
+        if (starterBtn) {
+          starterBtn.className = 'btn-plan-select';
+          starterBtn.disabled = false;
+          starterBtn.innerHTML = 'Choose Starter';
+        }
+        if (growthBtn) {
+          growthBtn.className = 'btn-plan-select';
+          growthBtn.disabled = false;
+          growthBtn.innerHTML = 'Choose Growth';
+        }
+        if (proBtn) {
+          proBtn.className = 'btn-plan-select';
+          proBtn.disabled = false;
+          proBtn.innerHTML = 'Choose Pro';
+        }
+        if (lifetimeBtn) {
+          lifetimeBtn.className = 'btn-plan-select';
+          lifetimeBtn.disabled = false;
+          lifetimeBtn.innerHTML = 'Get Lifetime Access';
+        }
+        return;
+      }
+
+      // Mark the active plan card
+      const activeCard = document.getElementById(`plan-card-${activePlan}`);
+      if (activeCard) activeCard.classList.add('is-current-plan');
+
+      // Free Plan button
+      if (freeActionWrap) {
+        if (activePlan === 'free') {
+          freeActionWrap.innerHTML = `
+            <button type="button" class="btn-plan-select btn-free-horizontal current-plan" disabled id="btn-select-free" style="background: #0f172a; color: #ffffff; cursor: default;">
+              <span>✓ Current Plan</span>
+            </button>
+          `;
+        } else {
+          freeActionWrap.innerHTML = `
+            <a href="index.html" class="btn-plan-select btn-free-horizontal" id="btn-select-free">
+              <span>Use Free Outreach</span>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </a>
+          `;
+        }
+      }
+
+      // Starter Plan button
+      if (starterBtn) {
+        if (activePlan === 'starter') {
+          starterBtn.className = 'btn-plan-select current-plan';
+          starterBtn.disabled = true;
+          starterBtn.innerHTML = '<span>✓ Current Plan</span>';
+        } else {
+          starterBtn.className = 'btn-plan-select';
+          starterBtn.disabled = false;
+          starterBtn.innerHTML = 'Choose Starter';
+        }
+      }
+
+      // Growth Plan button
+      if (growthBtn) {
+        if (activePlan === 'growth') {
+          growthBtn.className = 'btn-plan-select current-plan';
+          growthBtn.disabled = true;
+          growthBtn.innerHTML = '<span>✓ Current Plan</span>';
+        } else {
+          growthBtn.className = 'btn-plan-select';
+          growthBtn.disabled = false;
+          growthBtn.innerHTML = 'Choose Growth';
+        }
+      }
+
+      // Pro Plan button
+      if (proBtn) {
+        if (activePlan === 'pro') {
+          proBtn.className = 'btn-plan-select current-plan';
+          proBtn.disabled = true;
+          proBtn.innerHTML = '<span>✓ Current Plan</span>';
+        } else {
+          proBtn.className = 'btn-plan-select';
+          proBtn.disabled = false;
+          proBtn.innerHTML = 'Choose Pro';
+        }
+      }
+
+      // Lifetime Plan button
+      if (lifetimeBtn) {
+        if (activePlan === 'lifetime') {
+          lifetimeBtn.className = 'btn-plan-select current-plan';
+          lifetimeBtn.disabled = true;
+          lifetimeBtn.innerHTML = '<span>✓ Current Plan</span>';
+        } else {
+          lifetimeBtn.className = 'btn-plan-select';
+          lifetimeBtn.disabled = false;
+          lifetimeBtn.innerHTML = 'Get Lifetime Access';
+        }
       }
     }
 
@@ -574,6 +841,13 @@
         return;
       }
 
+      if (!screenshotBase64) {
+        showToast('Payment screenshot is required. Please upload your payment receipt or transfer proof.', 'error');
+        const fileInput = document.getElementById('payment-screenshot');
+        if (fileInput) fileInput.focus();
+        return;
+      }
+
       const submitBtn = document.getElementById('btn-submit-payment');
       submitBtn.disabled = true;
       submitBtn.textContent = 'Submitting...';
@@ -596,8 +870,6 @@
         if (data.success) {
           showToast('Payment submitted successfully! Your account will be credited once verified by our team.', 'success');
           closePaymentModal();
-          const historyCard = document.getElementById('billing-history-section');
-          if (historyCard) historyCard.style.display = 'block';
           loadBillingData();
         } else {
           showToast(data.error || 'Failed to submit payment.', 'error');

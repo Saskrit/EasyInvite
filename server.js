@@ -89,8 +89,11 @@ function createGmailTransporter(user, pass) {
       user: user.trim(),
       pass: cleanPassword
     },
-    connectionTimeout: 15000,
-    greetingTimeout: 15000
+    tls: {
+      rejectUnauthorized: false
+    },
+    connectionTimeout: 20000,
+    greetingTimeout: 20000
   });
 }
 

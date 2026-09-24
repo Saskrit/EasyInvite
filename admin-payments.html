@@ -739,7 +739,7 @@
         const data = await res.json();
 
         if (data.success) {
-          showToast('Payment rejected.', 'info');
+          showToast('Payment rejected. Fraud notice sent and user account deleted.', 'warning');
           closeRejectModal();
           closeReceiptModal();
           loadAdminData(true);

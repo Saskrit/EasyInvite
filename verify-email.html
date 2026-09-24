@@ -139,8 +139,14 @@
           iconWrap.innerHTML = '<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>';
           title.textContent = 'Email Verified Successfully!';
           desc.textContent = 'Your EasyInvite account has been verified and activated. You can now compose, preview, and send Google Play closed testing invitations.';
-          actionArea.style.display = 'block';
-          btnRedirect.textContent = 'Open EasyInvite Dashboard';
+          const plan = (data.user && data.user.plan_id) || data.chosenPlan || 'free';
+          if (plan && plan !== 'free') {
+            btnRedirect.href = `billing.html?openPayment=${encodeURIComponent(plan)}`;
+            btnRedirect.textContent = 'Proceed to Payment Verification';
+          } else {
+            btnRedirect.href = 'index.html';
+            btnRedirect.textContent = 'Open EasyInvite Dashboard';
+          }
 
           if (data.token) {
             localStorage.setItem('easyinvite_auth_token', data.token);
