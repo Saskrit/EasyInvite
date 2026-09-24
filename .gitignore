@@ -29,3 +29,7 @@ desktop.ini
 # Local Data Store & Uploads
 data/
 uploads/
+
+
+.agents
+.agents/*
