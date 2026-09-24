@@ -356,13 +356,401 @@ function getCurrentPage() {
   const path = (window.location.pathname || "").toLowerCase();
   if (path.includes("templates")) return "email-templates";
   if (path.includes("settings")) return "settings";
+  if (path.includes("billing")) return "billing";
+  if (path.includes("admin")) return "admin-payments";
   return "send-invitation";
+}
+
+// ==========================================================================
+// User Authentication, Usage Balances & Multi-Device Cloud Sync
+// ==========================================================================
+let currentUser = null;
+let currentUserUsage = null;
+
+async function initAuth() {
+  ensureAuthModal();
+  const token = localStorage.getItem("easyinvite_auth_token");
+  if (!token) {
+    renderSidebarUserSection();
+    return;
+  }
+
+  try {
+    const res = await fetch("/api/user/sync", {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+
+    if (!res.ok) {
+      if (res.status === 401) {
+        localStorage.removeItem("easyinvite_auth_token");
+        currentUser = null;
+        currentUserUsage = null;
+      }
+      renderSidebarUserSection();
+      return;
+    }
+
+    const data = await res.json();
+    if (data.success) {
+      currentUser = data.user;
+      currentUserUsage = data.usage;
+
+      // Sync database app configuration into state
+      if (data.appConfig) {
+        if (data.appConfig.appName) state.appName = data.appConfig.appName;
+        if (data.appConfig.packageId) state.packageName = data.appConfig.packageId;
+        if (data.appConfig.testingUrl) state.playStoreLink = data.appConfig.testingUrl;
+        if (data.appConfig.directUrl) state.directPlayLink = data.appConfig.directUrl;
+        if (data.appConfig.senderName) state.senderName = data.appConfig.senderName;
+        if (data.appConfig.senderEmail) state.senderEmail = data.appConfig.senderEmail;
+        if (data.appConfig.smtpOnline !== undefined) state.smtpOnline = data.appConfig.smtpOnline;
+      }
+
+      // Sync database templates into state
+      if (data.templates && Array.isArray(data.templates) && data.templates.length > 0) {
+        data.templates.forEach(t => {
+          state.templates[t.id] = {
+            name: t.name,
+            desc: t.desc || '',
+            subject: t.subject,
+            body: t.body
+          };
+        });
+      }
+
+      saveState();
+      loadSettingsIntoFields();
+      updatePlayConfigStatus();
+      updateAppIdBadge();
+      if (elements.fullTemplatesGrid) renderTemplatesGrid();
+    }
+  } catch (err) {
+    console.warn("Could not sync user cloud profile:", err);
+  } finally {
+    renderSidebarUserSection();
+  }
+}
+
+function renderSidebarUserSection() {
+  const container = document.getElementById("sidebar-user-section");
+  const adminNav = document.getElementById("sidebar-admin-link");
+
+  if (currentUser && currentUser.role === 'admin') {
+    if (adminNav) adminNav.style.display = 'flex';
+  } else {
+    if (adminNav) adminNav.style.display = 'none';
+  }
+
+  if (!container) return;
+
+  if (currentUser) {
+    const initial = (currentUser.name ? currentUser.name[0] : 'U').toUpperCase();
+    const balanceText = currentUserUsage
+      ? (currentUserUsage.isLifetime ? 'Unlimited (Lifetime)' : `${currentUserUsage.sendsRemaining} Sends left`)
+      : 'Loading balance...';
+    const isLifetime = currentUserUsage && currentUserUsage.isLifetime;
+
+    container.innerHTML = `
+      <div class="sidebar-user-card">
+        <div class="user-profile-row">
+          <div class="user-avatar">${escapeHtml(initial)}</div>
+          <div class="user-meta">
+            <div class="user-display-name">
+              <span>${escapeHtml(currentUser.name)}</span>
+              ${currentUser.role === 'admin' ? '<span class="user-role-tag">Admin</span>' : ''}
+            </div>
+            <div class="user-email-text" title="${escapeHtml(currentUser.email)}">${escapeHtml(currentUser.email)}</div>
+          </div>
+        </div>
+        <a href="billing.html" class="user-balance-pill ${isLifetime ? 'lifetime' : ''}" title="View plans & buy sends">
+          <span>⚡ ${balanceText}</span>
+          <span style="font-size: 0.72rem; opacity: 0.8;">Top up &rarr;</span>
+        </a>
+        <button type="button" class="btn-sidebar-logout" onclick="handleLogout()">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          Sign Out
+        </button>
+      </div>
+    `;
+  } else {
+    container.innerHTML = `
+      <button type="button" class="btn-sidebar-login" onclick="showAuthModal('signin')">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+          <polyline points="10 17 15 12 10 7"/>
+          <line x1="15" y1="12" x2="3" y2="12"/>
+        </svg>
+        Sign In / Register
+      </button>
+    `;
+  }
+}
+
+function ensureAuthModal() {
+  if (document.getElementById("auth-modal")) return;
+
+  const modalHtml = `
+  <div class="modal-backdrop" id="auth-modal" style="display: none; z-index: 10000;">
+    <div class="modal-card auth-modal-card">
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab-btn active" id="auth-tab-signin" onclick="switchAuthTab('signin')">Sign In</button>
+        <button type="button" class="auth-tab-btn" id="auth-tab-register" onclick="switchAuthTab('register')">Create Account</button>
+        <button type="button" class="auth-tab-btn" id="auth-tab-verify" onclick="switchAuthTab('verify')" style="display: none;">Verify Email</button>
+      </div>
+
+      <div class="modal-body" style="padding: 24px;">
+        <!-- Form 1: Sign In -->
+        <form id="auth-signin-form" onsubmit="submitSignIn(event)">
+          <div class="form-group">
+            <label class="form-label" for="signin-email">Email Address</label>
+            <input type="email" id="signin-email" class="form-control" placeholder="you@gmail.com" required autocomplete="email" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="signin-password">Password</label>
+            <input type="password" id="signin-password" class="form-control" placeholder="••••••••" required autocomplete="current-password" />
+          </div>
+          <button type="submit" class="btn-primary" id="btn-submit-signin" style="width: 100%; margin-top: 8px;">
+            Sign In
+          </button>
+          <div style="text-align: center; margin-top: 14px; font-size: 0.82rem; color: #64748b;">
+            Don't have an account? <a href="#" onclick="event.preventDefault(); switchAuthTab('register');" style="color: #2563eb; font-weight: 600;">Register here</a>
+          </div>
+        </form>
+
+        <!-- Form 2: Register -->
+        <form id="auth-register-form" onsubmit="submitRegister(event)" style="display: none;">
+          <div class="form-group">
+            <label class="form-label" for="register-name">Full Name</label>
+            <input type="text" id="register-name" class="form-control" placeholder="John Doe" required autocomplete="name" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="register-email">Email Address</label>
+            <input type="email" id="register-email" class="form-control" placeholder="you@gmail.com" required autocomplete="email" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="register-password">Password (min 6 characters)</label>
+            <input type="password" id="register-password" class="form-control" placeholder="••••••••" minlength="6" required autocomplete="new-password" />
+          </div>
+          <button type="submit" class="btn-primary" id="btn-submit-register" style="width: 100%; margin-top: 8px;">
+            Create Account
+          </button>
+          <div style="text-align: center; margin-top: 14px; font-size: 0.82rem; color: #64748b;">
+            Already have an account? <a href="#" onclick="event.preventDefault(); switchAuthTab('signin');" style="color: #2563eb; font-weight: 600;">Sign in</a>
+          </div>
+        </form>
+
+        <!-- Form 3: Verify Email -->
+        <form id="auth-verify-form" onsubmit="submitVerification(event)" style="display: none;">
+          <div style="text-align: center; margin-bottom: 16px;">
+            <div style="width: 48px; height: 48px; border-radius: 50%; background: #eff6ff; color: #2563eb; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 8px;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            <h4 style="margin: 0; font-size: 1.05rem;">Email Verification Required</h4>
+            <p style="font-size: 0.82rem; color: #64748b; margin: 4px 0 0;" id="verify-email-prompt">We sent a verification link to your email.</p>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="verify-token-input">Verification Token / Code</label>
+            <input type="text" id="verify-token-input" class="form-control" placeholder="Enter token from email or dev link" required />
+            <div id="dev-verify-helper" style="margin-top: 8px; font-size: 0.76rem; color: #2563eb;"></div>
+          </div>
+          <button type="submit" class="btn-primary" id="btn-submit-verify" style="width: 100%; margin-top: 8px;">
+            Verify and Log In
+          </button>
+          <div style="text-align: center; margin-top: 14px; font-size: 0.82rem; color: #64748b;">
+            <a href="#" onclick="event.preventDefault(); switchAuthTab('signin');" style="color: #64748b;">Back to Sign In</a>
+          </div>
+        </form>
+      </div>
+
+      <div style="padding: 12px 24px; background: #f8fafc; border-top: 1px solid #e2e8f0; text-align: right;">
+        <button type="button" class="btn-secondary" onclick="closeAuthModal()">Close</button>
+      </div>
+    </div>
+  </div>
+  `;
+  document.body.insertAdjacentHTML("beforeend", modalHtml);
+}
+
+function showAuthModal(tab = 'signin') {
+  ensureAuthModal();
+  switchAuthTab(tab);
+  document.getElementById("auth-modal").style.display = "flex";
+}
+
+function closeAuthModal() {
+  const modal = document.getElementById("auth-modal");
+  if (modal) modal.style.display = "none";
+}
+
+function switchAuthTab(tab) {
+  ensureAuthModal();
+  const tabSignin = document.getElementById("auth-tab-signin");
+  const tabRegister = document.getElementById("auth-tab-register");
+  const tabVerify = document.getElementById("auth-tab-verify");
+  const formSignin = document.getElementById("auth-signin-form");
+  const formRegister = document.getElementById("auth-register-form");
+  const formVerify = document.getElementById("auth-verify-form");
+
+  tabSignin.classList.remove("active");
+  tabRegister.classList.remove("active");
+  if (tabVerify) tabVerify.classList.remove("active");
+
+  formSignin.style.display = "none";
+  formRegister.style.display = "none";
+  if (formVerify) formVerify.style.display = "none";
+
+  if (tab === "signin") {
+    tabSignin.classList.add("active");
+    formSignin.style.display = "block";
+  } else if (tab === "register") {
+    tabRegister.classList.add("active");
+    formRegister.style.display = "block";
+  } else if (tab === "verify") {
+    if (tabVerify) {
+      tabVerify.style.display = "block";
+      tabVerify.classList.add("active");
+    }
+    if (formVerify) formVerify.style.display = "block";
+  }
+}
+
+async function submitSignIn(e) {
+  e.preventDefault();
+  const email = document.getElementById("signin-email").value.trim();
+  const password = document.getElementById("signin-password").value;
+  const btn = document.getElementById("btn-submit-signin");
+
+  btn.disabled = true;
+  btn.textContent = "Signing in...";
+
+  try {
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      localStorage.setItem("easyinvite_auth_token", data.token);
+      currentUser = data.user;
+      closeAuthModal();
+      showToast(`Welcome back, ${currentUser.name}!`, "success");
+      await initAuth();
+    } else if (data.requiresVerification) {
+      showToast("Please verify your email address.", "info");
+      document.getElementById("verify-email-prompt").textContent = `We sent a verification link to ${email}.`;
+      if (data.devVerificationToken) {
+        document.getElementById("verify-token-input").value = data.devVerificationToken;
+        document.getElementById("dev-verify-helper").innerHTML = `
+          <strong>Quick verification:</strong> <a href="/verify-email?token=${data.devVerificationToken}" target="_blank">Click here to verify</a>
+        `;
+      }
+      switchAuthTab("verify");
+    } else {
+      showToast(data.error || "Login failed.", "error");
+    }
+  } catch (err) {
+    showToast("Network error during login.", "error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Sign In";
+  }
+}
+
+async function submitRegister(e) {
+  e.preventDefault();
+  const name = document.getElementById("register-name").value.trim();
+  const email = document.getElementById("register-email").value.trim();
+  const password = document.getElementById("register-password").value;
+  const btn = document.getElementById("btn-submit-register");
+
+  btn.disabled = true;
+  btn.textContent = "Creating account...";
+
+  try {
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, password })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      showToast("Account created! Please verify your email.", "success");
+      document.getElementById("verify-email-prompt").textContent = `A verification code was created for ${email}.`;
+      if (data.devVerificationToken) {
+        document.getElementById("verify-token-input").value = data.devVerificationToken;
+        document.getElementById("dev-verify-helper").innerHTML = `
+          <strong>Quick verification link:</strong> <a href="${data.devVerifyUrl}" target="_blank">Click here to verify immediately</a>
+        `;
+      }
+      switchAuthTab("verify");
+    } else {
+      showToast(data.error || "Registration failed.", "error");
+    }
+  } catch (err) {
+    showToast("Network error during registration.", "error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Create Account";
+  }
+}
+
+async function submitVerification(e) {
+  e.preventDefault();
+  const token = document.getElementById("verify-token-input").value.trim();
+  const btn = document.getElementById("btn-submit-verify");
+
+  btn.disabled = true;
+  btn.textContent = "Verifying...";
+
+  try {
+    const res = await fetch("/api/auth/verify-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      if (data.token) {
+        localStorage.setItem("easyinvite_auth_token", data.token);
+      }
+      closeAuthModal();
+      showToast("Email verified successfully! You are now logged in.", "success");
+      await initAuth();
+    } else {
+      showToast(data.error || "Verification failed.", "error");
+    }
+  } catch (err) {
+    showToast("Network error during email verification.", "error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Verify and Log In";
+  }
+}
+
+function handleLogout() {
+  localStorage.removeItem("easyinvite_auth_token");
+  currentUser = null;
+  currentUserUsage = null;
+  fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
+  renderSidebarUserSection();
+  showToast("Logged out successfully.", "info");
 }
 
 // ==========================================================================
 // Initialization
 // ==========================================================================
 document.addEventListener("DOMContentLoaded", () => {
+  // Initialize authentication, cloud sync, and sidebar user section
+  initAuth();
+
   const activePage = getCurrentPage();
   try {
     sessionStorage.setItem("easyinvite_active_view", activePage);
@@ -1021,9 +1409,16 @@ function updateEditorWithTestingLink(newUrl) {
 }
 
 // ==========================================================================
-// Sending Invitations (Direct Real Gmail Dispatch or Simulator)
+// Sending Invitations (Direct Real Gmail Dispatch with Backend Usage Control)
 // ==========================================================================
 async function handleSendInvitations() {
+  const authToken = localStorage.getItem("easyinvite_auth_token");
+  if (!authToken) {
+    showToast("Please sign in or create an account to send invitations.", "warning");
+    showAuthModal("signin");
+    return;
+  }
+
   // Sync if currently typing in textarea mode
   if (recipientInputMode === "raw") {
     syncRecipientsFromTextarea();
@@ -1100,7 +1495,10 @@ async function handleSendInvitations() {
 
     const res = await fetch("/api/send-email", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${authToken}`
+      },
       body: JSON.stringify({
         recipients: state.recipients,
         subject: finalSubject,
@@ -1113,8 +1511,26 @@ async function handleSendInvitations() {
     });
 
     const data = await res.json();
+
+    if (res.status === 402 || data.code === "NO_BALANCE") {
+      showToast("You have 0 Send Actions remaining. Please purchase a plan on the Billing page.", "warning");
+      setTimeout(() => {
+        window.location.href = "billing.html";
+      }, 1800);
+      return;
+    }
+
     if (data.success) {
       updateSmtpUI(true, "Verified Online");
+      if (data.usage) {
+        currentUserUsage = {
+          ...(currentUserUsage || {}),
+          sendsRemaining: data.usage.sendsRemaining,
+          isLifetime: data.usage.isLifetime
+        };
+        renderSidebarUserSection();
+      }
+
       showToast(`Successfully sent ${data.sentCount} invitation${data.sentCount === 1 ? "" : "s"} via Gmail!`, "success");
 
       // Clear recipients for the next batch
@@ -1296,6 +1712,7 @@ function handleSaveTemplateFromModal() {
     return;
   }
 
+  let savedTplId = id;
   if (id && state.templates[id]) {
     // Update existing template
     state.templates[id] = { name, desc, subject, body };
@@ -1306,6 +1723,7 @@ function handleSaveTemplateFromModal() {
   } else {
     // Create new template
     const newId = "custom_" + Date.now();
+    savedTplId = newId;
     state.templates[newId] = { name, desc, subject, body };
     showToast(`Created new template: "${name}"`, "success");
   }
@@ -1313,6 +1731,25 @@ function handleSaveTemplateFromModal() {
   saveState();
   closeTemplateModal();
   renderTemplatesGrid();
+
+  // Persist template to database for multi-device sync
+  const authToken = localStorage.getItem("easyinvite_auth_token");
+  if (authToken) {
+    fetch("/api/user/templates", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${authToken}`
+      },
+      body: JSON.stringify({
+        id: savedTplId,
+        name,
+        desc,
+        subject,
+        body
+      })
+    }).catch(err => console.warn("Template cloud sync notice:", err));
+  }
 }
 
 function handleDeleteTemplate(key) {
@@ -1335,7 +1772,16 @@ function handleDeleteTemplate(key) {
 
   saveState();
   renderTemplatesGrid();
-  showToast(`Template "${tpl.name}" deleted.`, "info");
+
+  const authToken = localStorage.getItem("easyinvite_auth_token");
+  if (authToken) {
+    fetch(`/api/user/templates/${encodeURIComponent(key)}`, {
+      method: "DELETE",
+      headers: { "Authorization": `Bearer ${authToken}` }
+    }).catch(err => console.warn("Template cloud delete notice:", err));
+  }
+
+  showToast(`Deleted template "${tpl.name}"`, "info");
 }
 
 // ==========================================================================
@@ -1510,6 +1956,29 @@ function handleSaveSettings() {
   updatePlayConfigStatus();
   updateSmtpUI(state.smtpOnline);
   applyTemplate(currentTemplateId, true); // silent — settings save has its own toast
+
+  // Persist settings to user account in database
+  const authToken = localStorage.getItem("easyinvite_auth_token");
+  if (authToken) {
+    fetch("/api/user/settings", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${authToken}`
+      },
+      body: JSON.stringify({
+        appName: state.appName,
+        packageId: state.packageName,
+        testingUrl: state.playStoreLink,
+        directUrl: state.directPlayLink,
+        senderName: state.senderName,
+        senderEmail: state.senderEmail,
+        appPassword: state.appPassword,
+        smtpOnline: state.smtpOnline
+      })
+    }).catch(err => console.warn("Could not sync settings to server:", err));
+  }
+
   showToast("All settings successfully saved!", "success");
 }
 
@@ -1879,6 +2348,27 @@ function handleSavePlayConfig() {
   saveState();
   updatePlayConfigStatus();
   applyTemplate(currentTemplateId, true); // silent — Play config save has its own flow
+
+  const authToken = localStorage.getItem("easyinvite_auth_token");
+  if (authToken) {
+    fetch("/api/user/settings", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${authToken}`
+      },
+      body: JSON.stringify({
+        appName: state.appName,
+        packageId: state.packageName,
+        testingUrl: state.playStoreLink,
+        directUrl: state.directPlayLink,
+        senderName: state.senderName,
+        senderEmail: state.senderEmail,
+        appPassword: state.appPassword,
+        smtpOnline: state.smtpOnline
+      })
+    }).catch(err => console.warn("Could not sync app config to server:", err));
+  }
 
   if (elements.previewCtaButton) {
     elements.previewCtaButton.href = state.playStoreLink || "#";

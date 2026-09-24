@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Billing & Plans - EasyInvite</title>
+  <meta name="description" content="Choose a prepaid usage plan for Google Play Closed Testing outreach with EasyInvite." />
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/common.css?v=2.7" />
+  <link rel="stylesheet" href="css/billing.css?v=2.7" />
+
+  <!-- Google Fonts: Inter & Caveat -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body data-page="billing">
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <div class="app-container">
+    <!-- Left Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="brand">
+          <a href="index.html" style="display: block; text-decoration: none;">
+            <img src="easyinvite.png" alt="EasyInvite" class="brand-logo-img" />
+          </a>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="nav-menu">
+          <a href="index.html" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+            </svg>
+            <span>Send Invitation</span>
+          </a>
+
+          <a href="templates.html" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+              <polyline points="10 9 9 9 8 9"/>
+            </svg>
+            <span>Email Templates</span>
+          </a>
+
+          <a href="settings.html" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+            <span>Settings</span>
+          </a>
+
+          <a href="billing.html" class="nav-item active">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="4" width="20" height="16" rx="2"/>
+              <line x1="2" y1="10" x2="22" y2="10"/>
+            </svg>
+            <span>Billing &amp; Plans</span>
+          </a>
+
+          <a href="admin-payments.html" class="nav-item admin-only-nav" id="sidebar-admin-link" style="display: none;">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <span>Admin Payments</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-smtp-status" id="sidebar-smtp-card" style="cursor: pointer;" title="Click to configure SMTP in Settings" onclick="window.location.href='settings.html'">
+          <div class="status-indicator-wrap">
+            <span class="status-indicator-dot online" id="sidebar-smtp-dot"></span>
+            <span class="status-indicator-label" id="sidebar-smtp-label">SMTP: Online</span>
+          </div>
+          <span class="sidebar-live-tag">LIVE</span>
+        </div>
+      </div>
+
+      <!-- User Profile / Auth Status in Sidebar -->
+      <div class="sidebar-bottom" id="sidebar-user-section" style="padding-top: 16px; border-top: 1px solid var(--border-color);">
+        <!-- Injected dynamically by app.js -->
+      </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <main class="main-wrapper" style="padding: 24px 32px 64px; overflow-y: auto;">
+      <section class="view-content active" id="view-billing">
+        <div class="billing-layout">
+          
+          <!-- Card: Current Balance & Entitlement -->
+          <div class="balance-overview-card">
+            <div class="balance-info">
+              <span class="balance-label">Current Usage Balance</span>
+              <div class="balance-val-row">
+                <span class="balance-number" id="balance-display">Loading...</span>
+                <span class="balance-plan-badge" id="plan-badge">Plan: Free</span>
+              </div>
+              <span class="balance-hint" id="balance-subtext">1 Send action allows dispatching to 1 or 100+ recipients in a single campaign batch.</span>
+            </div>
+            <div class="balance-actions">
+              <a href="#plans-section" class="btn-buy-more">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Buy / Upgrade Plan
+              </a>
+            </div>
+          </div>
+
+          <!-- Pricing Plans Section -->
+          <div id="plans-section">
+            <div class="pricing-header">
+              <h2>Simple Prepaid Plans</h2>
+              <p>No recurring subscriptions. Pay once via bank transfer, top up whenever you need, or get Lifetime unlimited outreach.</p>
+            </div>
+
+            <div class="pricing-grid">
+              <!-- Plan 1: Starter -->
+              <div class="plan-card" id="plan-card-starter">
+                <div class="plan-header">
+                  <h3 class="plan-name">Starter</h3>
+                  <p class="plan-desc">Great for small apps and initial closed test rollout.</p>
+                  <div class="plan-price-wrap">
+                    <span class="plan-currency">NPR</span>
+                    <span class="plan-amount">100</span>
+                    <span class="plan-billing-type">/ one-time</span>
+                  </div>
+                  <ul class="plan-features-list">
+                    <li class="plan-feature-item">
+                      <span class="feature-check">✓</span>
+                      <span><strong>10 Send Actions</strong></span>
+                    </li>
+                    <li class="plan-feature-item">
+                      <span class="feature-check">✓</span>
+                      <span>Unlimited recipients per send</span>
+                    </li>
+                    <li class="plan-feature-item">
+                      <span class="feature-check">✓</span>
+                      <span>Multi-device sync</span>
+                    </li>
+                    <li class="plan-feature-item">
+                      <span class="feature-check">✓</span>
+                      <span>Templates &amp; CSV import</span>
+                    </li>
+                  </ul>
+                </div>
+                <button type="button" class="btn-plan-select" onclick="openPaymentModal('starter', 'Starter', 100, 10, false)">
+                  Choose Starter
+                </button>
+              </div>
+
+              <!-- Plan 2: Growth (Featured) -->
+              <div class="plan-card featured" id="plan-card-growth">
+                <span class="featured-pill">Most Popular</span>
+                <div class="plan-header">
+                  <h3 class="plan-name">Growth</h3>
+                  <p class="plan-desc">Ideal for indie developers testing multiple release candidates.</p>
+                  <div class="plan-price-wrap">
+                    <span class="plan-currency">NPR</span>
+                    <span class="plan-amount">200</span>
+                    <span class="plan-billing-type">/ one-time</span>
+                  </div>
+                  <ul class="plan-features-list">
+                    <li class="plan-feature-item">
+                      <span class="feature-check">✓</span>
+                      <span><strong>40 Send Actions</strong></span>
+                    </li>
+                    <li class="plan-feature-item">
+                      <span class="feature-check">✓</span>
+                      <span>Unlimited recipients per send</span>
+                    </li>
+                    <li class="plan-feature-item">
+                      <span class="feature-check">✓</span>
+                      <span>Save custom templates</span>
+                    </li>
+                    <li class="plan-feature-item">
+                      <span class="feature-check">✓</span>
+                      <span>Priority deliverability shell</span>
+                    </li>
+                  </ul>
+                </div>
+                <button type="button" class="btn-plan-select" onclick="openPaymentModal('growth', 'Growth', 200, 40, false)">
+                  Choose Growth
+                </button>
+              </div>
+
+              <!-- Plan 3: Pro -->
+              <div class="plan-card" id="plan-card-pro">
+                <div class="plan-header">
+                  <h3 class="plan-name">Pro</h3>
+                  <p class="plan-desc">Best value for studios running continuous closed testing.</p>
+                  <div class="plan-price-wrap">
+                    <span class="plan-currency">NPR</span>
+                    <span class="plan-amount">300</span>
+                    <span class="plan-billing-type">/ one-time</span>
+                  </div>
+                  <ul class="plan-features-list">
+                    <li class="plan-feature-item">
+                      <span class="feature-check">✓</span>
+                      <span><strong>60 Send Actions</strong></span>
+                    </li>
+                    <li class="plan-feature-item">
+                      <span class="feature-check">✓</span>
+                      <span>Unlimited recipients per send</span>
+                    </li>
+                    <li class="plan-feature-item">
+                      <span class="feature-check">✓</span>
+                      <span>Complete campaign tracking</span>
+                    </li>
+                    <li class="plan-feature-item">
+                      <span class="feature-check">✓</span>
+                      <span>Multi-app configurations</span>
+                    </li>
+                  </ul>
+                </div>
+                <button type="button" class="btn-plan-select" onclick="openPaymentModal('pro', 'Pro', 300, 60, false)">
+                  Choose Pro
+                </button>
+              </div>
+
+              <!-- Plan 4: Lifetime -->
+              <div class="plan-card lifetime" id="plan-card-lifetime">
+                <span class="lifetime-pill">Lifetime Deal</span>
+                <div class="plan-header">
+                  <h3 class="plan-name">Lifetime</h3>
+                  <p class="plan-desc">Pay once, send unlimited invitations forever with zero restrictions.</p>
+                  <div class="plan-price-wrap">
+                    <span class="plan-currency">NPR</span>
+                    <span class="plan-amount">1,000</span>
+                    <span class="plan-billing-type">/ once forever</span>
+                  </div>
+                  <ul class="plan-features-list">
+                    <li class="plan-feature-item">
+                      <span class="feature-check">✓</span>
+                      <span><strong>Unlimited Send Actions</strong></span>
+                    </li>
+                    <li class="plan-feature-item">
+                      <span class="feature-check">✓</span>
+                      <span>Never expires</span>
+                    </li>
+                    <li class="plan-feature-item">
+                      <span class="feature-check">✓</span>
+                      <span>VIP priority support</span>
+                    </li>
+                    <li class="plan-feature-item">
+                      <span class="feature-check">✓</span>
+                      <span>All future updates included</span>
+                    </li>
+                  </ul>
+                </div>
+                <button type="button" class="btn-plan-select" onclick="openPaymentModal('lifetime', 'Lifetime', 1000, -1, true)">
+                  Get Lifetime Access
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card: Purchase & Payment History -->
+          <div class="history-card">
+            <div class="history-card-header">
+              <h3 class="history-card-title">Payment &amp; Order History</h3>
+              <button type="button" class="btn-outline-small" onclick="loadBillingData()">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M23 4v6h-6"/>
+                  <path d="M1 20v-6h6"/>
+                  <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                </svg>
+                Refresh
+              </button>
+            </div>
+
+            <div class="table-responsive">
+              <table class="custom-table" id="payments-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Plan</th>
+                    <th>Amount</th>
+                    <th>Reference / Txn #</th>
+                    <th>Sends Added</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="payments-tbody">
+                  <tr>
+                    <td colspan="6" style="text-align: center; color: #94a3b8; padding: 24px;">Loading purchase history...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- MODAL: Manual Bank Transfer Payment -->
+  <div class="modal-backdrop" id="payment-modal" style="display: none;">
+    <div class="modal-card checkout-modal-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#2563eb" stroke-width="2">
+            <rect x="2" y="4" width="20" height="16" rx="2"/>
+            <line x1="2" y1="10" x2="22" y2="10"/>
+          </svg>
+          <h3 id="modal-plan-title">Bank Transfer Payment</h3>
+        </div>
+        <button type="button" class="modal-close-btn" onclick="closePaymentModal()">&times;</button>
+      </div>
+
+      <div class="modal-body" style="padding: 24px;">
+        <!-- Bank Details Card -->
+        <div class="bank-details-box">
+          <div class="bank-row">
+            <span class="label">Payable Amount:</span>
+            <span class="val highlight" id="modal-amount">NPR 100</span>
+          </div>
+          <div class="bank-row">
+            <span class="label">Bank Name:</span>
+            <span class="val" id="bank-name">Global IME Bank</span>
+          </div>
+          <div class="bank-row">
+            <span class="label">Account Name:</span>
+            <span class="val" id="bank-acc-name">EasyInvite Technologies</span>
+          </div>
+          <div class="bank-row">
+            <span class="label">Account Number:</span>
+            <span class="val" id="bank-acc-number">01234567890123</span>
+          </div>
+          <div class="bank-row">
+            <span class="label">Branch:</span>
+            <span class="val" id="bank-branch">Kathmandu Main Branch</span>
+          </div>
+        </div>
+
+        <form id="payment-submit-form" onsubmit="handlePaymentSubmit(event)">
+          <input type="hidden" id="modal-plan-id" value="" />
+
+          <div class="form-group">
+            <label class="form-label" for="payment-reference">
+              Transaction / Reference Number <span style="color: #ef4444;">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="payment-reference" 
+              class="form-control" 
+              placeholder="e.g. 104928374920 or Fonepay Ref ID" 
+              required 
+            />
+            <small style="font-size: 0.76rem; color: #64748b; margin-top: 4px; display: block;">
+              Enter the exact transaction reference code from your mobile banking or receipt.
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="payment-screenshot">
+              Payment Screenshot <span style="color: #94a3b8; font-weight: normal;">(Optional)</span>
+            </label>
+            <input 
+              type="file" 
+              id="payment-screenshot" 
+              class="form-control" 
+              accept="image/png, image/jpeg, image/webp" 
+              onchange="handleScreenshotPreview(event)"
+            />
+            <div id="screenshot-preview-wrap" style="display: none; margin-top: 10px;">
+              <img id="screenshot-preview-img" src="" alt="Screenshot Preview" style="max-height: 120px; border-radius: 6px; border: 1px solid #cbd5e1;" />
+            </div>
+          </div>
+
+          <div class="modal-footer" style="padding: 16px 0 0; margin-top: 20px; border-top: 1px solid #e2e8f0;">
+            <button type="button" class="btn-secondary" onclick="closePaymentModal()">Cancel</button>
+            <button type="submit" class="btn-primary" id="btn-submit-payment">
+              Submit Payment for Verification
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js?v=2.7"></script>
+  <script>
+    let selectedPlanData = null;
+    let screenshotBase64 = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadBillingData();
+    });
+
+    async function loadBillingData() {
+      const token = localStorage.getItem('easyinvite_auth_token');
+      if (!token) {
+        document.getElementById('balance-display').textContent = 'Please log in';
+        document.getElementById('plan-badge').textContent = 'Unauthenticated';
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/billing/history', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          const usage = data.usage;
+          const displayEl = document.getElementById('balance-display');
+          const badgeEl = document.getElementById('plan-badge');
+
+          if (usage.isLifetime) {
+            displayEl.textContent = 'Unlimited';
+            badgeEl.className = 'balance-plan-badge lifetime';
+            badgeEl.textContent = 'Lifetime Member';
+          } else {
+            const remaining = usage.sendsRemaining;
+            const total = usage.totalPurchased || remaining;
+            displayEl.textContent = `${remaining} / ${total} Send Actions Remaining`;
+            badgeEl.className = 'balance-plan-badge';
+            badgeEl.textContent = `Plan: ${usage.planId.toUpperCase()}`;
+          }
+
+          renderPaymentsTable(data.payments || []);
+        }
+      } catch (err) {
+        console.error('Failed to load billing history:', err);
+      }
+    }
+
+    function renderPaymentsTable(payments) {
+      const tbody = document.getElementById('payments-tbody');
+      if (!tbody) return;
+
+      if (payments.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align: center; color: #94a3b8; padding: 24px;">
+              No payment transactions yet. Select a plan above to buy Send actions.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = payments.map(p => {
+        const dateStr = new Date(p.created_at).toLocaleDateString(undefined, {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+
+        const statusClass = p.status;
+        const sendsText = p.is_lifetime ? 'Unlimited (Lifetime)' : `+${p.sends_to_credit} sends`;
+
+        return `
+          <tr>
+            <td style="white-space: nowrap;">${dateStr}</td>
+            <td><strong>${p.plan_name || p.plan_id}</strong></td>
+            <td>NPR ${p.amount_npr}</td>
+            <td><code>${p.reference_number}</code></td>
+            <td>${sendsText}</td>
+            <td>
+              <span class="status-badge ${statusClass}">${p.status}</span>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function openPaymentModal(planId, name, amount, sends, isLifetime) {
+      const token = localStorage.getItem('easyinvite_auth_token');
+      if (!token) {
+        if (typeof showAuthModal === 'function') {
+          showAuthModal('signin');
+        } else {
+          showToast('Please log in or register before purchasing a plan.', 'info');
+        }
+        return;
+      }
+
+      selectedPlanData = { planId, name, amount, sends, isLifetime };
+      document.getElementById('modal-plan-id').value = planId;
+      document.getElementById('modal-plan-title').textContent = `${name} Plan — Bank Transfer`;
+      document.getElementById('modal-amount').textContent = `NPR ${amount}`;
+      document.getElementById('payment-reference').value = '';
+      document.getElementById('payment-screenshot').value = '';
+      document.getElementById('screenshot-preview-wrap').style.display = 'none';
+      screenshotBase64 = null;
+
+      document.getElementById('payment-modal').style.display = 'flex';
+    }
+
+    function closePaymentModal() {
+      document.getElementById('payment-modal').style.display = 'none';
+    }
+
+    function handleScreenshotPreview(event) {
+      const file = event.target.files[0];
+      if (!file) {
+        screenshotBase64 = null;
+        document.getElementById('screenshot-preview-wrap').style.display = 'none';
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        screenshotBase64 = e.target.result;
+        document.getElementById('screenshot-preview-img').src = screenshotBase64;
+        document.getElementById('screenshot-preview-wrap').style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function handlePaymentSubmit(event) {
+      event.preventDefault();
+      const token = localStorage.getItem('easyinvite_auth_token');
+      if (!token) {
+        showToast('Please log in to submit a payment.', 'warning');
+        return;
+      }
+
+      const planId = document.getElementById('modal-plan-id').value;
+      const referenceNumber = document.getElementById('payment-reference').value.trim();
+
+      if (!referenceNumber) {
+        showToast('Please enter your transaction reference number.', 'warning');
+        return;
+      }
+
+      const submitBtn = document.getElementById('btn-submit-payment');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+
+      try {
+        const res = await fetch('/api/billing/purchase', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            planId,
+            referenceNumber,
+            screenshotBase64
+          })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          showToast('Payment submitted successfully! Your account will be credited once verified by our team.', 'success');
+          closePaymentModal();
+          loadBillingData();
+        } else {
+          showToast(data.error || 'Failed to submit payment.', 'error');
+        }
+      } catch (err) {
+        showToast('Network error while submitting payment.', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Payment for Verification';
+      }
+    }
+  </script>
+</body>
+</html>

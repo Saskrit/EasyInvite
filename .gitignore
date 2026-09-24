@@ -22,3 +22,10 @@ desktop.ini
 .idea/
 *.swp
 *.swo
+
+# Neon Context
+.neon
+
+# Local Data Store & Uploads
+data/
+uploads/

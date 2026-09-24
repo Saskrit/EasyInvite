@@ -91,13 +91,26 @@ function createGmailTransporter(user, pass) {
   });
 }
 
+const db = require('./lib/db');
+const auth = require('./lib/auth');
+const { handleApiRequest } = require('./lib/routes');
+
+// Connect and synchronize with Neon PostgreSQL
+if (process.env.DATABASE_URL) {
+  db.initPostgres().then(ok => {
+    if (ok) console.log('✓ EasyInvite synchronized with live Neon PostgreSQL database');
+  }).catch(err => {
+    console.warn('[Neon Sync Notice]', err.message);
+  });
+}
+
 const server = http.createServer(async (req, res) => {
   // Security Headers
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-XSS-Protection', '1; mode=block');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data:");
+  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data: blob:;");
 
   // CORS — restrict to same origin in production; allow localhost for dev
   const origin = req.headers.origin || '';
@@ -105,8 +118,8 @@ const server = http.createServer(async (req, res) => {
   if (allowedOrigins.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
   }
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
     res.writeHead(204);
@@ -114,6 +127,14 @@ const server = http.createServer(async (req, res) => {
   }
 
   const urlPath = req.url.split('?')[0];
+
+  // Delegate API requests to centralized API router
+  if (urlPath.startsWith('/api/')) {
+    const handled = await handleApiRequest(req, res, urlPath);
+    if (handled !== false) {
+      return;
+    }
+  }
 
   // API: Health Check (for Docker, Render, Railway, Kubernetes, etc.)
   if (req.method === 'GET' && (urlPath === '/health' || urlPath === '/api/health')) {
@@ -491,6 +512,12 @@ function wrapInDeliverableEmailShell(bodyHtml, subject, senderName) {
     requestedPath = 'templates.html';
   } else if (requestedPath === '/settings') {
     requestedPath = 'settings.html';
+  } else if (requestedPath === '/billing' || requestedPath === '/pricing') {
+    requestedPath = 'billing.html';
+  } else if (requestedPath === '/admin' || requestedPath === '/admin/payments' || requestedPath === '/admin-payments') {
+    requestedPath = 'admin-payments.html';
+  } else if (requestedPath === '/verify-email') {
+    requestedPath = 'verify-email.html';
   }
 
   // Strip any ../ traversal attempts
@@ -527,8 +554,8 @@ function wrapInDeliverableEmailShell(bodyHtml, subject, senderName) {
 });
 
 if (require.main === module) {
-  server.listen(PORT, '0.0.0.0', () => {
-    console.log(`EasyInvite server running at http://0.0.0.0:${PORT} (port ${PORT})`);
+  server.listen(PORT, () => {
+    console.log(`EasyInvite server running at http://localhost:${PORT} (port ${PORT})`);
   });
 
   // Graceful shutdown handling for container and cloud environments

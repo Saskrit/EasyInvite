@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Executive Dashboard - EasyInvite</title>
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/common.css?v=2.8" />
+  <link rel="stylesheet" href="css/billing.css?v=2.8" />
+  <link rel="stylesheet" href="css/admin.css?v=2.8" />
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+</head>
+<body data-page="admin-payments">
+  <!-- Toast Notifications Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <div class="app-container">
+    <!-- Left Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="brand">
+          <a href="index.html" style="display: block; text-decoration: none;">
+            <img src="easyinvite.png" alt="EasyInvite" class="brand-logo-img" />
+          </a>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="nav-menu">
+          <a href="index.html" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+            </svg>
+            <span>Send Invitation</span>
+          </a>
+
+          <a href="templates.html" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+              <polyline points="10 9 9 9 8 9"/>
+            </svg>
+            <span>Email Templates</span>
+          </a>
+
+          <a href="settings.html" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+            <span>Settings</span>
+          </a>
+
+          <a href="billing.html" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="4" width="20" height="16" rx="2"/>
+              <line x1="2" y1="10" x2="22" y2="10"/>
+            </svg>
+            <span>Billing &amp; Plans</span>
+          </a>
+
+          <a href="admin-payments.html" class="nav-item active admin-only-nav" id="sidebar-admin-link">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <span>Admin Dashboard</span>
+          </a>
+        </nav>
+      </div>
+
+      <div class="sidebar-bottom" id="sidebar-user-section" style="padding-top: 16px; border-top: 1px solid var(--border-color);">
+        <!-- Injected dynamically -->
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-wrapper" style="padding: 32px 40px 80px; overflow-y: auto;">
+      <div style="max-width: 1300px; margin: 0 auto;">
+        
+        <!-- Top Executive Header Strip -->
+        <div class="admin-header-strip">
+          <div class="admin-title-group">
+            <h1>
+              <span>Operations &amp; Finance</span>
+              <span class="admin-badge">Administrator Portal</span>
+            </h1>
+            <p class="admin-subtitle">
+              Verify customer bank transfers, credit Send quotas, and monitor platform operations.
+            </p>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+            <!-- Live Neon Status Pill -->
+            <div class="neon-health-pill" id="neon-health-badge" title="Real-time connected with Neon Serverless Postgres">
+              <span class="pulse-dot"></span>
+              <span id="neon-status-text">Neon PostgreSQL: Connected (production)</span>
+            </div>
+
+            <!-- Refresh Button -->
+            <button type="button" class="btn-action-reject" style="background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12); color: #ffffff;" onclick="loadAdminData()">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M23 4v6h-6"/>
+                <path d="M1 20v-6h6"/>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+              </svg>
+              Refresh Data
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Luxury KPI Stat Cards -->
+        <div class="admin-stats-grid">
+          <!-- Pending Approvals -->
+          <div class="stat-card-pro">
+            <div class="stat-glow-orb amber"></div>
+            <div class="stat-card-inner">
+              <div>
+                <div class="stat-label-pro">Pending Review</div>
+                <div class="stat-value-pro amber" id="stat-pending">0</div>
+                <div class="stat-subtext" id="stat-pending-sub">Awaiting bank verification</div>
+              </div>
+              <div class="stat-icon-wrap" style="color: #f59e0b;">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Total Approved Revenue -->
+          <div class="stat-card-pro">
+            <div class="stat-glow-orb emerald"></div>
+            <div class="stat-card-inner">
+              <div>
+                <div class="stat-label-pro">Total Revenue</div>
+                <div class="stat-value-pro emerald" id="stat-revenue">NPR 0</div>
+                <div class="stat-subtext" id="stat-revenue-sub">From approved orders</div>
+              </div>
+              <div class="stat-icon-wrap" style="color: #10b981;">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Registered Accounts -->
+          <div class="stat-card-pro">
+            <div class="stat-glow-orb blue"></div>
+            <div class="stat-card-inner">
+              <div>
+                <div class="stat-label-pro">Registered Users</div>
+                <div class="stat-value-pro blue" id="stat-users">0</div>
+                <div class="stat-subtext" id="stat-users-sub">Stored in Neon cloud DB</div>
+              </div>
+              <div class="stat-icon-wrap" style="color: #3b82f6;">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Total Dispatches -->
+          <div class="stat-card-pro">
+            <div class="stat-glow-orb purple"></div>
+            <div class="stat-card-inner">
+              <div>
+                <div class="stat-label-pro">Total Invitations Sent</div>
+                <div class="stat-value-pro purple" id="stat-emails">0</div>
+                <div class="stat-subtext" id="stat-campaigns-sub">Across all user campaigns</div>
+              </div>
+              <div class="stat-icon-wrap" style="color: #8b5cf6;">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter Tabs & Real-Time Search Bar -->
+        <div class="admin-control-bar">
+          <div class="filter-tab-group" id="filter-tabs">
+            <button type="button" class="filter-tab-btn active" onclick="setFilter('all')">
+              <span>All Orders</span>
+              <span class="filter-badge" id="badge-all">0</span>
+            </button>
+            <button type="button" class="filter-tab-btn" onclick="setFilter('PENDING')">
+              <span>Pending</span>
+              <span class="filter-badge pulse" id="badge-pending">0</span>
+            </button>
+            <button type="button" class="filter-tab-btn" onclick="setFilter('APPROVED')">
+              <span>Approved</span>
+              <span class="filter-badge" id="badge-approved">0</span>
+            </button>
+            <button type="button" class="filter-tab-btn" onclick="setFilter('REJECTED')">
+              <span>Rejected</span>
+              <span class="filter-badge" id="badge-rejected">0</span>
+            </button>
+            <button type="button" class="filter-tab-btn" onclick="toggleNeonDrawer()">
+              <span style="color: #10b981;">⚡ Neon Database</span>
+            </button>
+          </div>
+
+          <!-- Search Box -->
+          <div class="search-box-wrap">
+            <svg class="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input 
+              type="text" 
+              class="search-input-pro" 
+              id="admin-search-input" 
+              placeholder="Search user, email, ref #, bank..." 
+              oninput="handleSearch(this.value)"
+            />
+          </div>
+        </div>
+
+        <!-- Orders Table Container -->
+        <div class="admin-table-container">
+          <table class="admin-table" id="admin-table">
+            <thead>
+              <tr>
+                <th>Customer / User</th>
+                <th>Purchased Plan</th>
+                <th>Amount</th>
+                <th>Txn Reference #</th>
+                <th>Receipt Screenshot</th>
+                <th>Status</th>
+                <th>Submitted</th>
+                <th style="text-align: right;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="admin-tbody">
+              <tr>
+                <td colspan="8" style="text-align: center; color: var(--admin-text-faint); padding: 48px;">
+                  <div class="pulse-dot" style="margin: 0 auto 12px;"></div>
+                  Loading payment orders from Neon PostgreSQL...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Receipt Inspection Modal -->
+  <div class="modal-backdrop" id="receipt-modal" style="display: none;">
+    <div class="modal-card-pro">
+      <div class="modal-header-pro">
+        <div>
+          <h3>Payment Receipt Verification</h3>
+          <p style="font-size: 0.8rem; color: var(--admin-text-faint); margin: 2px 0 0;">Inspect bank transfer reference and transaction screenshot</p>
+        </div>
+        <button type="button" class="modal-close-btn" onclick="closeReceiptModal()">&times;</button>
+      </div>
+
+      <div class="modal-body-pro">
+        <div id="receipt-modal-summary" style="width: 100%; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); padding: 14px 18px; border-radius: 12px;">
+          <!-- Injected dynamically -->
+        </div>
+
+        <div style="position: relative; max-width: 100%; text-align: center;">
+          <img id="receipt-modal-img" src="" alt="Customer Receipt" class="modal-receipt-img" />
+          <div id="receipt-no-img" style="display: none; padding: 40px; color: var(--admin-text-faint); font-style: italic;">
+            No payment screenshot uploaded by customer. Please verify with bank transaction reference number.
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer-pro" id="receipt-modal-actions">
+        <button type="button" class="btn-action-reject" onclick="closeReceiptModal()">Close Viewer</button>
+        <div id="receipt-modal-decision-btns" style="display: flex; gap: 8px;">
+          <!-- Injected dynamically if pending -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rejection Reason Modal -->
+  <div class="modal-backdrop" id="reject-modal" style="display: none;">
+    <div class="modal-card-pro" style="max-width: 480px;">
+      <div class="modal-header-pro">
+        <h3 style="color: #fb7185;">Reject Payment Order</h3>
+        <button type="button" class="modal-close-btn" onclick="closeRejectModal()">&times;</button>
+      </div>
+
+      <div style="padding: 24px;">
+        <p style="font-size: 0.88rem; color: #cbd5e1; margin-top: 0;">Select or enter the reason for rejecting this transaction:</p>
+        
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+          <button type="button" class="filter-tab-btn" style="text-align: left; background: rgba(255,255,255,0.03);" onclick="setRejectReason('Bank reference number not found in bank statement')">
+            1. Reference number not found in bank statement
+          </button>
+          <button type="button" class="filter-tab-btn" style="text-align: left; background: rgba(255,255,255,0.03);" onclick="setRejectReason('Transferred amount does not match plan price')">
+            2. Transferred amount does not match plan price
+          </button>
+          <button type="button" class="filter-tab-btn" style="text-align: left; background: rgba(255,255,255,0.03);" onclick="setRejectReason('Unclear or illegible receipt screenshot')">
+            3. Unclear or illegible receipt screenshot
+          </button>
+        </div>
+
+        <label style="font-size: 0.78rem; font-weight: 600; text-transform: uppercase; color: var(--admin-text-faint); display: block; margin-bottom: 6px;">
+          Custom Reason / Admin Notes
+        </label>
+        <textarea id="reject-notes-input" rows="3" class="search-input-pro" style="width: 100%; border-radius: 8px; resize: none;" placeholder="Explain why payment was rejected..."></textarea>
+      </div>
+
+      <div class="modal-footer-pro">
+        <button type="button" class="btn-action-reject" style="background: transparent;" onclick="closeRejectModal()">Cancel</button>
+        <button type="button" class="btn-action-reject" style="background: #dc2626; color: #ffffff;" id="confirm-reject-btn" onclick="submitRejection()">Confirm Rejection</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Neon Database Health Drawer Modal -->
+  <div class="modal-backdrop" id="neon-drawer" style="display: none;">
+    <div class="modal-card-pro" style="max-width: 580px;">
+      <div class="modal-header-pro">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div class="pulse-dot"></div>
+          <h3 style="color: #6ee7b7;">Neon PostgreSQL Telemetry</h3>
+        </div>
+        <button type="button" class="modal-close-btn" onclick="toggleNeonDrawer()">&times;</button>
+      </div>
+
+      <div style="padding: 24px; display: flex; flex-direction: column; gap: 16px;">
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 16px;">
+          <div style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: var(--admin-text-faint); margin-bottom: 8px;">Cluster Connection</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.84rem; color: #93c5fd; word-break: break-all;">
+            ep-divine-credit-b42vkynj-pooler.c-6.us-east-2.aws.neon.tech
+          </div>
+          <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
+            <span class="plan-pill starter">Branch: production</span>
+            <span class="plan-pill growth">SSL Mode: verify-full</span>
+            <span class="plan-pill pro">Pool: pg-pool (max 10)</span>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;" id="neon-counts-grid">
+          <div class="stat-card-pro" style="padding: 16px;">
+            <div class="stat-label-pro">Users In Neon</div>
+            <div class="stat-value-pro" style="font-size: 1.5rem;" id="neon-stat-users">-</div>
+          </div>
+          <div class="stat-card-pro" style="padding: 16px;">
+            <div class="stat-label-pro">Payment Records</div>
+            <div class="stat-value-pro" style="font-size: 1.5rem;" id="neon-stat-payments">-</div>
+          </div>
+          <div class="stat-card-pro" style="padding: 16px;">
+            <div class="stat-label-pro">Templates Table</div>
+            <div class="stat-value-pro" style="font-size: 1.5rem;" id="neon-stat-templates">-</div>
+          </div>
+          <div class="stat-card-pro" style="padding: 16px;">
+            <div class="stat-label-pro">Campaigns Logged</div>
+            <div class="stat-value-pro" style="font-size: 1.5rem;" id="neon-stat-campaigns">-</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer-pro">
+        <button type="button" class="btn-action-reject" onclick="toggleNeonDrawer()">Close Telemetry</button>
+        <button type="button" class="btn-action-approve" onclick="fetchNeonDiagnostics()">Re-probe Diagnostics</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js?v=2.8"></script>
+  <script>
+    let allOrders = [];
+    let activeFilter = 'all';
+    let searchQuery = '';
+    let selectedPaymentForReject = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadAdminData();
+      fetchNeonDiagnostics();
+      // Auto-refresh every 45 seconds for active admins
+      setInterval(() => {
+        loadAdminData(true);
+      }, 45000);
+    });
+
+    async function loadAdminData(silent = false) {
+      const token = localStorage.getItem('easyinvite_auth_token');
+      if (!token) {
+        if (!silent) showToast('Administrator login required.', 'error');
+        renderAccessDenied();
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/admin/payments', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (res.status === 403) {
+          renderAccessDenied();
+          return;
+        }
+
+        const data = await res.json();
+        if (data.success) {
+          allOrders = data.payments || [];
+          const stats = data.stats || {};
+
+          // Update KPI metrics
+          document.getElementById('stat-pending').textContent = stats.pendingPayments || 0;
+          document.getElementById('stat-revenue').textContent = `NPR ${Number(stats.totalRevenueNpr || 0).toLocaleString()}`;
+          document.getElementById('stat-users').textContent = stats.totalUsers || 0;
+          document.getElementById('stat-emails').textContent = Number(stats.totalEmailsSent || 0).toLocaleString();
+
+          // Update tab badges
+          const pendingCount = allOrders.filter(p => p.status === 'PENDING').length;
+          const approvedCount = allOrders.filter(p => p.status === 'APPROVED').length;
+          const rejectedCount = allOrders.filter(p => p.status === 'REJECTED').length;
+
+          document.getElementById('badge-all').textContent = allOrders.length;
+          document.getElementById('badge-pending').textContent = pendingCount;
+          document.getElementById('badge-approved').textContent = approvedCount;
+          document.getElementById('badge-rejected').textContent = rejectedCount;
+
+          renderTable();
+          if (!silent) showToast('Dashboard updated with latest records', 'success');
+        } else {
+          if (!silent) showToast(data.error || 'Failed to load data', 'error');
+        }
+      } catch (err) {
+        if (!silent) showToast('Network connection error', 'error');
+      }
+    }
+
+    async function fetchNeonDiagnostics() {
+      const token = localStorage.getItem('easyinvite_auth_token');
+      if (!token) return;
+
+      try {
+        const res = await fetch('/api/admin/neon-status', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+
+        if (data.success && data.diagnostics && data.diagnostics.connected) {
+          const d = data.diagnostics;
+          document.getElementById('neon-status-text').textContent = `Neon PostgreSQL: Connected (${d.branch || 'production'})`;
+          
+          if (d.stats) {
+            document.getElementById('neon-stat-users').textContent = d.stats.users || 0;
+            document.getElementById('neon-stat-payments').textContent = d.stats.payments || 0;
+            document.getElementById('neon-stat-templates').textContent = d.stats.templates || 0;
+            document.getElementById('neon-stat-campaigns').textContent = d.stats.campaigns || 0;
+          }
+        }
+      } catch (_) {}
+    }
+
+    function setFilter(filter) {
+      activeFilter = filter;
+      document.querySelectorAll('.filter-tab-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = Array.from(document.querySelectorAll('.filter-tab-btn')).find(b => b.textContent.includes(filter === 'all' ? 'All' : filter.charAt(0) + filter.slice(1).toLowerCase()));
+      if (activeBtn) activeBtn.classList.add('active');
+      renderTable();
+    }
+
+    function handleSearch(val) {
+      searchQuery = (val || '').toLowerCase().trim();
+      renderTable();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('admin-tbody');
+      let filtered = allOrders;
+
+      if (activeFilter !== 'all') {
+        filtered = filtered.filter(p => p.status === activeFilter);
+      }
+
+      if (searchQuery) {
+        filtered = filtered.filter(p => {
+          return (p.user_name || '').toLowerCase().includes(searchQuery) ||
+                 (p.user_email || '').toLowerCase().includes(searchQuery) ||
+                 (p.reference_number || '').toLowerCase().includes(searchQuery) ||
+                 (p.bank_name || '').toLowerCase().includes(searchQuery) ||
+                 (p.plan_id || '').toLowerCase().includes(searchQuery);
+        });
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8">
+              <div class="admin-empty-state">
+                <div class="admin-empty-icon">
+                  <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                    <line x1="2" y1="10" x2="22" y2="10"/>
+                  </svg>
+                </div>
+                <h4 class="admin-empty-title">No Payment Orders Found</h4>
+                <p class="admin-empty-desc">${searchQuery ? 'No results matched your search query.' : 'There are currently no orders under this filter.'}</p>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(order => {
+        const initials = (order.user_name || 'U').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        const planClass = (order.plan_id || 'starter').toLowerCase();
+        const planName = (order.plan_name || order.plan_id || 'Starter').toUpperCase();
+        const dateStr = new Date(order.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        
+        let statusBadge = '';
+        if (order.status === 'PENDING') {
+          statusBadge = '<span class="status-pill-pro pending">● Awaiting Approval</span>';
+        } else if (order.status === 'APPROVED') {
+          statusBadge = '<span class="status-pill-pro approved">✓ Approved &amp; Credited</span>';
+        } else {
+          statusBadge = '<span class="status-pill-pro rejected">✕ Rejected</span>';
+        }
+
+        let receiptCol = '<span style="color: var(--admin-text-faint); font-size: 0.78rem;">No receipt</span>';
+        if (order.screenshot_path) {
+          receiptCol = `
+            <div class="receipt-thumb-wrap" onclick="openReceiptModal('${order.id}')" title="Click to inspect receipt screenshot">
+              <img src="${escapeHtml(order.screenshot_path)}" alt="Receipt" class="receipt-thumb-img" />
+            </div>
+          `;
+        }
+
+        let actionsCol = '';
+        if (order.status === 'PENDING') {
+          actionsCol = `
+            <div class="action-btn-group">
+              <button type="button" class="btn-action-approve" onclick="approveOrder('${order.id}', '${escapeHtml(order.user_name || 'User')}')">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                Approve
+              </button>
+              <button type="button" class="btn-action-reject" onclick="openRejectModal('${order.id}')">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                Reject
+              </button>
+            </div>
+          `;
+        } else if (order.status === 'APPROVED') {
+          actionsCol = `<span style="font-size: 0.78rem; color: #34d399; font-weight: 600;">Credited on ${order.reviewed_at ? new Date(order.reviewed_at).toLocaleDateString() : 'N/A'}</span>`;
+        } else {
+          actionsCol = `<span style="font-size: 0.76rem; color: #fb7185;" title="${escapeHtml(order.admin_notes || '')}">Reason: ${escapeHtml((order.admin_notes || 'Declined').substring(0, 24))}...</span>`;
+        }
+
+        return `
+          <tr>
+            <td>
+              <div class="user-cell">
+                <div class="user-avatar-initials">${initials}</div>
+                <div>
+                  <div class="user-details-title">${escapeHtml(order.user_name || 'Customer')}</div>
+                  <div class="user-details-email">${escapeHtml(order.user_email || '')}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="plan-pill ${planClass}">
+                ${planClass === 'lifetime' ? '👑 ' : ''}${escapeHtml(planName)}
+              </span>
+            </td>
+            <td>
+              <strong style="color: #ffffff; font-size: 0.95rem;">NPR ${Number(order.amount_npr).toLocaleString()}</strong>
+              <div style="font-size: 0.74rem; color: var(--admin-text-faint);">${escapeHtml(order.bank_name || 'Bank Transfer')}</div>
+            </td>
+            <td>
+              <span class="ref-pill">
+                ${escapeHtml(order.reference_number || '-')}
+                <button type="button" class="btn-copy-ref" onclick="copyToClipboard('${escapeHtml(order.reference_number)}')" title="Copy reference number">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                </button>
+              </span>
+            </td>
+            <td>${receiptCol}</td>
+            <td>${statusBadge}</td>
+            <td style="color: var(--admin-text-muted); font-size: 0.8rem;">${dateStr}</td>
+            <td style="text-align: right;">${actionsCol}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function approveOrder(paymentId, userName) {
+      const confirmApprove = confirm(`Approve order ${paymentId} for ${userName}?\n\nThis will immediately credit the customer's prepaid Send actions in Neon PostgreSQL.`);
+      if (!confirmApprove) return;
+
+      const token = localStorage.getItem('easyinvite_auth_token');
+      try {
+        const res = await fetch(`/api/admin/payments/${paymentId}/approve`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          showToast(`Order approved! ${userName} has been credited.`, 'success');
+          loadAdminData(true);
+          closeReceiptModal();
+        } else {
+          showToast(data.error || 'Failed to approve payment', 'error');
+        }
+      } catch (err) {
+        showToast('Network error during approval', 'error');
+      }
+    }
+
+    function openRejectModal(paymentId) {
+      selectedPaymentForReject = paymentId;
+      document.getElementById('reject-notes-input').value = '';
+      document.getElementById('reject-modal').style.display = 'flex';
+    }
+
+    function closeRejectModal() {
+      document.getElementById('reject-modal').style.display = 'none';
+      selectedPaymentForReject = null;
+    }
+
+    function setRejectReason(reason) {
+      document.getElementById('reject-notes-input').value = reason;
+    }
+
+    async function submitRejection() {
+      if (!selectedPaymentForReject) return;
+      const notes = document.getElementById('reject-notes-input').value.trim() || 'Payment rejected by administrator';
+      const token = localStorage.getItem('easyinvite_auth_token');
+
+      try {
+        const res = await fetch(`/api/admin/payments/${selectedPaymentForReject}/reject`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ adminNotes: notes })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          showToast('Payment rejected.', 'info');
+          closeRejectModal();
+          closeReceiptModal();
+          loadAdminData(true);
+        } else {
+          showToast(data.error || 'Failed to reject payment', 'error');
+        }
+      } catch (err) {
+        showToast('Network error during rejection', 'error');
+      }
+    }
+
+    function openReceiptModal(paymentId) {
+      const order = allOrders.find(p => p.id === paymentId);
+      if (!order) return;
+
+      const summaryWrap = document.getElementById('receipt-modal-summary');
+      summaryWrap.innerHTML = `
+        <div>
+          <div style="font-size: 0.72rem; color: var(--admin-text-faint); text-transform: uppercase;">Customer</div>
+          <div style="font-weight: 700; color: #ffffff;">${escapeHtml(order.user_name || 'Customer')}</div>
+        </div>
+        <div>
+          <div style="font-size: 0.72rem; color: var(--admin-text-faint); text-transform: uppercase;">Plan</div>
+          <div style="font-weight: 700; color: #93c5fd;">${escapeHtml(order.plan_name || order.plan_id)}</div>
+        </div>
+        <div>
+          <div style="font-size: 0.72rem; color: var(--admin-text-faint); text-transform: uppercase;">Amount</div>
+          <div style="font-weight: 700; color: #34d399;">NPR ${order.amount_npr}</div>
+        </div>
+        <div>
+          <div style="font-size: 0.72rem; color: var(--admin-text-faint); text-transform: uppercase;">Txn Ref</div>
+          <div style="font-family: monospace; color: #fde68a;">${escapeHtml(order.reference_number)}</div>
+        </div>
+      `;
+
+      const imgEl = document.getElementById('receipt-modal-img');
+      const noImgEl = document.getElementById('receipt-no-img');
+      if (order.screenshot_path) {
+        imgEl.src = order.screenshot_path;
+        imgEl.style.display = 'block';
+        noImgEl.style.display = 'none';
+      } else {
+        imgEl.style.display = 'none';
+        noImgEl.style.display = 'block';
+      }
+
+      const decisionWrap = document.getElementById('receipt-modal-decision-btns');
+      if (order.status === 'PENDING') {
+        decisionWrap.innerHTML = `
+          <button type="button" class="btn-action-reject" onclick="openRejectModal('${order.id}')">Reject Order</button>
+          <button type="button" class="btn-action-approve" onclick="approveOrder('${order.id}', '${escapeHtml(order.user_name || 'Customer')}')">Approve &amp; Credit</button>
+        `;
+      } else {
+        decisionWrap.innerHTML = `
+          <span class="status-pill-pro ${order.status.toLowerCase()}">${order.status}</span>
+        `;
+      }
+
+      document.getElementById('receipt-modal').style.display = 'flex';
+    }
+
+    function closeReceiptModal() {
+      document.getElementById('receipt-modal').style.display = 'none';
+    }
+
+    function toggleNeonDrawer() {
+      const drawer = document.getElementById('neon-drawer');
+      drawer.style.display = drawer.style.display === 'none' ? 'flex' : 'none';
+      if (drawer.style.display === 'flex') {
+        fetchNeonDiagnostics();
+      }
+    }
+
+    function renderAccessDenied() {
+      document.getElementById('admin-tbody').innerHTML = `
+        <tr>
+          <td colspan="8">
+            <div class="admin-empty-state">
+              <div class="admin-empty-icon" style="background: rgba(244,63,94,0.1); border-color: rgba(244,63,94,0.3); color: #fb7185;">
+                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+              </div>
+              <h4 class="admin-empty-title" style="color: #fb7185;">403 Access Denied</h4>
+              <p class="admin-empty-desc">You must be logged in with an Administrator account (e.g. admin@easyinvite.com) to view and manage payments.</p>
+              <button type="button" class="btn-action-approve" style="margin-top: 16px;" onclick="showAuthModal('login')">Log In as Admin</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('Reference number copied to clipboard', 'info');
+      }).catch(() => {});
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+  </script>
+</body>
+</html>

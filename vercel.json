@@ -10,6 +10,11 @@
   "rewrites": [
     { "source": "/templates", "destination": "/templates.html" },
     { "source": "/settings", "destination": "/settings.html" },
+    { "source": "/billing", "destination": "/billing.html" },
+    { "source": "/pricing", "destination": "/billing.html" },
+    { "source": "/admin-payments", "destination": "/admin-payments.html" },
+    { "source": "/admin/payments", "destination": "/admin-payments.html" },
+    { "source": "/verify-email", "destination": "/verify-email.html" },
     { "source": "/send-invite", "destination": "/index.html" },
     { "source": "/send-invitation", "destination": "/index.html" }
   ],
