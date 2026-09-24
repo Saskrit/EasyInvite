@@ -382,9 +382,15 @@ async function initAuth() {
 
     if (!res.ok) {
       if (res.status === 401) {
-        localStorage.removeItem("easyinvite_auth_token");
-        currentUser = null;
-        currentUserUsage = null;
+        try {
+          const errData = await res.json();
+          const errText = (errData && errData.error) ? String(errData.error).toLowerCase() : '';
+          if (errText.includes('expired') || errText.includes('invalid') || errText.includes('malformed')) {
+            localStorage.removeItem("easyinvite_auth_token");
+            currentUser = null;
+            currentUserUsage = null;
+          }
+        } catch (_) {}
       }
       renderSidebarUserSection();
       return;

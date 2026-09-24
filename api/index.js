@@ -4,9 +4,25 @@ const sendEmailHandler = require('./send-email');
 const healthHandler = require('./health');
 const { setCorsAndSecurityHeaders } = require('../lib/mailer');
 const { handleApiRequest } = require('../lib/routes');
+const db = require('../lib/db');
+
+let initPromise = null;
+function ensureDbInit() {
+  if (!initPromise) {
+    initPromise = db.initPostgres().catch(err => {
+      console.warn('[Vercel API] initPostgres error:', err.message);
+    });
+  }
+  return initPromise;
+}
 
 module.exports = async (req, res) => {
   setCorsAndSecurityHeaders(res, req.headers.origin);
+
+  // Initialize and synchronize Neon database on serverless cold starts
+  if (process.env.DATABASE_URL) {
+    await ensureDbInit();
+  }
 
   if (req.method === 'OPTIONS') {
     res.writeHead(204);
