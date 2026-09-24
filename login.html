@@ -180,10 +180,63 @@
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
+          <div class="auth-input-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <label class="auth-label" style="margin: 0;">Choose Your Plan <span style="color: #ef4444;">*</span></label>
+              <a href="billing.html" target="_blank" style="font-size: 0.72rem; color: #2563eb; text-decoration: none; font-weight: 600;">View plan details &rarr;</a>
+            </div>
+            <div class="auth-plan-picker" id="page-register-plan-picker">
+              <label class="auth-plan-card">
+                <input type="radio" name="page-register-plan" value="starter" class="auth-plan-radio" />
+                <div class="auth-plan-content">
+                  <div class="auth-plan-top">
+                    <span class="auth-plan-name">Starter</span>
+                    <span class="auth-plan-price">NPR 100/mo</span>
+                  </div>
+                  <div class="auth-plan-sub">50 send actions · Saved settings</div>
+                </div>
+              </label>
+
+              <label class="auth-plan-card selected">
+                <input type="radio" name="page-register-plan" value="growth" checked class="auth-plan-radio" />
+                <div class="auth-plan-content">
+                  <div class="auth-plan-top">
+                    <span class="auth-plan-name">Growth <span class="auth-plan-badge">Popular</span></span>
+                    <span class="auth-plan-price">NPR 200/mo</span>
+                  </div>
+                  <div class="auth-plan-sub">100 send actions · Use email templates</div>
+                </div>
+              </label>
+
+              <label class="auth-plan-card">
+                <input type="radio" name="page-register-plan" value="pro" class="auth-plan-radio" />
+                <div class="auth-plan-content">
+                  <div class="auth-plan-top">
+                    <span class="auth-plan-name">Pro</span>
+                    <span class="auth-plan-price">NPR 300/mo</span>
+                  </div>
+                  <div class="auth-plan-sub">300 send actions · Make own templates</div>
+                </div>
+              </label>
+
+              <label class="auth-plan-card">
+                <input type="radio" name="page-register-plan" value="lifetime" class="auth-plan-radio" />
+                <div class="auth-plan-content">
+                  <div class="auth-plan-top">
+                    <span class="auth-plan-name">Lifetime Deal</span>
+                    <span class="auth-plan-price">NPR 1,000</span>
+                  </div>
+                  <div class="auth-plan-sub">Unlimited sends forever · All features</div>
+                </div>
+              </label>
+            </div>
+            <div style="margin-top: 6px; font-size: 0.74rem; color: #64748b;">
+              Want to test without signing up? <a href="index.html" style="color: #2563eb; font-weight: 600;">Use Free Guest Mode (5 free sends)</a>
+            </div>
           </div>
 
           <button type="submit" class="btn-auth-submit" id="btn-submit-register">
-            <span>Create Account</span>
+            <span>Create Account &amp; Proceed</span>
             <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
 
@@ -192,45 +245,44 @@
           </div>
         </form>
 
-        <!-- FORM 3: Verify Email -->
+        <!-- FORM 3: Verify Email with 4-Digit Code -->
         <form id="page-verify-form" onsubmit="handleVerificationSubmit(event)" style="display: none;">
-          <div style="text-align: center; margin-bottom: 16px;">
-            <div style="width: 44px; height: 44px; border-radius: 50%; background: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 8px;">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          <div style="text-align: center; margin-bottom: 18px;">
+            <div style="width: 48px; height: 48px; border-radius: 50%; background: #eff6ff; border: 1px solid #bfdbfe; color: #2563eb; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 8px;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
             </div>
-            <p style="font-size: 0.84rem; color: #475569; margin: 0;" id="verify-email-prompt">We sent a verification code to your email.</p>
+            <h3 style="margin: 0 0 4px; font-size: 1.15rem; font-weight: 700; color: #0f172a;">Enter 4-Digit Code</h3>
+            <p style="font-size: 0.84rem; color: #64748b; margin: 0; line-height: 1.45;" id="verify-email-prompt">We sent a 4-digit verification code to your email.</p>
           </div>
 
-          <div class="auth-input-group">
-            <label class="auth-label" for="verify-token-input">Verification Code / Token</label>
-            <div class="auth-input-wrap">
-              <span class="auth-input-icon">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-              </span>
-              <input type="text" id="verify-token-input" class="auth-input" placeholder="Paste verification code from email" required />
-            </div>
-            <div id="dev-verify-helper" style="margin-top: 8px; font-size: 0.78rem;"></div>
+          <div class="auth-input-group" style="text-align: center;">
+            <label class="auth-label" for="verify-code-input" style="text-align: center; margin-bottom: 8px;">4-Digit Verification Code</label>
+            <input 
+              type="text" 
+              id="verify-code-input" 
+              class="auth-input" 
+              placeholder="••••" 
+              maxlength="4" 
+              inputmode="numeric" 
+              pattern="[0-9]{4}" 
+              required 
+              autocomplete="one-time-code"
+              style="font-family: 'JetBrains Mono', monospace, sans-serif; font-size: 1.8rem; font-weight: 700; letter-spacing: 16px; text-align: center; padding-left: 20px; height: 56px; border: 2px solid #cbd5e1; border-radius: 10px;"
+              oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 4);"
+            />
+            <div id="dev-verify-helper" style="margin-top: 10px; font-size: 0.8rem; text-align: center;"></div>
           </div>
 
           <button type="submit" class="btn-auth-submit" id="btn-submit-verify">
-            <span>Verify &amp; Enter Dashboard</span>
+            <span>Verify &amp; Complete Registration</span>
             <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
 
-          <div class="auth-switch-text">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px; font-size: 0.8rem;">
             <a href="#" class="auth-switch-link" onclick="event.preventDefault(); switchPageTab('signin');">&larr; Back to Sign In</a>
+            <a href="#" class="auth-switch-link" id="btn-resend-code" onclick="event.preventDefault(); handleResendCode();" style="font-weight: 600;">Resend Code</a>
           </div>
         </form>
-
-        <div class="auth-security-footer">
-          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-          </svg>
-          <span>SSL 256-bit encrypted · Passwords hashed with bcrypt</span>
-        </div>
       </div>
     </div>
   </div>
@@ -329,7 +381,20 @@
     (function initTab() {
       const params = new URLSearchParams(window.location.search);
       const tabParam = params.get('tab');
-      if (tabParam === 'register' || window.location.pathname.includes('register')) {
+      const planParam = params.get('plan');
+
+      if (planParam) {
+        const planRadio = document.querySelector(`input[name="page-register-plan"][value="${planParam}"]`);
+        if (planRadio) {
+          planRadio.checked = true;
+          document.querySelectorAll('.auth-plan-card').forEach(c => c.classList.remove('selected'));
+          if (planRadio.closest('.auth-plan-card')) {
+            planRadio.closest('.auth-plan-card').classList.add('selected');
+          }
+        }
+      }
+
+      if (tabParam === 'register' || window.location.pathname.includes('register') || planParam) {
         switchPageTab('register');
       } else if (tabParam === 'verify') {
         switchPageTab('verify');
@@ -337,6 +402,16 @@
         switchPageTab('signin');
       }
     })();
+
+    // Dynamic style update for plan card selection
+    document.addEventListener('change', (e) => {
+      if (e.target && e.target.name === 'page-register-plan') {
+        document.querySelectorAll('.auth-plan-card').forEach(c => c.classList.remove('selected'));
+        if (e.target.closest('.auth-plan-card')) {
+          e.target.closest('.auth-plan-card').classList.add('selected');
+        }
+      }
+    });
 
     async function handleSignInSubmit(e) {
       e.preventDefault();
@@ -390,6 +465,9 @@
       const password = document.getElementById('register-password').value;
       const btn = document.getElementById('btn-submit-register');
 
+      const selectedPlanEl = document.querySelector('input[name="page-register-plan"]:checked');
+      const planId = selectedPlanEl ? selectedPlanEl.value : 'starter';
+
       if (!name) return showPageAlert('Please enter your full name.', 'error');
       if (!email) return showPageAlert('Please enter a valid email address.', 'error');
       if (!password || password.length < 6) return showPageAlert('Password must be at least 6 characters.', 'error');
@@ -401,19 +479,28 @@
         const res = await fetch('/api/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, password })
+          body: JSON.stringify({ name, email, password, planId })
         });
         const data = await res.json();
 
         if (data.success) {
-          document.getElementById('verify-email-prompt').textContent = `A verification code was created for ${email}.`;
-          if (data.devVerificationToken) {
-            document.getElementById('verify-token-input').value = data.devVerificationToken;
+          currentRegisteredEmail = email;
+          document.getElementById('verify-email-prompt').textContent = `We sent a 4-digit verification code to ${email}.`;
+          const code = data.devVerificationCode || data.devVerificationToken;
+          if (code) {
             document.getElementById('dev-verify-helper').innerHTML = `
-              <strong>Quick verification link:</strong> <a href="${data.devVerifyUrl}" target="_blank" style="color: #2563eb; font-weight: 600;">Click here to verify immediately</a>
+              <div style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; color: #1e40af; font-size: 0.8rem;">
+                <span>Dev Code:</span>
+                <strong style="font-size: 1.15rem; letter-spacing: 4px; font-family: monospace;">${code}</strong>
+                <button type="button" onclick="autoFillCode('${code}')" style="padding: 2px 8px; border: 1px solid #3b82f6; background: #ffffff; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: 600; color: #2563eb;">Auto-fill</button>
+              </div>
             `;
           }
           switchPageTab('verify');
+          setTimeout(() => {
+            const input = document.getElementById('verify-code-input');
+            if (input) input.focus();
+          }, 100);
         } else {
           showPageAlert(data.error || 'Registration failed.', 'error');
         }
@@ -425,11 +512,68 @@
       }
     }
 
+    let currentRegisteredEmail = '';
+
+    function autoFillCode(code) {
+      const input = document.getElementById('verify-code-input');
+      if (input) {
+        input.value = code;
+        input.focus();
+      }
+    }
+
+    async function handleResendCode() {
+      if (!currentRegisteredEmail) {
+        showPageAlert('Email address missing. Please register again.', 'error');
+        return;
+      }
+      const resendBtn = document.getElementById('btn-resend-code');
+      if (resendBtn) {
+        resendBtn.textContent = 'Sending...';
+        resendBtn.style.pointerEvents = 'none';
+      }
+      try {
+        const res = await fetch('/api/auth/resend-code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: currentRegisteredEmail })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showPageAlert('A fresh 4-digit code has been sent!', 'success');
+          const code = data.devVerificationCode || data.devVerificationToken;
+          if (code) {
+            document.getElementById('dev-verify-helper').innerHTML = `
+              <div style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; color: #1e40af; font-size: 0.8rem;">
+                <span>Dev Code:</span>
+                <strong style="font-size: 1.15rem; letter-spacing: 4px; font-family: monospace;">${code}</strong>
+                <button type="button" onclick="autoFillCode('${code}')" style="padding: 2px 8px; border: 1px solid #3b82f6; background: #ffffff; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: 600; color: #2563eb;">Auto-fill</button>
+              </div>
+            `;
+          }
+        } else {
+          showPageAlert(data.error || 'Failed to resend code.', 'error');
+        }
+      } catch (err) {
+        showPageAlert('Network error while resending code.', 'error');
+      } finally {
+        if (resendBtn) {
+          resendBtn.textContent = 'Resend Code';
+          resendBtn.style.pointerEvents = 'auto';
+        }
+      }
+    }
+
     async function handleVerificationSubmit(e) {
       e.preventDefault();
       clearPageAlert();
-      const token = document.getElementById('verify-token-input').value.trim();
+      const code = document.getElementById('verify-code-input').value.trim();
       const btn = document.getElementById('btn-submit-verify');
+
+      if (!code || code.length !== 4) {
+        showPageAlert('Please enter the complete 4-digit verification code.', 'error');
+        return;
+      }
 
       btn.disabled = true;
       btn.innerHTML = `<span>Verifying...</span>`;
@@ -438,7 +582,7 @@
         const res = await fetch('/api/auth/verify-email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token })
+          body: JSON.stringify({ code, email: currentRegisteredEmail })
         });
         const data = await res.json();
 
@@ -451,13 +595,13 @@
           }
           window.location.href = getRedirectTarget();
         } else {
-          showPageAlert(data.error || 'Verification failed. Invalid or expired token.', 'error');
+          showPageAlert(data.error || 'Invalid 4-digit code. Please check and try again.', 'error');
         }
       } catch (err) {
         showPageAlert('Network connection error. Please try again.', 'error');
       } finally {
         btn.disabled = false;
-        btn.innerHTML = `<span>Verify &amp; Enter Dashboard</span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>`;
+        btn.innerHTML = `<span>Verify &amp; Complete Registration</span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>`;
       }
     }
   </script>

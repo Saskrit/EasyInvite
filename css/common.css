@@ -626,6 +626,88 @@ body {
   text-decoration: underline;
 }
 
+/* Auth Plan Picker for Registration (Clean, Zero Gradient) */
+.auth-plan-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-top: 4px;
+}
+
+.auth-plan-card {
+  display: flex;
+  align-items: center;
+  padding: 9px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+  user-select: none;
+}
+
+.auth-plan-card:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+.auth-plan-card.selected,
+.auth-plan-card:has(input:checked) {
+  border-color: #2563eb;
+  background: #f8faff;
+  box-shadow: 0 0 0 1px #2563eb;
+}
+
+.auth-plan-radio {
+  margin: 0 10px 0 0;
+  accent-color: #2563eb;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.auth-plan-content {
+  flex: 1;
+}
+
+.auth-plan-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.auth-plan-name {
+  font-size: 0.83rem;
+  font-weight: 700;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.auth-plan-price {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #2563eb;
+}
+
+.auth-plan-badge {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: #2563eb;
+  padding: 1px 6px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.auth-plan-sub {
+  font-size: 0.71rem;
+  color: #64748b;
+  margin-top: 2px;
+}
+
 /* Security Badge Reassurance */
 .auth-security-footer {
   margin-top: 16px;

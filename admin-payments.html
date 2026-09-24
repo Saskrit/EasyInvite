@@ -263,32 +263,43 @@
     </main>
   </div>
 
-  <!-- Receipt Inspection Modal -->
+  <!-- Payment Details & Receipt Inspection Modal -->
   <div class="modal-backdrop" id="receipt-modal" style="display: none;">
-    <div class="modal-card-pro">
+    <div class="modal-card-pro" style="max-width: 680px; width: 95%;">
       <div class="modal-header-pro">
         <div>
-          <h3>Payment Receipt Verification</h3>
-          <p style="font-size: 0.8rem; color: var(--admin-text-faint); margin: 2px 0 0;">Inspect bank transfer reference and transaction screenshot</p>
+          <h3 id="receipt-modal-title">Payment Order &amp; Receipt Details</h3>
+          <p style="font-size: 0.8rem; color: var(--admin-text-faint); margin: 2px 0 0;">Inspect complete customer payment details, bank reference, and proof screenshot</p>
         </div>
         <button type="button" class="modal-close-btn" onclick="closeReceiptModal()">&times;</button>
       </div>
 
-      <div class="modal-body-pro">
+      <div class="modal-body-pro" style="padding: 20px; align-items: stretch;">
         <div id="receipt-modal-summary" class="receipt-summary-grid">
           <!-- Injected dynamically -->
         </div>
 
-        <div style="position: relative; max-width: 100%; text-align: center;">
-          <img id="receipt-modal-img" src="" alt="Customer Receipt" class="modal-receipt-img" />
-          <div id="receipt-no-img" style="display: none; padding: 40px; color: var(--admin-text-faint); font-style: italic;">
-            No payment screenshot uploaded by customer. Please verify with bank transaction reference number.
+        <div style="margin-top: 10px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-size: 0.78rem; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.5px;">Payment Screenshot / Receipt</span>
+            <a id="receipt-newtab-link" href="#" target="_blank" rel="noopener noreferrer" style="font-size: 0.8rem; color: #2563eb; text-decoration: none; font-weight: 600; display: none;">
+              Open Full Image ↗
+            </a>
+          </div>
+          <div style="position: relative; max-width: 100%; text-align: center; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; min-height: 180px; display: flex; align-items: center; justify-content: center;">
+            <img id="receipt-modal-img" src="" alt="Customer Receipt" class="modal-receipt-img" style="max-height: 480px; width: auto; max-width: 100%; object-fit: contain; display: none;" />
+            <div id="receipt-no-img" style="display: none; padding: 40px; color: var(--admin-text-faint); font-style: italic;">
+              No payment screenshot uploaded by customer. Please verify with bank transaction reference number.
+            </div>
+            <div id="receipt-img-error" style="display: none; padding: 30px; color: #dc2626; font-size: 0.88rem;">
+              Screenshot file could not be loaded from server.
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="modal-footer-pro" id="receipt-modal-actions">
-        <button type="button" class="btn-admin-refresh" onclick="closeReceiptModal()">Close Viewer</button>
+      <div class="modal-footer-pro" id="receipt-modal-actions" style="display: flex; justify-content: space-between; align-items: center;">
+        <button type="button" class="btn-admin-refresh" onclick="closeReceiptModal()">Close Details</button>
         <div id="receipt-modal-decision-btns" style="display: flex; gap: 8px;">
           <!-- Injected dynamically if pending -->
         </div>
@@ -599,36 +610,43 @@
         let receiptCol = '<span style="color: var(--admin-text-faint); font-size: 0.78rem;">No receipt</span>';
         if (order.screenshot_path) {
           receiptCol = `
-            <div class="receipt-thumb-wrap" onclick="openReceiptModal('${order.id}')" title="Click to inspect receipt screenshot">
-              <img src="${escapeHtml(order.screenshot_path)}" alt="Receipt" class="receipt-thumb-img" />
+            <div class="receipt-thumb-wrap" onclick="openReceiptModal('${order.id}')" title="Click to inspect receipt screenshot and payment details">
+              <img src="${escapeHtml(order.screenshot_path)}" alt="Receipt" class="receipt-thumb-img" onerror="this.onerror=null; this.parentElement.innerHTML='<button type=\'button\' class=\'btn-view-details-subtle\' onclick=\'openReceiptModal(\x22${order.id}\x22)\'>View Image</button>';" />
             </div>
+          `;
+        } else {
+          receiptCol = `
+            <button type="button" class="btn-view-details-subtle" onclick="openReceiptModal('${order.id}')" title="View payment details">
+              Details
+            </button>
           `;
         }
 
-        let actionsCol = '';
+        let actionsCol = `
+          <div class="action-btn-group" style="justify-content: flex-end;">
+            <button type="button" class="btn-action-view" onclick="openReceiptModal('${order.id}')" title="View complete payment and customer details">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              View Details
+            </button>
+        `;
         if (order.status === 'PENDING') {
-          actionsCol = `
-            <div class="action-btn-group">
-              <button type="button" class="btn-action-approve" onclick="approveOrder('${order.id}', '${escapeHtml(order.user_name || 'User')}')">
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                Approve
-              </button>
-              <button type="button" class="btn-action-reject" onclick="openRejectModal('${order.id}')">
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                Reject
-              </button>
-            </div>
+          actionsCol += `
+            <button type="button" class="btn-action-approve" onclick="approveOrder('${order.id}', '${escapeHtml(order.user_name || 'User')}')" title="Approve and credit send quota">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Approve
+            </button>
+            <button type="button" class="btn-action-reject" onclick="openRejectModal('${order.id}')" title="Reject payment order">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              Reject
+            </button>
           `;
-        } else if (order.status === 'APPROVED') {
-          actionsCol = `<span style="font-size: 0.78rem; color: #059669; font-weight: 600;">Credited on ${order.reviewed_at ? new Date(order.reviewed_at).toLocaleDateString() : 'N/A'}</span>`;
-        } else {
-          actionsCol = `<span style="font-size: 0.76rem; color: #dc2626; font-weight: 600;" title="${escapeHtml(order.admin_notes || '')}">Reason: ${escapeHtml((order.admin_notes || 'Declined').substring(0, 24))}...</span>`;
         }
+        actionsCol += `</div>`;
 
         return `
           <tr>
             <td>
-              <div class="user-cell">
+              <div class="user-cell" onclick="openReceiptModal('${order.id}')" style="cursor: pointer;" title="Click to view full payment details">
                 <div class="user-avatar-initials">${initials}</div>
                 <div>
                   <div class="user-details-title">${escapeHtml(order.user_name || 'Customer')}</div>
@@ -738,50 +756,130 @@
       if (!order) return;
 
       const summaryWrap = document.getElementById('receipt-modal-summary');
+      const planName = (order.plan_name || order.plan_id || 'Starter').toUpperCase();
+      const quotaStr = order.send_quota === -1 ? 'Unlimited' : `${Number(order.send_quota || 0).toLocaleString()} sends`;
+      const dateStr = new Date(order.created_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
+      
+      let statusBadge = '';
+      if (order.status === 'PENDING') {
+        statusBadge = '<span class="status-pill-pro pending">● Awaiting Approval</span>';
+      } else if (order.status === 'APPROVED') {
+        statusBadge = '<span class="status-pill-pro approved">✓ Approved &amp; Credited</span>';
+      } else {
+        statusBadge = '<span class="status-pill-pro rejected">✕ Rejected</span>';
+      }
+
       summaryWrap.innerHTML = `
-        <div>
-          <div style="font-size: 0.72rem; color: var(--admin-text-faint); text-transform: uppercase;">Customer</div>
-          <div style="font-weight: 700; color: #0f172a;">${escapeHtml(order.user_name || 'Customer')}</div>
+        <div class="detail-box">
+          <div class="detail-label">Customer Name</div>
+          <div class="detail-val strong">${escapeHtml(order.user_name || 'Customer')}</div>
         </div>
-        <div>
-          <div style="font-size: 0.72rem; color: var(--admin-text-faint); text-transform: uppercase;">Plan</div>
-          <div style="font-weight: 700; color: #2563eb;">${escapeHtml(order.plan_name || order.plan_id)}</div>
+        <div class="detail-box">
+          <div class="detail-label">Customer Email</div>
+          <div class="detail-val" style="word-break: break-all;">${escapeHtml(order.user_email || '-')}</div>
         </div>
-        <div>
-          <div style="font-size: 0.72rem; color: var(--admin-text-faint); text-transform: uppercase;">Amount</div>
-          <div style="font-weight: 700; color: #059669;">NPR ${order.amount_npr}</div>
+        <div class="detail-box">
+          <div class="detail-label">Selected Plan</div>
+          <div class="detail-val strong" style="color: #2563eb;">${escapeHtml(planName)} (${quotaStr})</div>
         </div>
-        <div>
-          <div style="font-size: 0.72rem; color: var(--admin-text-faint); text-transform: uppercase;">Txn Ref</div>
-          <div style="font-family: monospace; color: #b45309; font-weight: 600;">${escapeHtml(order.reference_number)}</div>
+        <div class="detail-box">
+          <div class="detail-label">Amount Paid</div>
+          <div class="detail-val strong" style="color: #059669; font-size: 1rem;">NPR ${Number(order.amount_npr).toLocaleString()}</div>
         </div>
+        <div class="detail-box">
+          <div class="detail-label">Bank / Transfer Method</div>
+          <div class="detail-val strong">${escapeHtml(order.bank_name || 'Bank Transfer')}</div>
+        </div>
+        <div class="detail-box">
+          <div class="detail-label">Reference Number</div>
+          <div class="detail-val" style="font-family: monospace; font-weight: 700; color: #b45309;">
+            ${escapeHtml(order.reference_number || '-')}
+            ${order.reference_number ? `<button type="button" class="btn-copy-ref" onclick="copyToClipboard('${escapeHtml(order.reference_number)}')" title="Copy reference" style="display:inline-flex;margin-left:4px;"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>` : ''}
+          </div>
+        </div>
+        <div class="detail-box">
+          <div class="detail-label">Date Submitted</div>
+          <div class="detail-val">${dateStr}</div>
+        </div>
+        <div class="detail-box">
+          <div class="detail-label">Current Status</div>
+          <div class="detail-val">${statusBadge}</div>
+        </div>
+        ${order.reviewed_at ? `
+          <div class="detail-box" style="grid-column: 1 / -1; background: #fff; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
+            <div class="detail-label">Review Verification</div>
+            <div class="detail-val" style="font-size: 0.84rem; color: #475569;">
+              Reviewed on ${new Date(order.reviewed_at).toLocaleString()} ${order.reviewed_by ? `by ${escapeHtml(order.reviewed_by)}` : ''}
+              ${order.admin_notes ? `<span style="display:block; margin-top:4px; color: ${order.status === 'REJECTED' ? '#dc2626' : '#059669'}; font-weight:600;">Note / Reason: ${escapeHtml(order.admin_notes)}</span>` : ''}
+            </div>
+          </div>
+        ` : ''}
+        ${order.notes ? `
+          <div class="detail-box" style="grid-column: 1 / -1; background: #fff; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
+            <div class="detail-label">Customer Order Notes</div>
+            <div class="detail-val" style="font-size: 0.84rem; color: #334155; font-style: italic;">${escapeHtml(order.notes)}</div>
+          </div>
+        ` : ''}
       `;
 
       const imgEl = document.getElementById('receipt-modal-img');
       const noImgEl = document.getElementById('receipt-no-img');
+      const errImgEl = document.getElementById('receipt-img-error');
+      const newtabLink = document.getElementById('receipt-newtab-link');
+
+      if (errImgEl) errImgEl.style.display = 'none';
+
       if (order.screenshot_path) {
+        imgEl.onerror = function() {
+          imgEl.style.display = 'none';
+          if (errImgEl) errImgEl.style.display = 'block';
+        };
+        imgEl.onload = function() {
+          imgEl.style.display = 'block';
+          if (errImgEl) errImgEl.style.display = 'none';
+        };
         imgEl.src = order.screenshot_path;
-        imgEl.style.display = 'block';
         noImgEl.style.display = 'none';
+        if (newtabLink) {
+          newtabLink.href = order.screenshot_path;
+          newtabLink.style.display = 'inline-flex';
+        }
       } else {
         imgEl.style.display = 'none';
+        imgEl.src = '';
         noImgEl.style.display = 'block';
+        if (newtabLink) {
+          newtabLink.style.display = 'none';
+        }
       }
 
       const decisionWrap = document.getElementById('receipt-modal-decision-btns');
       if (order.status === 'PENDING') {
         decisionWrap.innerHTML = `
-          <button type="button" class="btn-action-reject" onclick="openRejectModal('${order.id}')">Reject Order</button>
-          <button type="button" class="btn-action-approve" onclick="approveOrder('${order.id}', '${escapeHtml(order.user_name || 'Customer')}')">Approve &amp; Credit</button>
+          <button type="button" class="btn-action-reject" onclick="openRejectModal('${order.id}')">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Reject Order
+          </button>
+          <button type="button" class="btn-action-approve" onclick="approveOrder('${order.id}', '${escapeHtml(order.user_name || 'Customer')}')">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Approve &amp; Credit
+          </button>
+        `;
+      } else if (order.status === 'APPROVED') {
+        decisionWrap.innerHTML = `
+          <span class="status-pill-pro approved">✓ Approved &amp; Credited</span>
         `;
       } else {
         decisionWrap.innerHTML = `
-          <span class="status-pill-pro ${order.status.toLowerCase()}">${order.status}</span>
+          <span class="status-pill-pro rejected">✕ Order Rejected</span>
         `;
       }
 
       document.getElementById('receipt-modal').style.display = 'flex';
     }
+
+    // Alias for payment details modal
+    window.openPaymentDetailsModal = openReceiptModal;
 
     function closeReceiptModal() {
       document.getElementById('receipt-modal').style.display = 'none';

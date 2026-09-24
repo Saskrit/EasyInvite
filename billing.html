@@ -100,20 +100,20 @@
             </div>
 
             <div class="pricing-grid">
-              <!-- Plan 1: Starter -->
-              <div class="plan-card" id="plan-card-starter">
+              <!-- Plan 1: Free (Guest) -->
+              <div class="plan-card" id="plan-card-free">
                 <div class="plan-header">
-                  <h3 class="plan-name">Starter</h3>
-                  <p class="plan-desc">Great for small apps and initial closed test rollout.</p>
+                  <h3 class="plan-name">Free</h3>
+                  <p class="plan-desc">Send up to 5 times without an account. Configure app &amp; SMTP directly.</p>
                   <div class="plan-price-wrap">
                     <span class="plan-currency">NPR</span>
-                    <span class="plan-amount">100</span>
-                    <span class="plan-billing-type">/ one-time</span>
+                    <span class="plan-amount">0</span>
+                    <span class="plan-billing-type">/ free guest</span>
                   </div>
                   <ul class="plan-features-list">
                     <li class="plan-feature-item">
                       <span class="feature-check">✓</span>
-                      <span><strong>10 Send Actions</strong></span>
+                      <span><strong>5 Send Actions Total</strong></span>
                     </li>
                     <li class="plan-feature-item">
                       <span class="feature-check">✓</span>
@@ -121,20 +121,62 @@
                     </li>
                     <li class="plan-feature-item">
                       <span class="feature-check">✓</span>
-                      <span>Multi-device sync</span>
+                      <span>No account or signup needed</span>
                     </li>
                     <li class="plan-feature-item">
                       <span class="feature-check">✓</span>
-                      <span>Templates &amp; CSV import</span>
+                      <span>Configure App &amp; SMTP in form</span>
+                    </li>
+                    <li class="plan-feature-item">
+                      <span class="feature-check" style="color: #94a3b8;">&ndash;</span>
+                      <span style="color: #94a3b8;">No saved templates or settings</span>
                     </li>
                   </ul>
                 </div>
-                <button type="button" class="btn-plan-select" onclick="openPaymentModal('starter', 'Starter', 100, 10, false)">
+                <a href="index.html" class="btn-plan-select" style="text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; background: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1;">
+                  Start Free as Guest
+                </a>
+              </div>
+
+              <!-- Plan 2: Starter -->
+              <div class="plan-card" id="plan-card-starter">
+                <div class="plan-header">
+                  <h3 class="plan-name">Starter</h3>
+                  <p class="plan-desc">Great for small apps and initial closed test rollout.</p>
+                  <div class="plan-price-wrap">
+                    <span class="plan-currency">NPR</span>
+                    <span class="plan-amount">100</span>
+                    <span class="plan-billing-type">/ month</span>
+                  </div>
+                  <ul class="plan-features-list">
+                    <li class="plan-feature-item">
+                      <span class="feature-check">✓</span>
+                      <span><strong>50 Send Actions</strong></span>
+                    </li>
+                    <li class="plan-feature-item">
+                      <span class="feature-check">✓</span>
+                      <span>Unlimited recipients per send</span>
+                    </li>
+                    <li class="plan-feature-item">
+                      <span class="feature-check">✓</span>
+                      <span>User saved login account</span>
+                    </li>
+                    <li class="plan-feature-item">
+                      <span class="feature-check">✓</span>
+                      <span>Saved settings &amp; credentials</span>
+                    </li>
+                    <li class="plan-feature-item">
+                      <span class="feature-check">✓</span>
+                      <span>Multi-device sync</span>
+                    </li>
+                  </ul>
+                </div>
+                <button type="button" class="btn-plan-select" onclick="handleChoosePlan('starter', 'Starter', 100, 50, false)">
                   Choose Starter
                 </button>
               </div>
 
-              <!-- Plan 2: Growth (Featured) -->
+              <!-- Plan 3: Growth (Featured) -->
               <div class="plan-card featured" id="plan-card-growth">
                 <span class="featured-pill">Most Popular</span>
                 <div class="plan-header">
@@ -143,12 +185,12 @@
                   <div class="plan-price-wrap">
                     <span class="plan-currency">NPR</span>
                     <span class="plan-amount">200</span>
-                    <span class="plan-billing-type">/ one-time</span>
+                    <span class="plan-billing-type">/ month</span>
                   </div>
                   <ul class="plan-features-list">
                     <li class="plan-feature-item">
                       <span class="feature-check">✓</span>
-                      <span><strong>40 Send Actions</strong></span>
+                      <span><strong>100 Send Actions</strong></span>
                     </li>
                     <li class="plan-feature-item">
                       <span class="feature-check">✓</span>
@@ -156,7 +198,11 @@
                     </li>
                     <li class="plan-feature-item">
                       <span class="feature-check">✓</span>
-                      <span>Save custom templates</span>
+                      <span>Saved login &amp; settings data</span>
+                    </li>
+                    <li class="plan-feature-item">
+                      <span class="feature-check">✓</span>
+                      <span><strong>Can use preset email templates</strong></span>
                     </li>
                     <li class="plan-feature-item">
                       <span class="feature-check">✓</span>
@@ -164,12 +210,12 @@
                     </li>
                   </ul>
                 </div>
-                <button type="button" class="btn-plan-select" onclick="openPaymentModal('growth', 'Growth', 200, 40, false)">
+                <button type="button" class="btn-plan-select" onclick="handleChoosePlan('growth', 'Growth', 200, 100, false)">
                   Choose Growth
                 </button>
               </div>
 
-              <!-- Plan 3: Pro -->
+              <!-- Plan 4: Pro -->
               <div class="plan-card" id="plan-card-pro">
                 <div class="plan-header">
                   <h3 class="plan-name">Pro</h3>
@@ -177,12 +223,12 @@
                   <div class="plan-price-wrap">
                     <span class="plan-currency">NPR</span>
                     <span class="plan-amount">300</span>
-                    <span class="plan-billing-type">/ one-time</span>
+                    <span class="plan-billing-type">/ month</span>
                   </div>
                   <ul class="plan-features-list">
                     <li class="plan-feature-item">
                       <span class="feature-check">✓</span>
-                      <span><strong>60 Send Actions</strong></span>
+                      <span><strong>300 Send Actions</strong></span>
                     </li>
                     <li class="plan-feature-item">
                       <span class="feature-check">✓</span>
@@ -190,20 +236,24 @@
                     </li>
                     <li class="plan-feature-item">
                       <span class="feature-check">✓</span>
-                      <span>Complete campaign tracking</span>
+                      <span>Saved login &amp; settings data</span>
                     </li>
                     <li class="plan-feature-item">
                       <span class="feature-check">✓</span>
-                      <span>Multi-app configurations</span>
+                      <span>Can use preset email templates</span>
+                    </li>
+                    <li class="plan-feature-item">
+                      <span class="feature-check">✓</span>
+                      <span><strong>Make &amp; save own templates</strong></span>
                     </li>
                   </ul>
                 </div>
-                <button type="button" class="btn-plan-select" onclick="openPaymentModal('pro', 'Pro', 300, 60, false)">
+                <button type="button" class="btn-plan-select" onclick="handleChoosePlan('pro', 'Pro', 300, 300, false)">
                   Choose Pro
                 </button>
               </div>
 
-              <!-- Plan 4: Lifetime -->
+              <!-- Plan 5: Lifetime -->
               <div class="plan-card lifetime" id="plan-card-lifetime">
                 <span class="lifetime-pill">Lifetime Deal</span>
                 <div class="plan-header">
@@ -212,7 +262,7 @@
                   <div class="plan-price-wrap">
                     <span class="plan-currency">NPR</span>
                     <span class="plan-amount">1,000</span>
-                    <span class="plan-billing-type">/ once forever</span>
+                    <span class="plan-billing-type">/ once lifetime</span>
                   </div>
                   <ul class="plan-features-list">
                     <li class="plan-feature-item">
@@ -225,15 +275,19 @@
                     </li>
                     <li class="plan-feature-item">
                       <span class="feature-check">✓</span>
-                      <span>VIP priority support</span>
+                      <span>All email templates + create own</span>
                     </li>
                     <li class="plan-feature-item">
                       <span class="feature-check">✓</span>
-                      <span>All future updates included</span>
+                      <span>Saved login &amp; settings data</span>
+                    </li>
+                    <li class="plan-feature-item">
+                      <span class="feature-check">✓</span>
+                      <span>VIP priority support</span>
                     </li>
                   </ul>
                 </div>
-                <button type="button" class="btn-plan-select" onclick="openPaymentModal('lifetime', 'Lifetime', 1000, -1, true)">
+                <button type="button" class="btn-plan-select" onclick="handleChoosePlan('lifetime', 'Lifetime', 1000, -1, true)">
                   Get Lifetime Access
                 </button>
               </div>
@@ -447,13 +501,26 @@
       }).join('');
     }
 
+    function handleChoosePlan(planId, name, amount, sends, isLifetime) {
+      const token = localStorage.getItem('easyinvite_auth_token');
+      if (!token) {
+        if (typeof showAuthModal === 'function') {
+          showAuthModal('register', planId);
+        } else {
+          window.location.href = `login.html?tab=register&plan=${planId}`;
+        }
+        return;
+      }
+      openPaymentModal(planId, name, amount, sends, isLifetime);
+    }
+
     function openPaymentModal(planId, name, amount, sends, isLifetime) {
       const token = localStorage.getItem('easyinvite_auth_token');
       if (!token) {
         if (typeof showAuthModal === 'function') {
-          showAuthModal('signin');
+          showAuthModal('register', planId);
         } else {
-          showToast('Please log in or register before purchasing a plan.', 'info');
+          window.location.href = `login.html?tab=register&plan=${planId}`;
         }
         return;
       }

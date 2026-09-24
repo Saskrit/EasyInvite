@@ -51,6 +51,9 @@ const MIME_TYPES = {
   '.json': 'application/json',
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.webp': 'image/webp',
+  '.gif': 'image/gif',
   '.svg': 'image/svg+xml',
   '.ico': 'image/x-icon'
 };
@@ -550,7 +553,7 @@ function wrapInDeliverableEmailShell(bodyHtml, subject, senderName) {
         'Content-Type': contentType,
         'Cache-Control': isDynamicAsset ? 'no-cache, no-store, must-revalidate, max-age=0' : 'public, max-age=86400'
       });
-      res.end(content, 'utf-8');
+      res.end(content);
     }
   });
 });

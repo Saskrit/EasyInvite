@@ -367,6 +367,60 @@ function getCurrentPage() {
 let currentUser = null;
 let currentUserUsage = null;
 
+function getUserPlan() {
+  if (currentUser && currentUser.role === 'admin') return 'admin';
+  if (currentUserUsage && currentUserUsage.planId) return String(currentUserUsage.planId).toLowerCase();
+  return 'free';
+}
+
+function canUseEmailTemplates() {
+  const plan = getUserPlan();
+  return ['growth', 'pro', 'lifetime', 'admin'].includes(plan);
+}
+
+function canCreateCustomTemplates() {
+  const plan = getUserPlan();
+  return ['pro', 'lifetime', 'admin'].includes(plan);
+}
+
+function showPlanUpgradePrompt(featureName, requiredPlanName) {
+  const existing = document.getElementById("plan-upgrade-modal");
+  if (existing) existing.remove();
+
+  const modal = document.createElement("div");
+  modal.className = "modal-backdrop";
+  modal.id = "plan-upgrade-modal";
+  modal.style.display = "flex";
+  modal.style.alignItems = "center";
+  modal.style.justifyContent = "center";
+  modal.style.zIndex = "10000";
+
+  modal.innerHTML = `
+    <div class="modal-card" style="max-width: 440px; text-align: center; padding: 28px 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.18);">
+      <div style="width: 52px; height: 52px; border-radius: 50%; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+        </svg>
+      </div>
+      <h3 style="font-size: 1.22rem; font-weight: 700; color: #0f172a; margin-bottom: 8px;">Upgrade to ${escapeHtml(requiredPlanName)}</h3>
+      <p style="font-size: 0.9rem; color: #64748b; line-height: 1.55; margin-bottom: 22px;">
+        ${escapeHtml(featureName)} is unlocked on the <strong>${escapeHtml(requiredPlanName)}</strong> plan. Upgrade your plan on the Billing page to access this feature.
+      </p>
+      <div style="display: flex; gap: 10px; justify-content: center;">
+        <button type="button" class="btn-secondary" id="btn-close-upgrade-modal" style="padding: 10px 18px;">Cancel</button>
+        <a href="billing.html" class="btn-primary" style="padding: 10px 20px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; font-weight: 600;">View Plans &amp; Upgrade</a>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  const closeBtn = modal.querySelector("#btn-close-upgrade-modal");
+  if (closeBtn) closeBtn.addEventListener("click", () => modal.remove());
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) modal.remove();
+  });
+}
+
 async function initAuth() {
   ensureAuthModal();
   const token = localStorage.getItem("easyinvite_auth_token");
@@ -453,6 +507,8 @@ function renderSidebarUserSection() {
     const initial = (currentUser.name ? currentUser.name[0] : 'U').toUpperCase();
     const isAdmin = currentUser.role === 'admin';
     const isLifetime = currentUserUsage && currentUserUsage.isLifetime;
+    const planId = (currentUserUsage && currentUserUsage.planId) ? currentUserUsage.planId.toLowerCase() : 'starter';
+    const planLabel = isAdmin ? 'Admin' : (planId.charAt(0).toUpperCase() + planId.slice(1) + ' Plan');
     const balanceText = isLifetime
       ? 'Unlimited (Lifetime)'
       : (currentUserUsage ? `${currentUserUsage.sendsRemaining} Sends left` : 'Loading balance...');
@@ -471,7 +527,7 @@ function renderSidebarUserSection() {
           <div class="user-meta">
             <div class="user-display-name">
               <span>${escapeHtml(currentUser.name)}</span>
-              ${isAdmin ? '<span class="user-role-tag">Admin</span>' : ''}
+              <span class="user-role-tag">${escapeHtml(planLabel)}</span>
             </div>
             <div class="user-email-text" title="${escapeHtml(currentUser.email)}">${escapeHtml(currentUser.email)}</div>
           </div>
@@ -488,15 +544,30 @@ function renderSidebarUserSection() {
       </div>
     `;
   } else {
+    const guestSends = parseInt(localStorage.getItem("easyinvite_guest_sends") || "0", 10);
+    const guestRemaining = Math.max(0, 5 - guestSends);
     container.innerHTML = `
-      <button type="button" class="btn-sidebar-login" onclick="showAuthModal('signin')">
-        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-          <polyline points="10 17 15 12 10 7"/>
-          <line x1="15" y1="12" x2="3" y2="12"/>
-        </svg>
-        Sign In / Register
-      </button>
+      <div class="sidebar-user-card" style="padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <span style="font-size: 0.78rem; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 5px;">
+            <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
+            Free Guest Plan
+          </span>
+          <span style="font-size: 0.72rem; color: #64748b; font-weight: 600;">${guestRemaining} / 5 left</span>
+        </div>
+        <a href="billing.html" class="user-balance-pill" style="margin-bottom: 8px;" title="View prepaid plans">
+          <span>⚡ Free: ${guestRemaining} sends left</span>
+          <span style="font-size: 0.72rem; opacity: 0.8;">Upgrade &rarr;</span>
+        </a>
+        <button type="button" class="btn-sidebar-login" style="margin: 0; padding: 8px 12px; font-size: 0.82rem;" onclick="showAuthModal('signin')">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+            <polyline points="10 17 15 12 10 7"/>
+            <line x1="15" y1="12" x2="3" y2="12"/>
+          </svg>
+          Sign In / Register
+        </button>
+      </div>
     `;
   }
 }
@@ -629,8 +700,63 @@ function ensureAuthModal() {
             </div>
           </div>
 
+          <div class="auth-input-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <label class="auth-label" style="margin: 0;">Choose Your Plan <span style="color: #ef4444;">*</span></label>
+              <a href="billing.html" target="_blank" style="font-size: 0.72rem; color: #2563eb; text-decoration: none; font-weight: 600;">View plan details &rarr;</a>
+            </div>
+            <div class="auth-plan-picker" id="modal-register-plan-picker">
+              <label class="auth-plan-card">
+                <input type="radio" name="modal-register-plan" value="starter" class="auth-plan-radio" />
+                <div class="auth-plan-content">
+                  <div class="auth-plan-top">
+                    <span class="auth-plan-name">Starter</span>
+                    <span class="auth-plan-price">NPR 100/mo</span>
+                  </div>
+                  <div class="auth-plan-sub">50 send actions · Saved settings</div>
+                </div>
+              </label>
+
+              <label class="auth-plan-card selected">
+                <input type="radio" name="modal-register-plan" value="growth" checked class="auth-plan-radio" />
+                <div class="auth-plan-content">
+                  <div class="auth-plan-top">
+                    <span class="auth-plan-name">Growth <span class="auth-plan-badge">Popular</span></span>
+                    <span class="auth-plan-price">NPR 200/mo</span>
+                  </div>
+                  <div class="auth-plan-sub">100 send actions · Use email templates</div>
+                </div>
+              </label>
+
+              <label class="auth-plan-card">
+                <input type="radio" name="modal-register-plan" value="pro" class="auth-plan-radio" />
+                <div class="auth-plan-content">
+                  <div class="auth-plan-top">
+                    <span class="auth-plan-name">Pro</span>
+                    <span class="auth-plan-price">NPR 300/mo</span>
+                  </div>
+                  <div class="auth-plan-sub">300 send actions · Make own templates</div>
+                </div>
+              </label>
+
+              <label class="auth-plan-card">
+                <input type="radio" name="modal-register-plan" value="lifetime" class="auth-plan-radio" />
+                <div class="auth-plan-content">
+                  <div class="auth-plan-top">
+                    <span class="auth-plan-name">Lifetime Deal</span>
+                    <span class="auth-plan-price">NPR 1,000</span>
+                  </div>
+                  <div class="auth-plan-sub">Unlimited sends forever · All features</div>
+                </div>
+              </label>
+            </div>
+            <div style="margin-top: 6px; font-size: 0.74rem; color: #64748b;">
+              Want to test without signing up? <a href="index.html" onclick="closeAuthModal();" style="color: #2563eb; font-weight: 600;">Use Free Guest Mode (5 free sends)</a>
+            </div>
+          </div>
+
           <button type="submit" class="btn-auth-submit" id="btn-submit-register">
-            <span>Create Account</span>
+            <span>Create Account &amp; Proceed</span>
             <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
 
@@ -639,45 +765,44 @@ function ensureAuthModal() {
           </div>
         </form>
 
-        <!-- FORM 3: Verify Email -->
+        <!-- FORM 3: Verify Email with 4-Digit Code -->
         <form id="auth-verify-form" onsubmit="submitVerification(event)" style="display: none;">
-          <div style="text-align: center; margin-bottom: 16px;">
-            <div style="width: 44px; height: 44px; border-radius: 50%; background: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 8px;">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          <div style="text-align: center; margin-bottom: 18px;">
+            <div style="width: 48px; height: 48px; border-radius: 50%; background: #eff6ff; border: 1px solid #bfdbfe; color: #2563eb; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 8px;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
             </div>
-            <p style="font-size: 0.84rem; color: #475569; margin: 0;" id="verify-email-prompt">We sent a verification link to your email.</p>
+            <h3 style="margin: 0 0 4px; font-size: 1.15rem; font-weight: 700; color: #0f172a;">Enter 4-Digit Code</h3>
+            <p style="font-size: 0.84rem; color: #64748b; margin: 0; line-height: 1.45;" id="verify-email-prompt">We sent a 4-digit verification code to your email.</p>
           </div>
 
-          <div class="auth-input-group">
-            <label class="auth-label" for="verify-token-input">Verification Code / Token</label>
-            <div class="auth-input-wrap">
-              <span class="auth-input-icon">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-              </span>
-              <input type="text" id="verify-token-input" class="auth-input" placeholder="Paste verification code from email" required />
-            </div>
-            <div id="dev-verify-helper" style="margin-top: 8px; font-size: 0.78rem;"></div>
+          <div class="auth-input-group" style="text-align: center;">
+            <label class="auth-label" for="modal-verify-code-input" style="text-align: center; margin-bottom: 8px;">4-Digit Verification Code</label>
+            <input 
+              type="text" 
+              id="modal-verify-code-input" 
+              class="auth-input" 
+              placeholder="••••" 
+              maxlength="4" 
+              inputmode="numeric" 
+              pattern="[0-9]{4}" 
+              required 
+              autocomplete="one-time-code"
+              style="font-family: 'JetBrains Mono', monospace, sans-serif; font-size: 1.8rem; font-weight: 700; letter-spacing: 16px; text-align: center; padding-left: 20px; height: 56px; border: 2px solid #cbd5e1; border-radius: 10px;"
+              oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 4);"
+            />
+            <div id="modal-dev-verify-helper" style="margin-top: 10px; font-size: 0.8rem; text-align: center;"></div>
           </div>
 
           <button type="submit" class="btn-auth-submit" id="btn-submit-verify">
-            <span>Verify &amp; Enter Dashboard</span>
+            <span>Verify &amp; Complete Registration</span>
             <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
 
-          <div class="auth-switch-text">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px; font-size: 0.8rem;">
             <a href="#" class="auth-switch-link" onclick="event.preventDefault(); switchAuthTab('signin');">&larr; Back to Sign In</a>
+            <a href="#" class="auth-switch-link" id="btn-modal-resend-code" onclick="event.preventDefault(); handleResendAuthModalCode();" style="font-weight: 600;">Resend Code</a>
           </div>
         </form>
-
-        <div class="auth-security-footer">
-          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-          </svg>
-          <span>SSL 256-bit encrypted · Passwords hashed with bcrypt</span>
-        </div>
       </div>
     </div>
   </div>
@@ -721,10 +846,20 @@ function clearAuthAlert() {
   }
 }
 
-function showAuthModal(tab = 'signin') {
+function showAuthModal(tab = 'signin', preselectedPlan = null) {
   ensureAuthModal();
   clearAuthAlert();
   switchAuthTab(tab);
+  if (preselectedPlan) {
+    const radio = document.querySelector(`input[name="modal-register-plan"][value="${preselectedPlan}"]`);
+    if (radio) {
+      radio.checked = true;
+      document.querySelectorAll('#modal-register-plan-picker .auth-plan-card').forEach(c => c.classList.remove('selected'));
+      if (radio.closest('.auth-plan-card')) {
+        radio.closest('.auth-plan-card').classList.add('selected');
+      }
+    }
+  }
   document.getElementById("auth-modal").style.display = "flex";
 }
 
@@ -764,7 +899,7 @@ function switchAuthTab(tab) {
     tabRegister.classList.add("active");
     formRegister.style.display = "block";
     if (title) title.textContent = "Create an account";
-    if (subtitle) subtitle.textContent = "Start dispatching Google Play closed test invitations";
+    if (subtitle) subtitle.textContent = "Choose your plan to start dispatching Google Play test invitations";
   } else if (tab === "verify") {
     if (switcherWrap) switcherWrap.style.display = "none";
     if (formVerify) formVerify.style.display = "block";
@@ -772,6 +907,16 @@ function switchAuthTab(tab) {
     if (subtitle) subtitle.textContent = "Enter the verification code to activate your account";
   }
 }
+
+// Plan picker selection visual state listener
+document.addEventListener('change', (e) => {
+  if (e.target && e.target.name === 'modal-register-plan') {
+    document.querySelectorAll('#modal-register-plan-picker .auth-plan-card').forEach(c => c.classList.remove('selected'));
+    if (e.target.closest('.auth-plan-card')) {
+      e.target.closest('.auth-plan-card').classList.add('selected');
+    }
+  }
+});
 
 async function submitSignIn(e) {
   e.preventDefault();
@@ -829,6 +974,9 @@ async function submitRegister(e) {
   const password = document.getElementById("register-password").value;
   const btn = document.getElementById("btn-submit-register");
 
+  const selectedPlanEl = document.querySelector('input[name="modal-register-plan"]:checked');
+  const planId = selectedPlanEl ? selectedPlanEl.value : 'starter';
+
   if (!name) {
     showAuthAlert("Please enter your full name.", "error");
     return;
@@ -849,20 +997,29 @@ async function submitRegister(e) {
     const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password })
+      body: JSON.stringify({ name, email, password, planId })
     });
     const data = await res.json();
 
     if (data.success) {
-      showToast("Account created! Please verify your email.", "success");
-      document.getElementById("verify-email-prompt").textContent = `A verification code was created for ${email}.`;
-      if (data.devVerificationToken) {
-        document.getElementById("verify-token-input").value = data.devVerificationToken;
-        document.getElementById("dev-verify-helper").innerHTML = `
-          <strong>Quick verification link:</strong> <a href="${data.devVerifyUrl}" target="_blank" style="color: #2563eb; font-weight: 600;">Click here to verify immediately</a>
+      authRegisteredEmail = email;
+      showToast("Account created! Please enter the 4-digit code.", "success");
+      document.getElementById("verify-email-prompt").textContent = `We sent a 4-digit verification code to ${email}.`;
+      const code = data.devVerificationCode || data.devVerificationToken;
+      if (code) {
+        document.getElementById("modal-dev-verify-helper").innerHTML = `
+          <div style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; color: #1e40af; font-size: 0.8rem;">
+            <span>Dev Code:</span>
+            <strong style="font-size: 1.15rem; letter-spacing: 4px; font-family: monospace;">${code}</strong>
+            <button type="button" onclick="autoFillModalCode('${code}')" style="padding: 2px 8px; border: 1px solid #3b82f6; background: #ffffff; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: 600; color: #2563eb;">Auto-fill</button>
+          </div>
         `;
       }
       switchAuthTab("verify");
+      setTimeout(() => {
+        const input = document.getElementById("modal-verify-code-input");
+        if (input) input.focus();
+      }, 100);
     } else {
       const errMsg = data.error || "Registration failed.";
       showAuthAlert(errMsg, "error");
@@ -873,15 +1030,72 @@ async function submitRegister(e) {
     showToast("Network error during registration.", "error");
   } finally {
     btn.disabled = false;
-    btn.innerHTML = `<span>Create Account</span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>`;
+    btn.innerHTML = `<span>Create Account &amp; Proceed</span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>`;
+  }
+}
+
+let authRegisteredEmail = '';
+
+function autoFillModalCode(code) {
+  const input = document.getElementById("modal-verify-code-input");
+  if (input) {
+    input.value = code;
+    input.focus();
+  }
+}
+
+async function handleResendAuthModalCode() {
+  if (!authRegisteredEmail) {
+    showAuthAlert("Email address missing. Please register again.", "error");
+    return;
+  }
+  const btn = document.getElementById("btn-modal-resend-code");
+  if (btn) {
+    btn.textContent = "Sending...";
+    btn.style.pointerEvents = "none";
+  }
+  try {
+    const res = await fetch("/api/auth/resend-code", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: authRegisteredEmail })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast("A new 4-digit code was sent!", "success");
+      const code = data.devVerificationCode || data.devVerificationToken;
+      if (code) {
+        document.getElementById("modal-dev-verify-helper").innerHTML = `
+          <div style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; color: #1e40af; font-size: 0.8rem;">
+            <span>Dev Code:</span>
+            <strong style="font-size: 1.15rem; letter-spacing: 4px; font-family: monospace;">${code}</strong>
+            <button type="button" onclick="autoFillModalCode('${code}')" style="padding: 2px 8px; border: 1px solid #3b82f6; background: #ffffff; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: 600; color: #2563eb;">Auto-fill</button>
+          </div>
+        `;
+      }
+    } else {
+      showAuthAlert(data.error || "Failed to resend code.", "error");
+    }
+  } catch (err) {
+    showAuthAlert("Network error while resending code.", "error");
+  } finally {
+    if (btn) {
+      btn.textContent = "Resend Code";
+      btn.style.pointerEvents = "auto";
+    }
   }
 }
 
 async function submitVerification(e) {
   e.preventDefault();
   clearAuthAlert();
-  const token = document.getElementById("verify-token-input").value.trim();
+  const code = (document.getElementById("modal-verify-code-input")?.value || "").trim();
   const btn = document.getElementById("btn-submit-verify");
+
+  if (!code || code.length !== 4) {
+    showAuthAlert("Please enter the complete 4-digit verification code.", "error");
+    return;
+  }
 
   btn.disabled = true;
   btn.innerHTML = `<span>Verifying...</span>`;
@@ -890,7 +1104,7 @@ async function submitVerification(e) {
     const res = await fetch("/api/auth/verify-email", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token })
+      body: JSON.stringify({ code, email: authRegisteredEmail })
     });
     const data = await res.json();
 
@@ -899,10 +1113,10 @@ async function submitVerification(e) {
         localStorage.setItem("easyinvite_auth_token", data.token);
       }
       closeAuthModal();
-      showToast("Email verified successfully! You are now logged in.", "success");
+      showToast("Account activated successfully! You are now logged in.", "success");
       await initAuth();
     } else {
-      const errMsg = data.error || "Verification failed.";
+      const errMsg = data.error || "Invalid 4-digit code. Please check and try again.";
       showAuthAlert(errMsg, "error");
       showToast(errMsg, "error");
     }
@@ -911,7 +1125,7 @@ async function submitVerification(e) {
     showToast("Network error during email verification.", "error");
   } finally {
     btn.disabled = false;
-    btn.innerHTML = `<span>Verify &amp; Enter Dashboard</span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>`;
+    btn.innerHTML = `<span>Verify &amp; Complete Registration</span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>`;
   }
 }
 
@@ -1020,6 +1234,10 @@ function setupEventListeners() {
   if (elements.btnOpenTemplateSelector) {
     elements.btnOpenTemplateSelector.addEventListener("click", (e) => {
       e.preventDefault();
+      if (!canUseEmailTemplates()) {
+        showPlanUpgradePrompt("Email templates", "Growth (Rs 200/mo)");
+        return;
+      }
       switchView("email-templates");
     });
   }
@@ -1028,6 +1246,10 @@ function setupEventListeners() {
   if (elements.btnSaveCurrentAsTemplate) {
     elements.btnSaveCurrentAsTemplate.addEventListener("click", (e) => {
       e.preventDefault();
+      if (!canCreateCustomTemplates()) {
+        showPlanUpgradePrompt("Saving custom email templates", "Pro (Rs 300/mo)");
+        return;
+      }
       const currentSubject = (elements.emailSubject && elements.emailSubject.value.trim()) || "";
       const currentHtml = (elements.messageEditor && elements.messageEditor.innerHTML.trim()) || "";
 
@@ -1278,6 +1500,10 @@ function setupEventListeners() {
   // Templates View: New Template
   if (elements.btnCreateTemplate) {
     elements.btnCreateTemplate.addEventListener("click", () => {
+      if (!canCreateCustomTemplates()) {
+        showPlanUpgradePrompt("Creating custom email templates", "Pro (Rs 300/mo)");
+        return;
+      }
       openTemplateModal(null);
     });
   }
@@ -1561,6 +1787,10 @@ function getResolvedSenderName() {
 // Template Selection & Insertion Logic
 // ==========================================================================
 function applyTemplate(templateId, suppressToast = false) {
+  if (!suppressToast && !canUseEmailTemplates()) {
+    showPlanUpgradePrompt("Applying email templates", "Growth (Rs 200/mo)");
+    return;
+  }
   currentTemplateId = templateId;
   state.currentTemplateId = templateId;
   saveState();
@@ -1606,10 +1836,14 @@ function updateEditorWithTestingLink(newUrl) {
 // ==========================================================================
 async function handleSendInvitations() {
   const authToken = localStorage.getItem("easyinvite_auth_token");
+  let guestSends = parseInt(localStorage.getItem("easyinvite_guest_sends") || "0", 10);
+
   if (!authToken) {
-    showToast("Please sign in or create an account to send invitations.", "warning");
-    showAuthModal("signin");
-    return;
+    if (guestSends >= 5) {
+      showToast("You have reached the 5-send limit on the Free Guest plan! Please choose a plan to continue.", "warning");
+      showAuthModal("register");
+      return;
+    }
   }
 
   // Sync if currently typing in textarea mode
@@ -1686,12 +1920,14 @@ async function handleSendInvitations() {
       .replaceAll("{{direct_link}}", directPlaceholder)
       .replaceAll("{{package_id}}", pkgPlaceholder);
 
+    const headers = { "Content-Type": "application/json" };
+    if (authToken) {
+      headers["Authorization"] = `Bearer ${authToken}`;
+    }
+
     const res = await fetch("/api/send-email", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${authToken}`
-      },
+      headers,
       body: JSON.stringify({
         recipients: state.recipients,
         subject: finalSubject,
@@ -1706,25 +1942,37 @@ async function handleSendInvitations() {
     const data = await res.json();
 
     if (res.status === 402 || data.code === "NO_BALANCE") {
-      showToast("You have 0 Send Actions remaining. Please purchase a plan on the Billing page.", "warning");
-      setTimeout(() => {
-        window.location.href = "billing.html";
-      }, 1800);
+      if (!authToken || data.isGuest) {
+        showToast("You have reached the 5-send limit on the Free Guest plan. Please choose a plan to continue.", "warning");
+        setTimeout(() => showAuthModal("register"), 1500);
+      } else {
+        showToast("You have 0 Send Actions remaining. Please purchase a plan on the Billing page.", "warning");
+        setTimeout(() => {
+          window.location.href = "billing.html";
+        }, 1800);
+      }
       return;
     }
 
     if (data.success) {
       updateSmtpUI(true, "Verified Online");
-      if (data.usage) {
-        currentUserUsage = {
-          ...(currentUserUsage || {}),
-          sendsRemaining: data.usage.sendsRemaining,
-          isLifetime: data.usage.isLifetime
-        };
+      if (data.isGuest || !authToken) {
+        guestSends++;
+        localStorage.setItem("easyinvite_guest_sends", String(guestSends));
         renderSidebarUserSection();
+        const left = data.guestSendsRemaining !== undefined ? data.guestSendsRemaining : Math.max(0, 5 - guestSends);
+        showToast(`Successfully sent ${data.sentCount} invitation${data.sentCount === 1 ? "" : "s"}! (${left} free guest sends left)`, "success");
+      } else {
+        if (data.usage) {
+          currentUserUsage = {
+            ...(currentUserUsage || {}),
+            sendsRemaining: data.usage.sendsRemaining,
+            isLifetime: data.usage.isLifetime
+          };
+          renderSidebarUserSection();
+        }
+        showToast(`Successfully sent ${data.sentCount} invitation${data.sentCount === 1 ? "" : "s"} via Gmail!`, "success");
       }
-
-      showToast(`Successfully sent ${data.sentCount} invitation${data.sentCount === 1 ? "" : "s"} via Gmail!`, "success");
 
       // Clear recipients for the next batch
       state.recipients = [];
@@ -1755,24 +2003,64 @@ function renderTemplatesGrid() {
   if (!elements.fullTemplatesGrid) return;
   elements.fullTemplatesGrid.innerHTML = "";
 
+  const userPlan = getUserPlan();
+  const canUseTpl = canUseEmailTemplates();
+  const canCustomTpl = canCreateCustomTemplates();
+
+  // Show Plan Info / Upgrade banner on templates view
+  if (!canUseTpl) {
+    const banner = document.createElement("div");
+    banner.style.cssText = "grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 18px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 8px;";
+    banner.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#2563eb" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        <span style="font-size: 0.86rem; color: #475569;">
+          Email templates are available on <strong>Growth</strong> (Rs 200/mo), <strong>Pro</strong> (Rs 300/mo), and <strong>Lifetime</strong> plans. You are currently on the <strong>${userPlan === 'starter' ? 'Starter' : 'Free Guest'}</strong> plan.
+        </span>
+      </div>
+      <a href="billing.html" class="btn-primary-small" style="text-decoration: none; white-space: nowrap; padding: 6px 14px; font-weight: 600;">Upgrade Plan</a>
+    `;
+    elements.fullTemplatesGrid.appendChild(banner);
+  } else if (!canCustomTpl) {
+    const banner = document.createElement("div");
+    banner.style.cssText = "grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 18px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; margin-bottom: 8px;";
+    banner.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#16a34a" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        <span style="font-size: 0.86rem; color: #166534;">
+          <strong>Growth Plan:</strong> You can apply all preset email templates. Upgrade to <strong>Pro</strong> (Rs 300/mo) or <strong>Lifetime</strong> to create and save custom templates.
+        </span>
+      </div>
+      <a href="billing.html" class="btn-secondary-small" style="text-decoration: none; white-space: nowrap; padding: 6px 14px; font-weight: 600;">Upgrade to Pro</a>
+    `;
+    elements.fullTemplatesGrid.appendChild(banner);
+  }
+
   const keys = Object.keys(state.templates);
   if (keys.length === 0) {
-    elements.fullTemplatesGrid.innerHTML = `
-      <div style="grid-column: 1 / -1; text-align: center; padding: 48px 20px; color: var(--text-muted);">
-        <p style="font-size: 1.05rem; font-weight: 600; color: #334155; margin-bottom: 8px;">No templates found</p>
-        <p style="font-size: 0.85rem; margin-bottom: 18px;">Create a template to save custom invitation messaging for Google Play testing.</p>
-        <button type="button" class="btn-primary" id="btn-empty-create-template">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="12" y1="5" x2="12" y2="19"/>
-            <line x1="5" y1="12" x2="19" y2="12"/>
-          </svg>
-          Create Template
-        </button>
-      </div>
+    const emptyWrapper = document.createElement("div");
+    emptyWrapper.style.cssText = "grid-column: 1 / -1; text-align: center; padding: 48px 20px; color: var(--text-muted);";
+    emptyWrapper.innerHTML = `
+      <p style="font-size: 1.05rem; font-weight: 600; color: #334155; margin-bottom: 8px;">No templates found</p>
+      <p style="font-size: 0.85rem; margin-bottom: 18px;">Create a template to save custom invitation messaging for Google Play testing.</p>
+      <button type="button" class="btn-primary" id="btn-empty-create-template">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Create Template
+      </button>
     `;
+    elements.fullTemplatesGrid.appendChild(emptyWrapper);
     const emptyBtn = document.getElementById("btn-empty-create-template");
     if (emptyBtn) {
-      emptyBtn.addEventListener("click", () => openTemplateModal(null));
+      emptyBtn.addEventListener("click", () => {
+        if (!canCreateCustomTemplates()) {
+          showPlanUpgradePrompt("Creating custom email templates", "Pro (Rs 300/mo)");
+          return;
+        }
+        openTemplateModal(null);
+      });
     }
     return;
   }
@@ -1798,10 +2086,10 @@ function renderTemplatesGrid() {
       </div>
       <div class="template-card-actions">
         <button type="button" class="btn-primary-small btn-apply-tpl" data-id="${key}" title="Apply this template to the invitation composer">
-          Apply to Form
+          ${canUseTpl ? 'Apply to Form' : '🔒 Apply (Growth+)'}
         </button>
         <div class="template-action-icons">
-          <button type="button" class="btn-icon-small btn-edit-tpl" data-id="${key}" title="Edit Template">
+          <button type="button" class="btn-icon-small btn-edit-tpl" data-id="${key}" title="${canCustomTpl ? 'Edit Template' : 'Edit (Pro required)'}">
             <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
               <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
@@ -1821,12 +2109,16 @@ function renderTemplatesGrid() {
 
     // Apply button
     card.querySelector(".btn-apply-tpl").addEventListener("click", () => {
+      if (!canUseEmailTemplates()) {
+        showPlanUpgradePrompt("Applying email templates", "Growth (Rs 200/mo)");
+        return;
+      }
       state.currentTemplateId = key;
       currentTemplateId = key;
       saveState();
 
       if (elements.messageEditor) {
-        applyTemplate(key, true);
+        applyTemplate(key, false);
         switchView("send-invitation");
       } else {
         window.location.href = "index.html";
@@ -1835,11 +2127,19 @@ function renderTemplatesGrid() {
 
     // Edit button
     card.querySelector(".btn-edit-tpl").addEventListener("click", () => {
+      if (!canCreateCustomTemplates()) {
+        showPlanUpgradePrompt("Editing email templates", "Pro (Rs 300/mo)");
+        return;
+      }
       openTemplateModal(key);
     });
 
     // Delete button
     card.querySelector(".btn-delete-tpl").addEventListener("click", () => {
+      if (!canCreateCustomTemplates()) {
+        showPlanUpgradePrompt("Managing custom templates", "Pro (Rs 300/mo)");
+        return;
+      }
       handleDeleteTemplate(key);
     });
 
@@ -1849,6 +2149,10 @@ function renderTemplatesGrid() {
 
 function openTemplateModal(templateId = null) {
   if (!elements.templateEditorModal) return;
+  if (!canCreateCustomTemplates()) {
+    showPlanUpgradePrompt("Creating custom email templates", "Pro (Rs 300/mo)");
+    return;
+  }
 
   const defaultBody = `<p>Hi there,</p><p>You're invited to test our closed beta on Google Play!</p><p>Download and join here:<br><a href="{{link}}" target="_blank">{{link}}</a></p><p>Thanks for your help testing!</p>`;
 
@@ -1880,6 +2184,10 @@ function closeTemplateModal() {
 }
 
 function handleSaveTemplateFromModal() {
+  if (!canCreateCustomTemplates()) {
+    showPlanUpgradePrompt("Saving custom email templates", "Pro (Rs 300/mo)");
+    return;
+  }
   const name = (elements.tplEditName && elements.tplEditName.value.trim()) || "";
   const desc = (elements.tplEditDesc && elements.tplEditDesc.value.trim()) || "";
   const subject = (elements.tplEditSubject && elements.tplEditSubject.value.trim()) || "";

@@ -602,6 +602,44 @@ body[data-page="admin-payments"] .main-wrapper {
   transition: all 0.15s ease;
 }
 
+.btn-action-view {
+  background: #f1f5f9;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+  padding: 7px 13px;
+  border-radius: 8px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+}
+
+.btn-action-view:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.btn-view-details-subtle {
+  background: none;
+  border: 1px solid #e2e8f0;
+  color: #2563eb;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.btn-view-details-subtle:hover {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
 .btn-action-reject:hover {
   background: #fecaca;
   color: #991b1b;
@@ -651,12 +689,41 @@ body[data-page="admin-payments"] .main-wrapper {
 .receipt-summary-grid {
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 12px;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  padding: 14px 18px;
+  padding: 16px;
   border-radius: 12px;
+}
+
+@media (min-width: 680px) {
+  .receipt-summary-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.detail-box {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.detail-label {
+  font-size: 0.72rem;
+  color: #64748b;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+}
+
+.detail-val {
+  font-size: 0.88rem;
+  color: #0f172a;
+}
+
+.detail-val.strong {
+  font-weight: 700;
 }
 
 .modal-receipt-img {
