@@ -88,31 +88,9 @@
       </div>
     </aside>
 
-    <!-- Main Content Wrapper -->
-    <main class="main-wrapper" style="padding: 24px 32px 64px; overflow-y: auto;">
+    <main class="main-wrapper">
       <section class="view-content active" id="view-billing">
         <div class="billing-layout">
-          
-          <!-- Card: Current Balance & Entitlement -->
-          <div class="balance-overview-card">
-            <div class="balance-info">
-              <span class="balance-label">Current Usage Balance</span>
-              <div class="balance-val-row">
-                <span class="balance-number" id="balance-display">Loading...</span>
-                <span class="balance-plan-badge" id="plan-badge">Plan: Free</span>
-              </div>
-              <span class="balance-hint" id="balance-subtext">1 Send action allows dispatching to 1 or 100+ recipients in a single campaign batch.</span>
-            </div>
-            <div class="balance-actions">
-              <a href="#plans-section" class="btn-buy-more">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                  <line x1="12" y1="5" x2="12" y2="19"/>
-                  <line x1="5" y1="12" x2="19" y2="12"/>
-                </svg>
-                Buy / Upgrade Plan
-              </a>
-            </div>
-          </div>
 
           <!-- Pricing Plans Section -->
           <div id="plans-section">
@@ -262,8 +240,8 @@
             </div>
           </div>
 
-          <!-- Card: Purchase & Payment History -->
-          <div class="history-card">
+          <!-- Card: Purchase & Payment History (Displayed only after payment) -->
+          <div class="history-card" id="billing-history-section" style="display: none;">
             <div class="history-card-header">
               <h3 class="history-card-title">Payment &amp; Order History</h3>
               <button type="button" class="btn-outline-small" onclick="loadBillingData()">
@@ -398,9 +376,9 @@
 
     async function loadBillingData() {
       const token = localStorage.getItem('easyinvite_auth_token');
+      const historyCard = document.getElementById('billing-history-section');
       if (!token) {
-        document.getElementById('balance-display').textContent = 'Please log in';
-        document.getElementById('plan-badge').textContent = 'Unauthenticated';
+        if (historyCard) historyCard.style.display = 'none';
         return;
       }
 
@@ -411,23 +389,16 @@
         const data = await res.json();
 
         if (data.success) {
-          const usage = data.usage;
-          const displayEl = document.getElementById('balance-display');
-          const badgeEl = document.getElementById('plan-badge');
-
-          if (usage.isLifetime) {
-            displayEl.textContent = 'Unlimited';
-            badgeEl.className = 'balance-plan-badge lifetime';
-            badgeEl.textContent = 'Lifetime Member';
-          } else {
-            const remaining = usage.sendsRemaining;
-            const total = usage.totalPurchased || remaining;
-            displayEl.textContent = `${remaining} / ${total} Send Actions Remaining`;
-            badgeEl.className = 'balance-plan-badge';
-            badgeEl.textContent = `Plan: ${usage.planId.toUpperCase()}`;
+          const payments = data.payments || [];
+          if (historyCard) {
+            // Only after the payment, payment and order history page should be displayed
+            if (payments.length > 0) {
+              historyCard.style.display = 'block';
+              renderPaymentsTable(payments);
+            } else {
+              historyCard.style.display = 'none';
+            }
           }
-
-          renderPaymentsTable(data.payments || []);
         }
       } catch (err) {
         console.error('Failed to load billing history:', err);
@@ -558,6 +529,8 @@
         if (data.success) {
           showToast('Payment submitted successfully! Your account will be credited once verified by our team.', 'success');
           closePaymentModal();
+          const historyCard = document.getElementById('billing-history-section');
+          if (historyCard) historyCard.style.display = 'block';
           loadBillingData();
         } else {
           showToast(data.error || 'Failed to submit payment.', 'error');

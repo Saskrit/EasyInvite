@@ -445,10 +445,12 @@ function renderSidebarUserSection() {
 
   if (currentUser) {
     const initial = (currentUser.name ? currentUser.name[0] : 'U').toUpperCase();
-    const balanceText = currentUserUsage
-      ? (currentUserUsage.isLifetime ? 'Unlimited (Lifetime)' : `${currentUserUsage.sendsRemaining} Sends left`)
-      : 'Loading balance...';
-    const isLifetime = currentUserUsage && currentUserUsage.isLifetime;
+    const isAdmin = currentUser.role === 'admin';
+    const isLifetime = isAdmin || (currentUserUsage && currentUserUsage.isLifetime);
+    const balanceText = isLifetime
+      ? 'Unlimited (Lifetime)'
+      : (currentUserUsage ? `${currentUserUsage.sendsRemaining} Sends left` : 'Loading balance...');
+    const actionText = isAdmin ? 'Admin &rarr;' : (isLifetime ? 'Lifetime &rarr;' : 'Top up &rarr;');
 
     container.innerHTML = `
       <div class="sidebar-user-card">
@@ -462,9 +464,9 @@ function renderSidebarUserSection() {
             <div class="user-email-text" title="${escapeHtml(currentUser.email)}">${escapeHtml(currentUser.email)}</div>
           </div>
         </div>
-        <a href="billing.html" class="user-balance-pill ${isLifetime ? 'lifetime' : ''}" title="View plans & buy sends">
+        <a href="${isAdmin ? 'admin-payments.html' : 'billing.html'}" class="user-balance-pill ${isLifetime ? 'lifetime' : ''}" title="${isAdmin ? 'Admin Dashboard' : 'View plans & buy sends'}">
           <span>⚡ ${balanceText}</span>
-          <span style="font-size: 0.72rem; opacity: 0.8;">Top up &rarr;</span>
+          <span style="font-size: 0.72rem; opacity: 0.8;">${actionText}</span>
         </a>
         <button type="button" class="btn-sidebar-logout" onclick="handleLogout()">
           <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
