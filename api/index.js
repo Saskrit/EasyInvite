@@ -3,6 +3,7 @@ const verifyHandler = require('./verify-smtp');
 const sendEmailHandler = require('./send-email');
 const healthHandler = require('./health');
 const { setCorsAndSecurityHeaders } = require('../lib/mailer');
+const { handleApiRequest } = require('../lib/routes');
 
 module.exports = async (req, res) => {
   setCorsAndSecurityHeaders(res, req.headers.origin);
@@ -12,8 +13,18 @@ module.exports = async (req, res) => {
     return res.end();
   }
 
-  const urlPath = (req.url || '').split('?')[0].replace(/^\/api/, '');
+  // Ensure normalized /api path
+  const rawPath = (req.url || '').split('?')[0];
+  const apiPath = rawPath.startsWith('/api') ? rawPath : `/api${rawPath.startsWith('/') ? '' : '/'}${rawPath}`;
 
+  // Try centralized router (handles /api/auth/*, /api/billing/*, /api/admin/*, /api/user/*, /api/send-email)
+  const handled = await handleApiRequest(req, res, apiPath);
+  if (handled !== false) {
+    return;
+  }
+
+  // Legacy route fallbacks
+  const urlPath = apiPath.replace(/^\/api/, '');
   if (urlPath === '/config' || urlPath === 'config') {
     return configHandler(req, res);
   }
@@ -28,5 +39,5 @@ module.exports = async (req, res) => {
   }
 
   res.writeHead(404, { 'Content-Type': 'application/json' });
-  return res.end(JSON.stringify({ success: false, error: `Route not found: /api${urlPath}` }));
+  return res.end(JSON.stringify({ success: false, error: `Route not found: ${req.url}` }));
 };

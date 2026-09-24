@@ -12,11 +12,13 @@
     { "source": "/settings", "destination": "/settings.html" },
     { "source": "/billing", "destination": "/billing.html" },
     { "source": "/pricing", "destination": "/billing.html" },
+    { "source": "/admin", "destination": "/admin-payments.html" },
     { "source": "/admin-payments", "destination": "/admin-payments.html" },
     { "source": "/admin/payments", "destination": "/admin-payments.html" },
     { "source": "/verify-email", "destination": "/verify-email.html" },
     { "source": "/send-invite", "destination": "/index.html" },
-    { "source": "/send-invitation", "destination": "/index.html" }
+    { "source": "/send-invitation", "destination": "/index.html" },
+    { "source": "/api/(.*)", "destination": "/api/index.js" }
   ],
   "headers": [
     {
