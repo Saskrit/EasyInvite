@@ -1,7 +1,11 @@
 const { Client } = require('pg');
 require('dotenv').config();
 
-const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_4v0hAagHtGCJ@ep-divine-credit-b42vkynj-pooler.c-6.us-east-2.aws.neon.tech/neondb?sslmode=require';
+const DATABASE_URL = process.env.DATABASE_URL;
+if (!DATABASE_URL) {
+  console.error('ERROR: DATABASE_URL environment variable is required.');
+  process.exit(1);
+}
 
 async function migrate() {
   console.log('Connecting to Neon PostgreSQL database...');
