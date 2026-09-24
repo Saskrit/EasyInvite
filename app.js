@@ -446,11 +446,17 @@ function renderSidebarUserSection() {
   if (currentUser) {
     const initial = (currentUser.name ? currentUser.name[0] : 'U').toUpperCase();
     const isAdmin = currentUser.role === 'admin';
-    const isLifetime = isAdmin || (currentUserUsage && currentUserUsage.isLifetime);
+    const isLifetime = currentUserUsage && currentUserUsage.isLifetime;
     const balanceText = isLifetime
       ? 'Unlimited (Lifetime)'
       : (currentUserUsage ? `${currentUserUsage.sendsRemaining} Sends left` : 'Loading balance...');
-    const actionText = isAdmin ? 'Admin &rarr;' : (isLifetime ? 'Lifetime &rarr;' : 'Top up &rarr;');
+
+    const balancePillHtml = isAdmin ? '' : `
+      <a href="billing.html" class="user-balance-pill ${isLifetime ? 'lifetime' : ''}" title="View plans & buy sends">
+        <span>⚡ ${balanceText}</span>
+        <span style="font-size: 0.72rem; opacity: 0.8;">${isLifetime ? 'Lifetime &rarr;' : 'Top up &rarr;'}</span>
+      </a>
+    `;
 
     container.innerHTML = `
       <div class="sidebar-user-card">
@@ -459,15 +465,12 @@ function renderSidebarUserSection() {
           <div class="user-meta">
             <div class="user-display-name">
               <span>${escapeHtml(currentUser.name)}</span>
-              ${currentUser.role === 'admin' ? '<span class="user-role-tag">Admin</span>' : ''}
+              ${isAdmin ? '<span class="user-role-tag">Admin</span>' : ''}
             </div>
             <div class="user-email-text" title="${escapeHtml(currentUser.email)}">${escapeHtml(currentUser.email)}</div>
           </div>
         </div>
-        <a href="${isAdmin ? 'admin-payments.html' : 'billing.html'}" class="user-balance-pill ${isLifetime ? 'lifetime' : ''}" title="${isAdmin ? 'Admin Dashboard' : 'View plans & buy sends'}">
-          <span>⚡ ${balanceText}</span>
-          <span style="font-size: 0.72rem; opacity: 0.8;">${actionText}</span>
-        </a>
+        ${balancePillHtml}
         <button type="button" class="btn-sidebar-logout" onclick="handleLogout()">
           <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
