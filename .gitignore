@@ -30,6 +30,7 @@ desktop.ini
 data/
 uploads/
 
-
+# Agent Rules & Skills
+.agents/
 .agents
-.agents/*
+AGENTS.md

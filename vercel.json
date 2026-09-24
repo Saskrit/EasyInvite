@@ -18,6 +18,10 @@
     { "source": "/admin-payments", "destination": "/admin-payments.html" },
     { "source": "/admin/payments", "destination": "/admin-payments.html" },
     { "source": "/verify-email", "destination": "/verify-email.html" },
+    { "source": "/login", "destination": "/login.html" },
+    { "source": "/signin", "destination": "/login.html" },
+    { "source": "/register", "destination": "/login.html" },
+    { "source": "/signup", "destination": "/login.html" },
     { "source": "/send-invite", "destination": "/index.html" },
     { "source": "/send-invitation", "destination": "/index.html" },
     { "source": "/api/(.*)", "destination": "/api/index.js" }

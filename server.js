@@ -518,6 +518,8 @@ function wrapInDeliverableEmailShell(bodyHtml, subject, senderName) {
     requestedPath = 'admin-payments.html';
   } else if (requestedPath === '/verify-email') {
     requestedPath = 'verify-email.html';
+  } else if (requestedPath === '/login' || requestedPath === '/signin' || requestedPath === '/register' || requestedPath === '/signup') {
+    requestedPath = 'login.html';
   }
 
   // Strip any ../ traversal attempts

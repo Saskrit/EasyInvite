@@ -507,87 +507,223 @@ function ensureAuthModal() {
   const modalHtml = `
   <div class="modal-backdrop" id="auth-modal" style="display: none; z-index: 10000;">
     <div class="modal-card auth-modal-card">
-      <div class="auth-tabs">
-        <button type="button" class="auth-tab-btn active" id="auth-tab-signin" onclick="switchAuthTab('signin')">Sign In</button>
-        <button type="button" class="auth-tab-btn" id="auth-tab-register" onclick="switchAuthTab('register')">Create Account</button>
-        <button type="button" class="auth-tab-btn" id="auth-tab-verify" onclick="switchAuthTab('verify')" style="display: none;">Verify Email</button>
+      <!-- Close button -->
+      <button type="button" class="auth-modal-close" onclick="closeAuthModal()" title="Close (Esc)">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+
+      <!-- Brand Header -->
+      <div class="auth-modal-header">
+        <img src="easyinvite.png" alt="EasyInvite" class="auth-brand-logo" />
+        <h2 class="auth-modal-title" id="auth-modal-title">Welcome back</h2>
+        <p class="auth-modal-subtitle" id="auth-modal-subtitle">Sign in to your account to dispatch test campaigns</p>
       </div>
 
-      <div class="modal-body" style="padding: 24px;">
-        <!-- Form 1: Sign In -->
+      <!-- Modern Segmented Pill Switcher (Zero Gradient) -->
+      <div class="auth-segmented-wrap" id="auth-switcher-wrap">
+        <div class="auth-segmented-pill">
+          <button type="button" class="auth-segment-btn active" id="auth-tab-signin" onclick="switchAuthTab('signin')">Sign In</button>
+          <button type="button" class="auth-segment-btn" id="auth-tab-register" onclick="switchAuthTab('register')">Create Account</button>
+        </div>
+      </div>
+
+      <div class="auth-modal-body">
+        <!-- Inline Alert Message Container -->
+        <div class="auth-alert" id="auth-inline-alert" role="alert">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <span id="auth-inline-alert-text"></span>
+        </div>
+
+        <!-- FORM 1: Sign In -->
         <form id="auth-signin-form" onsubmit="submitSignIn(event)">
-          <div class="form-group">
-            <label class="form-label" for="signin-email">Email Address</label>
-            <input type="email" id="signin-email" class="form-control" placeholder="you@gmail.com" required autocomplete="email" />
+          <div class="auth-input-group">
+            <label class="auth-label" for="signin-email">Email Address</label>
+            <div class="auth-input-wrap">
+              <span class="auth-input-icon">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
+              </span>
+              <input type="email" id="signin-email" class="auth-input" placeholder="you@domain.com" required autocomplete="email" />
+            </div>
           </div>
-          <div class="form-group">
-            <label class="form-label" for="signin-password">Password</label>
-            <input type="password" id="signin-password" class="form-control" placeholder="••••••••" required autocomplete="current-password" />
+
+          <div class="auth-input-group">
+            <label class="auth-label" for="signin-password">Password</label>
+            <div class="auth-input-wrap">
+              <span class="auth-input-icon">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+              </span>
+              <input type="password" id="signin-password" class="auth-input" placeholder="••••••••" required autocomplete="current-password" />
+              <button type="button" class="auth-pw-toggle" onclick="togglePasswordVisibility('signin-password', this)" title="Show/Hide password">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
           </div>
-          <button type="submit" class="btn-primary" id="btn-submit-signin" style="width: 100%; margin-top: 8px;">
-            Sign In
+
+          <button type="submit" class="btn-auth-submit" id="btn-submit-signin">
+            <span>Sign In</span>
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
-          <div style="text-align: center; margin-top: 14px; font-size: 0.82rem; color: #64748b;">
-            Don't have an account? <a href="#" onclick="event.preventDefault(); switchAuthTab('register');" style="color: #2563eb; font-weight: 600;">Register here</a>
+
+          <div class="auth-switch-text">
+            Don't have an account? <a href="#" class="auth-switch-link" onclick="event.preventDefault(); switchAuthTab('register');">Create one for free</a>
           </div>
         </form>
 
-        <!-- Form 2: Register -->
+        <!-- FORM 2: Register -->
         <form id="auth-register-form" onsubmit="submitRegister(event)" style="display: none;">
-          <div class="form-group">
-            <label class="form-label" for="register-name">Full Name</label>
-            <input type="text" id="register-name" class="form-control" placeholder="John Doe" required autocomplete="off" spellcheck="false" />
+          <div class="auth-input-group">
+            <label class="auth-label" for="register-name">Full Name</label>
+            <div class="auth-input-wrap">
+              <span class="auth-input-icon">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+              </span>
+              <input type="text" id="register-name" class="auth-input" placeholder="e.g. John Doe" required autocomplete="name" />
+            </div>
           </div>
-          <div class="form-group">
-            <label class="form-label" for="register-email">Email Address</label>
-            <input type="email" id="register-email" class="form-control" placeholder="you@gmail.com" required autocomplete="email" />
+
+          <div class="auth-input-group">
+            <label class="auth-label" for="register-email">Email Address</label>
+            <div class="auth-input-wrap">
+              <span class="auth-input-icon">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
+              </span>
+              <input type="email" id="register-email" class="auth-input" placeholder="you@domain.com" required autocomplete="email" />
+            </div>
           </div>
-          <div class="form-group">
-            <label class="form-label" for="register-password">Password (min 6 characters)</label>
-            <input type="password" id="register-password" class="form-control" placeholder="••••••••" minlength="6" required autocomplete="new-password" />
+
+          <div class="auth-input-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <label class="auth-label" for="register-password" style="margin: 0;">Password</label>
+              <span style="font-size: 0.72rem; color: #64748b;">Min. 6 chars</span>
+            </div>
+            <div class="auth-input-wrap">
+              <span class="auth-input-icon">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+              </span>
+              <input type="password" id="register-password" class="auth-input" placeholder="••••••••" minlength="6" required autocomplete="new-password" />
+              <button type="button" class="auth-pw-toggle" onclick="togglePasswordVisibility('register-password', this)" title="Show/Hide password">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
           </div>
-          <button type="submit" class="btn-primary" id="btn-submit-register" style="width: 100%; margin-top: 8px;">
-            Create Account
+
+          <button type="submit" class="btn-auth-submit" id="btn-submit-register">
+            <span>Create Account</span>
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
-          <div style="text-align: center; margin-top: 14px; font-size: 0.82rem; color: #64748b;">
-            Already have an account? <a href="#" onclick="event.preventDefault(); switchAuthTab('signin');" style="color: #2563eb; font-weight: 600;">Sign in</a>
+
+          <div class="auth-switch-text">
+            Already have an account? <a href="#" class="auth-switch-link" onclick="event.preventDefault(); switchAuthTab('signin');">Sign in</a>
           </div>
         </form>
 
-        <!-- Form 3: Verify Email -->
+        <!-- FORM 3: Verify Email -->
         <form id="auth-verify-form" onsubmit="submitVerification(event)" style="display: none;">
           <div style="text-align: center; margin-bottom: 16px;">
-            <div style="width: 48px; height: 48px; border-radius: 50%; background: #eff6ff; color: #2563eb; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 8px;">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <div style="width: 44px; height: 44px; border-radius: 50%; background: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 8px;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
             </div>
-            <h4 style="margin: 0; font-size: 1.05rem;">Email Verification Required</h4>
-            <p style="font-size: 0.82rem; color: #64748b; margin: 4px 0 0;" id="verify-email-prompt">We sent a verification link to your email.</p>
+            <p style="font-size: 0.84rem; color: #475569; margin: 0;" id="verify-email-prompt">We sent a verification link to your email.</p>
           </div>
-          <div class="form-group">
-            <label class="form-label" for="verify-token-input">Verification Token / Code</label>
-            <input type="text" id="verify-token-input" class="form-control" placeholder="Enter token from email or dev link" required />
-            <div id="dev-verify-helper" style="margin-top: 8px; font-size: 0.76rem; color: #2563eb;"></div>
+
+          <div class="auth-input-group">
+            <label class="auth-label" for="verify-token-input">Verification Code / Token</label>
+            <div class="auth-input-wrap">
+              <span class="auth-input-icon">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </span>
+              <input type="text" id="verify-token-input" class="auth-input" placeholder="Paste verification code from email" required />
+            </div>
+            <div id="dev-verify-helper" style="margin-top: 8px; font-size: 0.78rem;"></div>
           </div>
-          <button type="submit" class="btn-primary" id="btn-submit-verify" style="width: 100%; margin-top: 8px;">
-            Verify and Log In
+
+          <button type="submit" class="btn-auth-submit" id="btn-submit-verify">
+            <span>Verify &amp; Enter Dashboard</span>
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
-          <div style="text-align: center; margin-top: 14px; font-size: 0.82rem; color: #64748b;">
-            <a href="#" onclick="event.preventDefault(); switchAuthTab('signin');" style="color: #64748b;">Back to Sign In</a>
+
+          <div class="auth-switch-text">
+            <a href="#" class="auth-switch-link" onclick="event.preventDefault(); switchAuthTab('signin');">&larr; Back to Sign In</a>
           </div>
         </form>
-      </div>
 
-      <div style="padding: 12px 24px; background: #f8fafc; border-top: 1px solid #e2e8f0; text-align: right;">
-        <button type="button" class="btn-secondary" onclick="closeAuthModal()">Close</button>
+        <div class="auth-security-footer">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <span>SSL 256-bit encrypted · Passwords hashed with bcrypt</span>
+        </div>
       </div>
     </div>
   </div>
   `;
   document.body.insertAdjacentHTML("beforeend", modalHtml);
+
+  // Close modal when clicking backdrop
+  const modal = document.getElementById("auth-modal");
+  if (modal) {
+    modal.addEventListener("click", (e) => {
+      if (e.target.id === "auth-modal") {
+        closeAuthModal();
+      }
+    });
+  }
+
+  // Close modal when pressing Escape
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      const modalEl = document.getElementById("auth-modal");
+      if (modalEl && modalEl.style.display !== "none") {
+        closeAuthModal();
+      }
+    }
+  });
+}
+
+function showAuthAlert(msg, type = "error") {
+  const alert = document.getElementById("auth-inline-alert");
+  const text = document.getElementById("auth-inline-alert-text");
+  if (!alert || !text) return;
+  text.textContent = msg;
+  alert.className = `auth-alert ${type}`;
+}
+
+function clearAuthAlert() {
+  const alert = document.getElementById("auth-inline-alert");
+  if (alert) {
+    alert.className = "auth-alert";
+    alert.style.display = "none";
+  }
 }
 
 function showAuthModal(tab = 'signin') {
   ensureAuthModal();
+  clearAuthAlert();
   switchAuthTab(tab);
   document.getElementById("auth-modal").style.display = "flex";
 }
@@ -595,48 +731,57 @@ function showAuthModal(tab = 'signin') {
 function closeAuthModal() {
   const modal = document.getElementById("auth-modal");
   if (modal) modal.style.display = "none";
+  clearAuthAlert();
 }
 
 function switchAuthTab(tab) {
   ensureAuthModal();
+  clearAuthAlert();
+
   const tabSignin = document.getElementById("auth-tab-signin");
   const tabRegister = document.getElementById("auth-tab-register");
-  const tabVerify = document.getElementById("auth-tab-verify");
   const formSignin = document.getElementById("auth-signin-form");
   const formRegister = document.getElementById("auth-register-form");
   const formVerify = document.getElementById("auth-verify-form");
+  const switcherWrap = document.getElementById("auth-switcher-wrap");
+  const title = document.getElementById("auth-modal-title");
+  const subtitle = document.getElementById("auth-modal-subtitle");
 
   tabSignin.classList.remove("active");
   tabRegister.classList.remove("active");
-  if (tabVerify) tabVerify.classList.remove("active");
-
   formSignin.style.display = "none";
   formRegister.style.display = "none";
   if (formVerify) formVerify.style.display = "none";
 
   if (tab === "signin") {
+    if (switcherWrap) switcherWrap.style.display = "block";
     tabSignin.classList.add("active");
     formSignin.style.display = "block";
+    if (title) title.textContent = "Welcome back";
+    if (subtitle) subtitle.textContent = "Sign in to your account to dispatch test campaigns";
   } else if (tab === "register") {
+    if (switcherWrap) switcherWrap.style.display = "block";
     tabRegister.classList.add("active");
     formRegister.style.display = "block";
+    if (title) title.textContent = "Create an account";
+    if (subtitle) subtitle.textContent = "Start dispatching Google Play closed test invitations";
   } else if (tab === "verify") {
-    if (tabVerify) {
-      tabVerify.style.display = "block";
-      tabVerify.classList.add("active");
-    }
+    if (switcherWrap) switcherWrap.style.display = "none";
     if (formVerify) formVerify.style.display = "block";
+    if (title) title.textContent = "Verify your email";
+    if (subtitle) subtitle.textContent = "Enter the verification code to activate your account";
   }
 }
 
 async function submitSignIn(e) {
   e.preventDefault();
+  clearAuthAlert();
   const email = document.getElementById("signin-email").value.trim();
   const password = document.getElementById("signin-password").value;
   const btn = document.getElementById("btn-submit-signin");
 
   btn.disabled = true;
-  btn.textContent = "Signing in...";
+  btn.innerHTML = `<span>Signing in...</span>`;
 
   try {
     const res = await fetch("/api/auth/login", {
@@ -658,30 +803,47 @@ async function submitSignIn(e) {
       if (data.devVerificationToken) {
         document.getElementById("verify-token-input").value = data.devVerificationToken;
         document.getElementById("dev-verify-helper").innerHTML = `
-          <strong>Quick verification:</strong> <a href="/verify-email?token=${data.devVerificationToken}" target="_blank">Click here to verify</a>
+          <strong>Quick verification:</strong> <a href="/verify-email?token=${data.devVerificationToken}" target="_blank" style="color: #2563eb; font-weight: 600;">Click here to verify</a>
         `;
       }
       switchAuthTab("verify");
     } else {
-      showToast(data.error || "Login failed.", "error");
+      const errMsg = data.error || "Login failed.";
+      showAuthAlert(errMsg, "error");
+      showToast(errMsg, "error");
     }
   } catch (err) {
+    showAuthAlert("Network connection error. Please try again.", "error");
     showToast("Network error during login.", "error");
   } finally {
     btn.disabled = false;
-    btn.textContent = "Sign In";
+    btn.innerHTML = `<span>Sign In</span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>`;
   }
 }
 
 async function submitRegister(e) {
   e.preventDefault();
+  clearAuthAlert();
   const name = document.getElementById("register-name").value.trim();
   const email = document.getElementById("register-email").value.trim();
   const password = document.getElementById("register-password").value;
   const btn = document.getElementById("btn-submit-register");
 
+  if (!name) {
+    showAuthAlert("Please enter your full name.", "error");
+    return;
+  }
+  if (!email) {
+    showAuthAlert("Please enter a valid email address.", "error");
+    return;
+  }
+  if (!password || password.length < 6) {
+    showAuthAlert("Password must be at least 6 characters long.", "error");
+    return;
+  }
+
   btn.disabled = true;
-  btn.textContent = "Creating account...";
+  btn.innerHTML = `<span>Creating account...</span>`;
 
   try {
     const res = await fetch("/api/auth/register", {
@@ -697,28 +859,32 @@ async function submitRegister(e) {
       if (data.devVerificationToken) {
         document.getElementById("verify-token-input").value = data.devVerificationToken;
         document.getElementById("dev-verify-helper").innerHTML = `
-          <strong>Quick verification link:</strong> <a href="${data.devVerifyUrl}" target="_blank">Click here to verify immediately</a>
+          <strong>Quick verification link:</strong> <a href="${data.devVerifyUrl}" target="_blank" style="color: #2563eb; font-weight: 600;">Click here to verify immediately</a>
         `;
       }
       switchAuthTab("verify");
     } else {
-      showToast(data.error || "Registration failed.", "error");
+      const errMsg = data.error || "Registration failed.";
+      showAuthAlert(errMsg, "error");
+      showToast(errMsg, "error");
     }
   } catch (err) {
+    showAuthAlert("Network connection error. Please try again.", "error");
     showToast("Network error during registration.", "error");
   } finally {
     btn.disabled = false;
-    btn.textContent = "Create Account";
+    btn.innerHTML = `<span>Create Account</span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>`;
   }
 }
 
 async function submitVerification(e) {
   e.preventDefault();
+  clearAuthAlert();
   const token = document.getElementById("verify-token-input").value.trim();
   const btn = document.getElementById("btn-submit-verify");
 
   btn.disabled = true;
-  btn.textContent = "Verifying...";
+  btn.innerHTML = `<span>Verifying...</span>`;
 
   try {
     const res = await fetch("/api/auth/verify-email", {
@@ -736,13 +902,16 @@ async function submitVerification(e) {
       showToast("Email verified successfully! You are now logged in.", "success");
       await initAuth();
     } else {
-      showToast(data.error || "Verification failed.", "error");
+      const errMsg = data.error || "Verification failed.";
+      showAuthAlert(errMsg, "error");
+      showToast(errMsg, "error");
     }
   } catch (err) {
+    showAuthAlert("Network connection error. Please try again.", "error");
     showToast("Network error during email verification.", "error");
   } finally {
     btn.disabled = false;
-    btn.textContent = "Verify and Log In";
+    btn.innerHTML = `<span>Verify &amp; Enter Dashboard</span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>`;
   }
 }
 

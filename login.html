@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In &middot; EasyInvite</title>
+  <link rel="stylesheet" href="css/common.css?v=2.8" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #f8fafc;
+      min-height: 100vh;
+      margin: 0;
+      padding: 32px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      box-sizing: border-box;
+    }
+    .auth-page-container {
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .auth-back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.84rem;
+      font-weight: 500;
+      color: #64748b;
+      text-decoration: none;
+      margin-bottom: 20px;
+      transition: color 0.15s ease;
+      align-self: flex-start;
+    }
+    .auth-back-link:hover {
+      color: #0f172a;
+    }
+    .auth-page-card {
+      width: 100%;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.03);
+      position: relative;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-page-container">
+    <a href="index.html" class="auth-back-link">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      Back to EasyInvite
+    </a>
+
+    <div class="auth-page-card">
+      <!-- Brand Header -->
+      <div class="auth-modal-header">
+        <a href="index.html" style="display: inline-block;">
+          <img src="easyinvite.png" alt="EasyInvite" class="auth-brand-logo" />
+        </a>
+        <h1 class="auth-modal-title" id="page-auth-title" style="font-size: 1.35rem;">Welcome back</h1>
+        <p class="auth-modal-subtitle" id="page-auth-subtitle">Sign in to your account to dispatch test campaigns</p>
+      </div>
+
+      <!-- Modern Segmented Pill Switcher (Zero Gradient) -->
+      <div class="auth-segmented-wrap" id="page-auth-switcher-wrap">
+        <div class="auth-segmented-pill">
+          <button type="button" class="auth-segment-btn active" id="tab-btn-signin" onclick="switchPageTab('signin')">Sign In</button>
+          <button type="button" class="auth-segment-btn" id="tab-btn-register" onclick="switchPageTab('register')">Create Account</button>
+        </div>
+      </div>
+
+      <div class="auth-modal-body">
+        <!-- Inline Alert Message Container -->
+        <div class="auth-alert" id="page-auth-alert" role="alert">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <span id="page-auth-alert-text"></span>
+        </div>
+
+        <!-- FORM 1: Sign In -->
+        <form id="page-signin-form" onsubmit="handleSignInSubmit(event)">
+          <div class="auth-input-group">
+            <label class="auth-label" for="signin-email">Email Address</label>
+            <div class="auth-input-wrap">
+              <span class="auth-input-icon">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
+              </span>
+              <input type="email" id="signin-email" class="auth-input" placeholder="you@domain.com" required autocomplete="email" />
+            </div>
+          </div>
+
+          <div class="auth-input-group">
+            <label class="auth-label" for="signin-password">Password</label>
+            <div class="auth-input-wrap">
+              <span class="auth-input-icon">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+              </span>
+              <input type="password" id="signin-password" class="auth-input" placeholder="••••••••" required autocomplete="current-password" />
+              <button type="button" class="auth-pw-toggle" onclick="togglePasswordVisibility('signin-password', this)" title="Show/Hide password">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-auth-submit" id="btn-submit-signin">
+            <span>Sign In</span>
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+
+          <div class="auth-switch-text">
+            Don't have an account? <a href="#" class="auth-switch-link" onclick="event.preventDefault(); switchPageTab('register');">Create one for free</a>
+          </div>
+        </form>
+
+        <!-- FORM 2: Register -->
+        <form id="page-register-form" onsubmit="handleRegisterSubmit(event)" style="display: none;">
+          <div class="auth-input-group">
+            <label class="auth-label" for="register-name">Full Name</label>
+            <div class="auth-input-wrap">
+              <span class="auth-input-icon">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+              </span>
+              <input type="text" id="register-name" class="auth-input" placeholder="e.g. John Doe" required autocomplete="name" />
+            </div>
+          </div>
+
+          <div class="auth-input-group">
+            <label class="auth-label" for="register-email">Email Address</label>
+            <div class="auth-input-wrap">
+              <span class="auth-input-icon">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
+              </span>
+              <input type="email" id="register-email" class="auth-input" placeholder="you@domain.com" required autocomplete="email" />
+            </div>
+          </div>
+
+          <div class="auth-input-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <label class="auth-label" for="register-password" style="margin: 0;">Password</label>
+              <span style="font-size: 0.72rem; color: #64748b;">Min. 6 chars</span>
+            </div>
+            <div class="auth-input-wrap">
+              <span class="auth-input-icon">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+              </span>
+              <input type="password" id="register-password" class="auth-input" placeholder="••••••••" minlength="6" required autocomplete="new-password" />
+              <button type="button" class="auth-pw-toggle" onclick="togglePasswordVisibility('register-password', this)" title="Show/Hide password">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-auth-submit" id="btn-submit-register">
+            <span>Create Account</span>
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+
+          <div class="auth-switch-text">
+            Already have an account? <a href="#" class="auth-switch-link" onclick="event.preventDefault(); switchPageTab('signin');">Sign in</a>
+          </div>
+        </form>
+
+        <!-- FORM 3: Verify Email -->
+        <form id="page-verify-form" onsubmit="handleVerificationSubmit(event)" style="display: none;">
+          <div style="text-align: center; margin-bottom: 16px;">
+            <div style="width: 44px; height: 44px; border-radius: 50%; background: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 8px;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <p style="font-size: 0.84rem; color: #475569; margin: 0;" id="verify-email-prompt">We sent a verification code to your email.</p>
+          </div>
+
+          <div class="auth-input-group">
+            <label class="auth-label" for="verify-token-input">Verification Code / Token</label>
+            <div class="auth-input-wrap">
+              <span class="auth-input-icon">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </span>
+              <input type="text" id="verify-token-input" class="auth-input" placeholder="Paste verification code from email" required />
+            </div>
+            <div id="dev-verify-helper" style="margin-top: 8px; font-size: 0.78rem;"></div>
+          </div>
+
+          <button type="submit" class="btn-auth-submit" id="btn-submit-verify">
+            <span>Verify &amp; Enter Dashboard</span>
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+
+          <div class="auth-switch-text">
+            <a href="#" class="auth-switch-link" onclick="event.preventDefault(); switchPageTab('signin');">&larr; Back to Sign In</a>
+          </div>
+        </form>
+
+        <div class="auth-security-footer">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <span>SSL 256-bit encrypted · Passwords hashed with bcrypt</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Password toggle
+    function togglePasswordVisibility(inputId, btn) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+      const isPassword = input.type === 'password';
+      input.type = isPassword ? 'text' : 'password';
+      btn.innerHTML = isPassword
+        ? `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
+        : `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+    }
+
+    function showPageAlert(msg, type = 'error') {
+      const alert = document.getElementById('page-auth-alert');
+      const text = document.getElementById('page-auth-alert-text');
+      if (!alert || !text) return;
+      text.textContent = msg;
+      alert.className = `auth-alert ${type}`;
+    }
+
+    function clearPageAlert() {
+      const alert = document.getElementById('page-auth-alert');
+      if (alert) {
+        alert.className = 'auth-alert';
+        alert.style.display = 'none';
+      }
+    }
+
+    function switchPageTab(tab) {
+      clearPageAlert();
+      const tabSignin = document.getElementById('tab-btn-signin');
+      const tabRegister = document.getElementById('tab-btn-register');
+      const formSignin = document.getElementById('page-signin-form');
+      const formRegister = document.getElementById('page-register-form');
+      const formVerify = document.getElementById('page-verify-form');
+      const switcherWrap = document.getElementById('page-auth-switcher-wrap');
+      const title = document.getElementById('page-auth-title');
+      const subtitle = document.getElementById('page-auth-subtitle');
+
+      tabSignin.classList.remove('active');
+      tabRegister.classList.remove('active');
+      formSignin.style.display = 'none';
+      formRegister.style.display = 'none';
+      formVerify.style.display = 'none';
+
+      if (tab === 'signin') {
+        switcherWrap.style.display = 'block';
+        tabSignin.classList.add('active');
+        formSignin.style.display = 'block';
+        title.textContent = 'Welcome back';
+        subtitle.textContent = 'Sign in to your account to dispatch test campaigns';
+        document.title = 'Sign In · EasyInvite';
+      } else if (tab === 'register') {
+        switcherWrap.style.display = 'block';
+        tabRegister.classList.add('active');
+        formRegister.style.display = 'block';
+        title.textContent = 'Create an account';
+        subtitle.textContent = 'Start dispatching Google Play closed test invitations';
+        document.title = 'Create Account · EasyInvite';
+      } else if (tab === 'verify') {
+        switcherWrap.style.display = 'none';
+        formVerify.style.display = 'block';
+        title.textContent = 'Verify your email';
+        subtitle.textContent = 'Enter the verification code to activate your account';
+        document.title = 'Verify Email · EasyInvite';
+      }
+    }
+
+    function getRedirectTarget() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('redirect') || 'index.html';
+    }
+
+    // Auto-redirect if already logged in
+    (async function checkExistingAuth() {
+      const token = localStorage.getItem('easyinvite_auth_token');
+      if (!token) return;
+      try {
+        const res = await fetch('/api/auth/me', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (data.success && data.user) {
+          window.location.href = getRedirectTarget();
+        }
+      } catch (err) {
+        // Token invalid or network issue, stay on login page
+      }
+    })();
+
+    // Handle initial tab from query param or hash
+    (function initTab() {
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get('tab');
+      if (tabParam === 'register' || window.location.pathname.includes('register')) {
+        switchPageTab('register');
+      } else if (tabParam === 'verify') {
+        switchPageTab('verify');
+      } else {
+        switchPageTab('signin');
+      }
+    })();
+
+    async function handleSignInSubmit(e) {
+      e.preventDefault();
+      clearPageAlert();
+      const email = document.getElementById('signin-email').value.trim();
+      const password = document.getElementById('signin-password').value;
+      const btn = document.getElementById('btn-submit-signin');
+
+      btn.disabled = true;
+      btn.innerHTML = `<span>Signing in...</span>`;
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          localStorage.setItem('easyinvite_auth_token', data.token);
+          if (data.user) {
+            localStorage.setItem('easyinvite_user', JSON.stringify(data.user));
+          }
+          window.location.href = getRedirectTarget();
+        } else if (data.requiresVerification) {
+          document.getElementById('verify-email-prompt').textContent = `We sent a verification link to ${email}.`;
+          if (data.devVerificationToken) {
+            document.getElementById('verify-token-input').value = data.devVerificationToken;
+            document.getElementById('dev-verify-helper').innerHTML = `
+              <strong>Quick verification link:</strong> <a href="/verify-email?token=${data.devVerificationToken}" target="_blank" style="color: #2563eb; font-weight: 600;">Click here to verify</a>
+            `;
+          }
+          switchPageTab('verify');
+        } else {
+          showPageAlert(data.error || 'Invalid email or password.', 'error');
+        }
+      } catch (err) {
+        showPageAlert('Network connection error. Please try again.', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<span>Sign In</span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>`;
+      }
+    }
+
+    async function handleRegisterSubmit(e) {
+      e.preventDefault();
+      clearPageAlert();
+      const name = document.getElementById('register-name').value.trim();
+      const email = document.getElementById('register-email').value.trim();
+      const password = document.getElementById('register-password').value;
+      const btn = document.getElementById('btn-submit-register');
+
+      if (!name) return showPageAlert('Please enter your full name.', 'error');
+      if (!email) return showPageAlert('Please enter a valid email address.', 'error');
+      if (!password || password.length < 6) return showPageAlert('Password must be at least 6 characters.', 'error');
+
+      btn.disabled = true;
+      btn.innerHTML = `<span>Creating account...</span>`;
+
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          document.getElementById('verify-email-prompt').textContent = `A verification code was created for ${email}.`;
+          if (data.devVerificationToken) {
+            document.getElementById('verify-token-input').value = data.devVerificationToken;
+            document.getElementById('dev-verify-helper').innerHTML = `
+              <strong>Quick verification link:</strong> <a href="${data.devVerifyUrl}" target="_blank" style="color: #2563eb; font-weight: 600;">Click here to verify immediately</a>
+            `;
+          }
+          switchPageTab('verify');
+        } else {
+          showPageAlert(data.error || 'Registration failed.', 'error');
+        }
+      } catch (err) {
+        showPageAlert('Network connection error. Please try again.', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<span>Create Account</span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>`;
+      }
+    }
+
+    async function handleVerificationSubmit(e) {
+      e.preventDefault();
+      clearPageAlert();
+      const token = document.getElementById('verify-token-input').value.trim();
+      const btn = document.getElementById('btn-submit-verify');
+
+      btn.disabled = true;
+      btn.innerHTML = `<span>Verifying...</span>`;
+
+      try {
+        const res = await fetch('/api/auth/verify-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          if (data.token) {
+            localStorage.setItem('easyinvite_auth_token', data.token);
+          }
+          if (data.user) {
+            localStorage.setItem('easyinvite_user', JSON.stringify(data.user));
+          }
+          window.location.href = getRedirectTarget();
+        } else {
+          showPageAlert(data.error || 'Verification failed. Invalid or expired token.', 'error');
+        }
+      } catch (err) {
+        showPageAlert('Network connection error. Please try again.', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<span>Verify &amp; Enter Dashboard</span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>`;
+      }
+    }
+  </script>
+</body>
+</html>
