@@ -325,3 +325,81 @@ body[data-page="settings"] #view-settings {
 .field-error-msg.visible {
   display: block;
 }
+
+/* Administrator Security & Password Card */
+.admin-security-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03), 0 2px 8px -2px rgba(15, 23, 42, 0.05);
+  padding: 26px 30px;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 24px;
+}
+
+.form-row-3col {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-bottom: 18px;
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .form-row-3col {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+.password-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrap .form-control {
+  padding-right: 40px;
+}
+
+.btn-toggle-pw {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #94a3b8;
+  font-size: 0.9rem;
+  line-height: 1;
+  border-radius: 4px;
+  transition: color 0.15s ease;
+}
+
+.btn-toggle-pw:hover {
+  color: #475569;
+}
+
+.security-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 11px;
+  border-radius: 9999px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  height: 26px;
+  box-sizing: border-box;
+}
+
+.security-status-pill svg {
+  color: #10b981;
+}

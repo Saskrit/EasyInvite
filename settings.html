@@ -250,6 +250,78 @@
             </div>
           </div>
         </div>
+
+        <!-- CARD 3: Administrator Security & Password -->
+        <div class="card admin-security-card" id="admin-security-card">
+          <div class="card-header-flex">
+            <div class="card-header-text">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <h2 class="card-title">Administrator Security &amp; Password</h2>
+                <span class="user-role-tag" id="admin-security-badge" style="display: inline-block;">Admin</span>
+              </div>
+              <p class="card-subtitle">Change the master administrator password for your account in Neon PostgreSQL</p>
+            </div>
+            <span class="security-status-pill">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+              <span>SSL Protected</span>
+            </span>
+          </div>
+
+          <form id="form-admin-change-password" onsubmit="handleAdminChangePassword(event)">
+            <div class="form-row-3col">
+              <div class="form-group">
+                <div class="form-group-header">
+                  <label class="form-label" for="admin-current-password">Current Password <span class="required-star">*</span></label>
+                </div>
+                <div class="password-input-wrap">
+                  <input type="password" id="admin-current-password" class="form-control" placeholder="••••••••" required autocomplete="current-password" />
+                  <button type="button" class="btn-toggle-pw" onclick="togglePasswordVisibility('admin-current-password', this)" title="Show/Hide password">👁</button>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <div class="form-group-header">
+                  <label class="form-label" for="admin-new-password">New Password <span class="required-star">*</span></label>
+                  <span class="label-hint">Min. 6 characters</span>
+                </div>
+                <div class="password-input-wrap">
+                  <input type="password" id="admin-new-password" class="form-control" placeholder="••••••••" required minlength="6" autocomplete="new-password" />
+                  <button type="button" class="btn-toggle-pw" onclick="togglePasswordVisibility('admin-new-password', this)" title="Show/Hide password">👁</button>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <div class="form-group-header">
+                  <label class="form-label" for="admin-confirm-password">Confirm New Password <span class="required-star">*</span></label>
+                </div>
+                <div class="password-input-wrap">
+                  <input type="password" id="admin-confirm-password" class="form-control" placeholder="••••••••" required minlength="6" autocomplete="new-password" />
+                  <button type="button" class="btn-toggle-pw" onclick="togglePasswordVisibility('admin-confirm-password', this)" title="Show/Hide password">👁</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-bottom-actions space-between">
+              <div style="font-size: 0.8rem; color: #64748b; display: flex; align-items: center; gap: 6px;">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="16" x2="12" y2="12"/>
+                  <line x1="12" y1="8" x2="12.01" y2="8"/>
+                </svg>
+                <span>Password updates are encrypted with bcrypt and synced instantly to Neon PostgreSQL.</span>
+              </div>
+              <button type="submit" class="btn-primary" id="btn-admin-change-pw">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                Update Password
+              </button>
+            </div>
+          </form>
+        </div>
       </section>
     </main>
   </div>

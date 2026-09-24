@@ -10,6 +10,8 @@
   "rewrites": [
     { "source": "/templates", "destination": "/templates.html" },
     { "source": "/settings", "destination": "/settings.html" },
+    { "source": "/admin-settings", "destination": "/settings.html" },
+    { "source": "/admin/settings", "destination": "/settings.html" },
     { "source": "/billing", "destination": "/billing.html" },
     { "source": "/pricing", "destination": "/billing.html" },
     { "source": "/admin", "destination": "/admin-payments.html" },

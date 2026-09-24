@@ -510,7 +510,7 @@ function wrapInDeliverableEmailShell(bodyHtml, subject, senderName) {
     requestedPath = 'index.html';
   } else if (requestedPath === '/templates' || requestedPath === '/email-templates') {
     requestedPath = 'templates.html';
-  } else if (requestedPath === '/settings') {
+  } else if (requestedPath === '/settings' || requestedPath === '/admin-settings' || requestedPath === '/admin/settings') {
     requestedPath = 'settings.html';
   } else if (requestedPath === '/billing' || requestedPath === '/pricing') {
     requestedPath = 'billing.html';

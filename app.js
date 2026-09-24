@@ -2619,3 +2619,98 @@ function escapeHtml(str) {
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 }
+
+// ==========================================================================
+// Admin Password Management
+// ==========================================================================
+function togglePasswordVisibility(inputId, btn) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  if (input.type === "password") {
+    input.type = "text";
+    if (btn) btn.textContent = "🙈";
+  } else {
+    input.type = "password";
+    if (btn) btn.textContent = "👁";
+  }
+}
+
+async function handleAdminChangePassword(e) {
+  if (e) e.preventDefault();
+
+  const currentInput = document.getElementById("admin-current-password");
+  const newInput = document.getElementById("admin-new-password");
+  const confirmInput = document.getElementById("admin-confirm-password");
+  const btn = document.getElementById("btn-admin-change-pw");
+
+  const currentPassword = currentInput ? currentInput.value.trim() : "";
+  const newPassword = newInput ? newInput.value.trim() : "";
+  const confirmPassword = confirmInput ? confirmInput.value.trim() : "";
+
+  if (!currentPassword) {
+    showToast("Please enter your current password.", "error");
+    if (currentInput) currentInput.focus();
+    return;
+  }
+
+  if (!newPassword || newPassword.length < 6) {
+    showToast("New password must be at least 6 characters long.", "error");
+    if (newInput) newInput.focus();
+    return;
+  }
+
+  if (newPassword !== confirmPassword) {
+    showToast("New password and confirmation do not match.", "error");
+    if (confirmInput) confirmInput.focus();
+    return;
+  }
+
+  const token = localStorage.getItem("easyinvite_auth_token");
+  if (!token) {
+    showToast("You must be logged in to update your password.", "error");
+    showAuthModal("signin");
+    return;
+  }
+
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `Updating...`;
+  }
+
+  try {
+    const res = await fetch("/api/admin/change-password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ currentPassword, newPassword, confirmPassword })
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      if (data.token) {
+        localStorage.setItem("easyinvite_auth_token", data.token);
+      }
+      showToast("Password updated successfully! Synced with database.", "success");
+      if (currentInput) currentInput.value = "";
+      if (newInput) newInput.value = "";
+      if (confirmInput) confirmInput.value = "";
+    } else {
+      showToast(data.error || "Failed to update password.", "error");
+    }
+  } catch (err) {
+    showToast("Network error updating password. Please try again.", "error");
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = `
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        Update Password
+      `;
+    }
+  }
+}
