@@ -753,27 +753,27 @@ function ensureAuthModal() {
 
         <!-- FORM 2: Register -->
         <form id="auth-register-form" onsubmit="submitRegister(event)" style="display: none;">
-          <!-- 1. Plan Section (FIRST) -->
+          <!-- 1. Plan Section -->
           <div id="modal-plan-container">
-            <!-- State A: Chosen Plan Banner (shown when guest user already chose a plan) -->
-            <div id="modal-chosen-plan-banner" class="auth-chosen-plan-banner" style="display: none;">
+            <!-- Normal State: Shows chosen plan with Change Plan button -->
+            <div id="modal-chosen-plan-banner" class="auth-chosen-plan-banner">
               <div class="auth-chosen-plan-info">
-                <span class="auth-chosen-plan-tag">Selected Plan</span>
-                <div class="auth-chosen-plan-title" id="modal-chosen-plan-title">Growth Plan</div>
-                <div class="auth-chosen-plan-sub" id="modal-chosen-plan-sub">NPR 200/mo · 100 send actions</div>
+                <span class="auth-chosen-plan-tag">Plan</span>
+                <div class="auth-chosen-plan-title" id="modal-chosen-plan-title">Starter Plan</div>
+                <div class="auth-chosen-plan-sub" id="modal-chosen-plan-sub">NPR 100/mo · 50 send actions</div>
               </div>
               <button type="button" class="auth-chosen-plan-change" onclick="enableModalPlanSelection()">Change Plan</button>
             </div>
 
-            <!-- State B: Choose Plan Picker (shown when guest user has not chosen a plan yet) -->
-            <div id="modal-plan-picker-group" class="auth-input-group">
+            <!-- Options State: ONLY shown when clicking Change Plan -->
+            <div id="modal-plan-picker-group" class="auth-input-group" style="display: none;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <label class="auth-label" style="margin: 0;">Choose Your Plan <span style="color: #ef4444;">*</span></label>
-                <a href="billing.html" target="_blank" style="font-size: 0.72rem; color: #2563eb; text-decoration: none; font-weight: 600;">View plan details &rarr;</a>
+                <label class="auth-label" style="margin: 0;">Choose Plan Type</label>
+                <button type="button" onclick="cancelModalPlanSelection()" style="background: none; border: none; color: #64748b; font-size: 0.74rem; cursor: pointer; text-decoration: underline;">Cancel</button>
               </div>
               <div class="auth-plan-picker" id="modal-register-plan-picker">
-                <label class="auth-plan-card">
-                  <input type="radio" name="modal-register-plan" value="starter" class="auth-plan-radio" />
+                <div class="auth-plan-card selected" onclick="selectModalPlan('starter')">
+                  <input type="radio" name="modal-register-plan" value="starter" checked class="auth-plan-radio" />
                   <div class="auth-plan-content">
                     <div class="auth-plan-top">
                       <span class="auth-plan-name">Starter</span>
@@ -781,10 +781,10 @@ function ensureAuthModal() {
                     </div>
                     <div class="auth-plan-sub">50 send actions · Saved settings</div>
                   </div>
-                </label>
+                </div>
 
-                <label class="auth-plan-card selected">
-                  <input type="radio" name="modal-register-plan" value="growth" checked class="auth-plan-radio" />
+                <div class="auth-plan-card" onclick="selectModalPlan('growth')">
+                  <input type="radio" name="modal-register-plan" value="growth" class="auth-plan-radio" />
                   <div class="auth-plan-content">
                     <div class="auth-plan-top">
                       <span class="auth-plan-name">Growth <span class="auth-plan-badge">Popular</span></span>
@@ -792,9 +792,9 @@ function ensureAuthModal() {
                     </div>
                     <div class="auth-plan-sub">100 send actions · Use email templates</div>
                   </div>
-                </label>
+                </div>
 
-                <label class="auth-plan-card">
+                <div class="auth-plan-card" onclick="selectModalPlan('pro')">
                   <input type="radio" name="modal-register-plan" value="pro" class="auth-plan-radio" />
                   <div class="auth-plan-content">
                     <div class="auth-plan-top">
@@ -803,9 +803,9 @@ function ensureAuthModal() {
                     </div>
                     <div class="auth-plan-sub">300 send actions · Make own templates</div>
                   </div>
-                </label>
+                </div>
 
-                <label class="auth-plan-card">
+                <div class="auth-plan-card" onclick="selectModalPlan('lifetime')">
                   <input type="radio" name="modal-register-plan" value="lifetime" class="auth-plan-radio" />
                   <div class="auth-plan-content">
                     <div class="auth-plan-top">
@@ -814,17 +814,14 @@ function ensureAuthModal() {
                     </div>
                     <div class="auth-plan-sub">Unlimited sends forever · All features</div>
                   </div>
-                </label>
-              </div>
-              <div style="margin-top: 6px; font-size: 0.74rem; color: #64748b;">
-                Want to test without signing up? <a href="index.html" onclick="closeAuthModal();" style="color: #2563eb; font-weight: 600;">Use Free Guest Mode (5 free sends)</a>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- 2. Full Name -->
+          <!-- 2. First Name -->
           <div class="auth-input-group">
-            <label class="auth-label" for="register-name">Full Name</label>
+            <label class="auth-label" for="register-name">First Name</label>
             <div class="auth-input-wrap">
               <span class="auth-input-icon">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
@@ -832,7 +829,7 @@ function ensureAuthModal() {
                   <circle cx="12" cy="7" r="4"/>
                 </svg>
               </span>
-              <input type="text" id="register-name" class="auth-input" placeholder="e.g. John Doe" required autocomplete="name" />
+              <input type="text" id="register-name" class="auth-input" placeholder="e.g. John" required autocomplete="given-name" />
             </div>
           </div>
 
@@ -871,7 +868,7 @@ function ensureAuthModal() {
           </div>
 
           <button type="submit" class="btn-auth-submit" id="btn-submit-register">
-            <span>Create Account &amp; Proceed</span>
+            <span>Create Account</span>
             <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
 
@@ -967,11 +964,11 @@ const AUTH_PLAN_METADATA = {
   lifetime: { name: 'Lifetime Deal', price: 'NPR 1,000 once', sub: 'Unlimited sends forever · All features' }
 };
 
-let modalChosenPlan = null;
+let modalChosenPlan = 'starter';
 
-function setModalSelectedPlan(planId, isExplicitlyChosen = false) {
-  const normalized = (planId || 'growth').toLowerCase();
-  modalChosenPlan = isExplicitlyChosen ? normalized : null;
+function setModalSelectedPlan(planId) {
+  const normalized = (planId && AUTH_PLAN_METADATA[planId.toLowerCase()]) ? planId.toLowerCase() : 'starter';
+  modalChosenPlan = normalized;
 
   const radio = document.querySelector(`input[name="modal-register-plan"][value="${normalized}"]`);
   if (radio) {
@@ -987,27 +984,29 @@ function setModalSelectedPlan(planId, isExplicitlyChosen = false) {
   const title = document.getElementById('modal-chosen-plan-title');
   const sub = document.getElementById('modal-chosen-plan-sub');
 
-  if (isExplicitlyChosen && AUTH_PLAN_METADATA[normalized]) {
-    // Guest already chose plan: show his chosen plan and NO "choose your plan" picker
-    if (banner) {
-      banner.style.display = 'flex';
-      if (title) title.textContent = AUTH_PLAN_METADATA[normalized].name;
-      if (sub) sub.textContent = `${AUTH_PLAN_METADATA[normalized].price} · ${AUTH_PLAN_METADATA[normalized].sub}`;
-    }
-    if (pickerGroup) pickerGroup.style.display = 'none';
-  } else {
-    // Guest has not chosen plan: first show option to choose plan and view plan details
-    if (banner) banner.style.display = 'none';
-    if (pickerGroup) pickerGroup.style.display = 'block';
-  }
+  if (title) title.textContent = AUTH_PLAN_METADATA[normalized].name;
+  if (sub) sub.textContent = `${AUTH_PLAN_METADATA[normalized].price} · ${AUTH_PLAN_METADATA[normalized].sub}`;
+
+  // Normal state: banner visible, options hidden
+  if (banner) banner.style.display = 'flex';
+  if (pickerGroup) pickerGroup.style.display = 'none';
 }
 
 function enableModalPlanSelection() {
-  modalChosenPlan = null;
+  // Only show the plan options for changing
   const banner = document.getElementById('modal-chosen-plan-banner');
   const pickerGroup = document.getElementById('modal-plan-picker-group');
   if (banner) banner.style.display = 'none';
   if (pickerGroup) pickerGroup.style.display = 'block';
+}
+
+function selectModalPlan(planId) {
+  // On clicking or choosing it, it immediately goes back to normal!
+  setModalSelectedPlan(planId);
+}
+
+function cancelModalPlanSelection() {
+  setModalSelectedPlan(modalChosenPlan);
 }
 
 function showAuthModal(tab = 'signin', preselectedPlan = null) {
@@ -1015,9 +1014,9 @@ function showAuthModal(tab = 'signin', preselectedPlan = null) {
   clearAuthAlert();
   switchAuthTab(tab);
   if (preselectedPlan) {
-    setModalSelectedPlan(preselectedPlan, true);
+    setModalSelectedPlan(preselectedPlan);
   } else {
-    setModalSelectedPlan(null, false);
+    setModalSelectedPlan('starter');
   }
   document.getElementById("auth-modal").style.display = "flex";
 }
@@ -1128,10 +1127,10 @@ async function submitRegister(e) {
   const btn = document.getElementById("btn-submit-register");
 
   const selectedPlanEl = document.querySelector('input[name="modal-register-plan"]:checked');
-  const planId = modalChosenPlan || (selectedPlanEl ? selectedPlanEl.value : 'growth');
+  const planId = modalChosenPlan || (selectedPlanEl ? selectedPlanEl.value : 'starter');
 
   if (!name) {
-    showAuthAlert("Please enter your full name.", "error");
+    showAuthAlert("Please enter your first name.", "error");
     return;
   }
   if (!email) {
@@ -1144,7 +1143,7 @@ async function submitRegister(e) {
   }
 
   btn.disabled = true;
-  btn.innerHTML = `<span>Creating account...</span>`;
+  btn.innerHTML = `<span>Sending verification code...</span>`;
 
   try {
     const res = await fetch("/api/auth/register", {
@@ -1156,15 +1155,15 @@ async function submitRegister(e) {
 
     if (data.success) {
       authRegisteredEmail = email;
-      showToast("Account created! Please enter the 4-digit code sent to your email.", "success");
-      document.getElementById("verify-email-prompt").textContent = `We sent a 4-digit verification code to ${email}. Please check your inbox and spam folder.`;
+      showToast("Verification code sent! Please check your inbox.", "success");
+      document.getElementById("verify-email-prompt").textContent = `We sent a 4-digit verification code to ${email}. Please check your inbox and enter it below.`;
       switchAuthTab("verify");
       setTimeout(() => {
         const input = document.getElementById("modal-verify-code-input");
         if (input) input.focus();
       }, 100);
     } else {
-      const errMsg = data.error || "Registration failed.";
+      const errMsg = data.error || "Failed to send verification code. Please check your email.";
       showAuthAlert(errMsg, "error");
       showToast(errMsg, "error");
     }
@@ -1173,7 +1172,7 @@ async function submitRegister(e) {
     showToast("Network error during registration.", "error");
   } finally {
     btn.disabled = false;
-    btn.innerHTML = `<span>Create Account &amp; Proceed</span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>`;
+    btn.innerHTML = `<span>Create Account</span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>`;
   }
 }
 
