@@ -6,9 +6,8 @@
   <title>Admin Executive Dashboard - EasyInvite</title>
   
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/common.css?v=2.8" />
-  <link rel="stylesheet" href="css/billing.css?v=2.8" />
-  <link rel="stylesheet" href="css/admin.css?v=2.8" />
+  <link rel="stylesheet" href="css/common.css?v=2.9" />
+  <link rel="stylesheet" href="css/admin.css?v=2.9" />
 
   <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -80,7 +79,7 @@
     </aside>
 
     <!-- Main Content Area -->
-    <main class="main-wrapper" style="padding: 32px 40px 80px; overflow-y: auto;">
+    <main class="main-wrapper">
       <div style="max-width: 1300px; margin: 0 auto;">
         
         <!-- Top Executive Header Strip -->
@@ -103,7 +102,7 @@
             </div>
 
             <!-- Refresh Button -->
-            <button type="button" class="btn-action-reject" style="background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12); color: #ffffff;" onclick="loadAdminData()">
+            <button type="button" class="btn-admin-refresh" onclick="loadAdminData()">
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M23 4v6h-6"/>
                 <path d="M1 20v-6h6"/>
@@ -118,14 +117,13 @@
         <div class="admin-stats-grid">
           <!-- Pending Approvals -->
           <div class="stat-card-pro">
-            <div class="stat-glow-orb amber"></div>
             <div class="stat-card-inner">
               <div>
                 <div class="stat-label-pro">Pending Review</div>
-                <div class="stat-value-pro amber" id="stat-pending">0</div>
+                <div class="stat-value-pro" style="color: #b45309;" id="stat-pending">0</div>
                 <div class="stat-subtext" id="stat-pending-sub">Awaiting bank verification</div>
               </div>
-              <div class="stat-icon-wrap" style="color: #f59e0b;">
+              <div class="stat-icon-wrap amber">
                 <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
                   <circle cx="12" cy="12" r="10"/>
                   <polyline points="12 6 12 12 16 14"/>
@@ -136,14 +134,13 @@
 
           <!-- Total Approved Revenue -->
           <div class="stat-card-pro">
-            <div class="stat-glow-orb emerald"></div>
             <div class="stat-card-inner">
               <div>
                 <div class="stat-label-pro">Total Revenue</div>
-                <div class="stat-value-pro emerald" id="stat-revenue">NPR 0</div>
+                <div class="stat-value-pro" style="color: #059669;" id="stat-revenue">NPR 0</div>
                 <div class="stat-subtext" id="stat-revenue-sub">From approved orders</div>
               </div>
-              <div class="stat-icon-wrap" style="color: #10b981;">
+              <div class="stat-icon-wrap emerald">
                 <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
                 </svg>
@@ -153,14 +150,13 @@
 
           <!-- Registered Accounts -->
           <div class="stat-card-pro">
-            <div class="stat-glow-orb blue"></div>
             <div class="stat-card-inner">
               <div>
                 <div class="stat-label-pro">Registered Users</div>
-                <div class="stat-value-pro blue" id="stat-users">0</div>
+                <div class="stat-value-pro" style="color: #2563eb;" id="stat-users">0</div>
                 <div class="stat-subtext" id="stat-users-sub">Stored in Neon cloud DB</div>
               </div>
-              <div class="stat-icon-wrap" style="color: #3b82f6;">
+              <div class="stat-icon-wrap blue">
                 <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                   <circle cx="9" cy="7" r="4"/>
@@ -173,14 +169,13 @@
 
           <!-- Total Dispatches -->
           <div class="stat-card-pro">
-            <div class="stat-glow-orb purple"></div>
             <div class="stat-card-inner">
               <div>
                 <div class="stat-label-pro">Total Invitations Sent</div>
-                <div class="stat-value-pro purple" id="stat-emails">0</div>
+                <div class="stat-value-pro" style="color: #7c3aed;" id="stat-emails">0</div>
                 <div class="stat-subtext" id="stat-campaigns-sub">Across all user campaigns</div>
               </div>
-              <div class="stat-icon-wrap" style="color: #8b5cf6;">
+              <div class="stat-icon-wrap purple">
                 <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
                 </svg>
@@ -271,7 +266,7 @@
       </div>
 
       <div class="modal-body-pro">
-        <div id="receipt-modal-summary" style="width: 100%; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); padding: 14px 18px; border-radius: 12px;">
+        <div id="receipt-modal-summary" class="receipt-summary-grid">
           <!-- Injected dynamically -->
         </div>
 
@@ -284,7 +279,7 @@
       </div>
 
       <div class="modal-footer-pro" id="receipt-modal-actions">
-        <button type="button" class="btn-action-reject" onclick="closeReceiptModal()">Close Viewer</button>
+        <button type="button" class="btn-admin-refresh" onclick="closeReceiptModal()">Close Viewer</button>
         <div id="receipt-modal-decision-btns" style="display: flex; gap: 8px;">
           <!-- Injected dynamically if pending -->
         </div>
@@ -296,34 +291,34 @@
   <div class="modal-backdrop" id="reject-modal" style="display: none;">
     <div class="modal-card-pro" style="max-width: 480px;">
       <div class="modal-header-pro">
-        <h3 style="color: #fb7185;">Reject Payment Order</h3>
+        <h3 style="color: #dc2626; margin: 0; font-size: 1.15rem; font-weight: 700;">Reject Payment Order</h3>
         <button type="button" class="modal-close-btn" onclick="closeRejectModal()">&times;</button>
       </div>
 
       <div style="padding: 24px;">
-        <p style="font-size: 0.88rem; color: #cbd5e1; margin-top: 0;">Select or enter the reason for rejecting this transaction:</p>
+        <p style="font-size: 0.88rem; color: #64748b; margin-top: 0;">Select or enter the reason for rejecting this transaction:</p>
         
         <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
-          <button type="button" class="filter-tab-btn" style="text-align: left; background: rgba(255,255,255,0.03);" onclick="setRejectReason('Bank reference number not found in bank statement')">
+          <button type="button" class="reject-reason-btn" onclick="setRejectReason('Bank reference number not found in bank statement')">
             1. Reference number not found in bank statement
           </button>
-          <button type="button" class="filter-tab-btn" style="text-align: left; background: rgba(255,255,255,0.03);" onclick="setRejectReason('Transferred amount does not match plan price')">
+          <button type="button" class="reject-reason-btn" onclick="setRejectReason('Transferred amount does not match plan price')">
             2. Transferred amount does not match plan price
           </button>
-          <button type="button" class="filter-tab-btn" style="text-align: left; background: rgba(255,255,255,0.03);" onclick="setRejectReason('Unclear or illegible receipt screenshot')">
+          <button type="button" class="reject-reason-btn" onclick="setRejectReason('Unclear or illegible receipt screenshot')">
             3. Unclear or illegible receipt screenshot
           </button>
         </div>
 
-        <label style="font-size: 0.78rem; font-weight: 600; text-transform: uppercase; color: var(--admin-text-faint); display: block; margin-bottom: 6px;">
+        <label style="font-size: 0.78rem; font-weight: 600; text-transform: uppercase; color: var(--admin-text-muted); display: block; margin-bottom: 6px;">
           Custom Reason / Admin Notes
         </label>
         <textarea id="reject-notes-input" rows="3" class="search-input-pro" style="width: 100%; border-radius: 8px; resize: none;" placeholder="Explain why payment was rejected..."></textarea>
       </div>
 
       <div class="modal-footer-pro">
-        <button type="button" class="btn-action-reject" style="background: transparent;" onclick="closeRejectModal()">Cancel</button>
-        <button type="button" class="btn-action-reject" style="background: #dc2626; color: #ffffff;" id="confirm-reject-btn" onclick="submitRejection()">Confirm Rejection</button>
+        <button type="button" class="btn-admin-refresh" onclick="closeRejectModal()">Cancel</button>
+        <button type="button" class="btn-action-reject" id="confirm-reject-btn" onclick="submitRejection()">Confirm Rejection</button>
       </div>
     </div>
   </div>
@@ -334,15 +329,15 @@
       <div class="modal-header-pro">
         <div style="display: flex; align-items: center; gap: 10px;">
           <div class="pulse-dot"></div>
-          <h3 style="color: #6ee7b7;">Neon PostgreSQL Telemetry</h3>
+          <h3 style="color: #065f46; margin: 0; font-size: 1.15rem; font-weight: 700;">Neon PostgreSQL Telemetry</h3>
         </div>
         <button type="button" class="modal-close-btn" onclick="toggleNeonDrawer()">&times;</button>
       </div>
 
       <div style="padding: 24px; display: flex; flex-direction: column; gap: 16px;">
-        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 16px;">
-          <div style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: var(--admin-text-faint); margin-bottom: 8px;">Cluster Connection</div>
-          <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.84rem; color: #93c5fd; word-break: break-all;" id="neon-cluster-host">
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px;">
+          <div style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: var(--admin-text-muted); margin-bottom: 8px;">Cluster Connection</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.84rem; color: #2563eb; word-break: break-all; font-weight: 600;" id="neon-cluster-host">
             Neon Serverless PostgreSQL (Encrypted SSL Pooler)
           </div>
           <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
@@ -373,7 +368,7 @@
       </div>
 
       <div class="modal-footer-pro">
-        <button type="button" class="btn-action-reject" onclick="toggleNeonDrawer()">Close Telemetry</button>
+        <button type="button" class="btn-admin-refresh" onclick="toggleNeonDrawer()">Close Telemetry</button>
         <button type="button" class="btn-action-approve" onclick="fetchNeonDiagnostics()">Re-probe Diagnostics</button>
       </div>
     </div>
@@ -558,9 +553,9 @@
             </div>
           `;
         } else if (order.status === 'APPROVED') {
-          actionsCol = `<span style="font-size: 0.78rem; color: #34d399; font-weight: 600;">Credited on ${order.reviewed_at ? new Date(order.reviewed_at).toLocaleDateString() : 'N/A'}</span>`;
+          actionsCol = `<span style="font-size: 0.78rem; color: #059669; font-weight: 600;">Credited on ${order.reviewed_at ? new Date(order.reviewed_at).toLocaleDateString() : 'N/A'}</span>`;
         } else {
-          actionsCol = `<span style="font-size: 0.76rem; color: #fb7185;" title="${escapeHtml(order.admin_notes || '')}">Reason: ${escapeHtml((order.admin_notes || 'Declined').substring(0, 24))}...</span>`;
+          actionsCol = `<span style="font-size: 0.76rem; color: #dc2626; font-weight: 600;" title="${escapeHtml(order.admin_notes || '')}">Reason: ${escapeHtml((order.admin_notes || 'Declined').substring(0, 24))}...</span>`;
         }
 
         return `
@@ -580,7 +575,7 @@
               </span>
             </td>
             <td>
-              <strong style="color: #ffffff; font-size: 0.95rem;">NPR ${Number(order.amount_npr).toLocaleString()}</strong>
+              <strong style="color: #0f172a; font-size: 0.95rem;">NPR ${Number(order.amount_npr).toLocaleString()}</strong>
               <div style="font-size: 0.74rem; color: var(--admin-text-faint);">${escapeHtml(order.bank_name || 'Bank Transfer')}</div>
             </td>
             <td>
@@ -679,19 +674,19 @@
       summaryWrap.innerHTML = `
         <div>
           <div style="font-size: 0.72rem; color: var(--admin-text-faint); text-transform: uppercase;">Customer</div>
-          <div style="font-weight: 700; color: #ffffff;">${escapeHtml(order.user_name || 'Customer')}</div>
+          <div style="font-weight: 700; color: #0f172a;">${escapeHtml(order.user_name || 'Customer')}</div>
         </div>
         <div>
           <div style="font-size: 0.72rem; color: var(--admin-text-faint); text-transform: uppercase;">Plan</div>
-          <div style="font-weight: 700; color: #93c5fd;">${escapeHtml(order.plan_name || order.plan_id)}</div>
+          <div style="font-weight: 700; color: #2563eb;">${escapeHtml(order.plan_name || order.plan_id)}</div>
         </div>
         <div>
           <div style="font-size: 0.72rem; color: var(--admin-text-faint); text-transform: uppercase;">Amount</div>
-          <div style="font-weight: 700; color: #34d399;">NPR ${order.amount_npr}</div>
+          <div style="font-weight: 700; color: #059669;">NPR ${order.amount_npr}</div>
         </div>
         <div>
           <div style="font-size: 0.72rem; color: var(--admin-text-faint); text-transform: uppercase;">Txn Ref</div>
-          <div style="font-family: monospace; color: #fde68a;">${escapeHtml(order.reference_number)}</div>
+          <div style="font-family: monospace; color: #b45309; font-weight: 600;">${escapeHtml(order.reference_number)}</div>
         </div>
       `;
 
@@ -738,14 +733,14 @@
         <tr>
           <td colspan="8">
             <div class="admin-empty-state">
-              <div class="admin-empty-icon" style="background: rgba(244,63,94,0.1); border-color: rgba(244,63,94,0.3); color: #fb7185;">
+              <div class="admin-empty-icon" style="background: #fef2f2; border-color: #fecaca; color: #dc2626;">
                 <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                 </svg>
               </div>
-              <h4 class="admin-empty-title" style="color: #fb7185;">403 Access Denied</h4>
+              <h4 class="admin-empty-title" style="color: #dc2626;">403 Access Denied</h4>
               <p class="admin-empty-desc">You must be logged in with an Administrator account (e.g. admin@easyinvite.com) to view and manage payments.</p>
-              <button type="button" class="btn-action-approve" style="margin-top: 16px;" onclick="showAuthModal('login')">Log In as Admin</button>
+              <button type="button" class="btn-action-approve" style="margin-top: 16px;" onclick="showAuthModal('signin')">Log In as Admin</button>
             </div>
           </td>
         </tr>
