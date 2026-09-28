@@ -1276,19 +1276,26 @@ async function submitVerification(e) {
         localStorage.setItem("easyinvite_user", JSON.stringify(data.user));
       }
       closeAuthModal();
-      showToast("Account activated successfully! You are now logged in.", "success");
-      await initAuth();
 
       const chosenPlan = (data.user && (data.user.chosen_plan || data.user.plan_id)) || data.chosenPlan || modalChosenPlan || 'starter';
-      if (chosenPlan && chosenPlan !== 'free') {
+      const requiresPayment = chosenPlan !== 'free';
+
+      if (requiresPayment) {
+        localStorage.setItem("easyinvite_pending_payment", "true");
+        localStorage.setItem("easyinvite_is_new_registration", "true");
+        showToast("Email verified! Please complete payment to create your account.", "info");
+
         const currentPage = getCurrentPage();
         if (currentPage === 'billing' || window.location.pathname.includes('billing')) {
           if (typeof openPaymentModalForPlanId === 'function') {
             openPaymentModalForPlanId(chosenPlan);
           }
         } else {
-          window.location.href = `billing.html?openPayment=${encodeURIComponent(chosenPlan)}`;
+          window.location.href = `billing.html?openPayment=${encodeURIComponent(chosenPlan)}&isNew=1`;
         }
+      } else {
+        showToast("Account activated successfully! You are now logged in.", "success");
+        await initAuth();
       }
     } else {
       const errMsg = data.error || "Invalid 4-digit code. Please check and try again.";

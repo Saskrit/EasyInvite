@@ -635,8 +635,10 @@
           }
           const chosenPlan = (data.user && (data.user.chosen_plan || data.user.plan_id)) || data.chosenPlan || pageChosenPlan || 'starter';
           if (chosenPlan && chosenPlan !== 'free') {
+            localStorage.setItem('easyinvite_pending_payment', 'true');
+            localStorage.setItem('easyinvite_is_new_registration', 'true');
             // Automatically open respective plan payment verification modal
-            window.location.href = `billing.html?openPayment=${encodeURIComponent(chosenPlan)}`;
+            window.location.href = `billing.html?openPayment=${encodeURIComponent(chosenPlan)}&isNew=1`;
           } else {
             window.location.href = getRedirectTarget();
           }

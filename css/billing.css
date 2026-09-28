@@ -940,13 +940,15 @@ body[data-page="billing"] .bvb-value-row {
 
 body[data-page="billing"] .modal-payable-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: center;
+  gap: 12px;
   background: #eff6ff;
   border: 1px solid #bfdbfe;
   border-radius: 8px;
-  padding: 12px 16px;
-  margin-bottom: 16px;
+  padding: 11px 16px;
+  margin-bottom: 14px;
+  text-align: center;
 }
 
 body[data-page="billing"] .modal-payable-row .label {
@@ -962,21 +964,59 @@ body[data-page="billing"] .modal-payable-row .val.highlight {
 }
 
 body[data-page="billing"] .bank-vertical-grid.modal-style {
-  gap: 10px;
-  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
 }
 
 body[data-page="billing"] .bank-vertical-grid.modal-style .bank-vertical-box {
-  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 9px 14px;
+  transition: all 0.15s ease;
 }
 
-body[data-page="billing"] .bank-vertical-grid.modal-style .bvb-icon {
-  width: 36px;
-  height: 36px;
+body[data-page="billing"] .bank-vertical-grid.modal-style .bank-vertical-box:hover {
+  border-color: #cbd5e1;
+  background: #f1f5f9;
+}
+
+body[data-page="billing"] .bank-vertical-grid.modal-style .bvb-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #64748b;
+  margin-bottom: 2px;
+  text-align: center;
 }
 
 body[data-page="billing"] .bank-vertical-grid.modal-style .bvb-value {
-  font-size: 0.95rem;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #0f172a;
+  text-align: center;
+}
+
+body[data-page="billing"] .bank-vertical-grid.modal-style .bvb-value.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  letter-spacing: 0.5px;
+  font-size: 1.02rem;
+}
+
+body[data-page="billing"] .bank-vertical-grid.modal-style .bvb-value-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
 }
 
 /* Responsive adjustments */
