@@ -189,6 +189,17 @@
                   </div>
                 </div>
 
+                <div class="auth-plan-card" onclick="selectPagePlan('scale')">
+                  <input type="radio" name="page-register-plan" value="scale" class="auth-plan-radio" />
+                  <div class="auth-plan-content">
+                    <div class="auth-plan-top">
+                      <span class="auth-plan-name">Scale</span>
+                      <span class="auth-plan-price">NPR 500/mo</span>
+                    </div>
+                    <div class="auth-plan-sub">500 send actions · Saved testers &amp; sent history</div>
+                  </div>
+                </div>
+
                 <div class="auth-plan-card" onclick="selectPagePlan('lifetime')">
                   <input type="radio" name="page-register-plan" value="lifetime" class="auth-plan-radio" />
                   <div class="auth-plan-content">
@@ -396,6 +407,7 @@
       starter: { name: 'Starter Plan', price: 'NPR 100/mo', sub: '50 send actions · Saved settings' },
       growth: { name: 'Growth Plan', price: 'NPR 200/mo', sub: '100 send actions · Use email templates' },
       pro: { name: 'Pro Plan', price: 'NPR 300/mo', sub: '300 send actions · Make own templates' },
+      scale: { name: 'Scale Plan', price: 'NPR 500/mo', sub: '500 send actions · Saved testers & sent history' },
       lifetime: { name: 'Lifetime Deal', price: 'NPR 1,000 once', sub: 'Unlimited sends forever · All features' }
     };
 
@@ -621,7 +633,7 @@
           if (data.user) {
             localStorage.setItem('easyinvite_user', JSON.stringify(data.user));
           }
-          const chosenPlan = (data.user && data.user.plan_id) || data.chosenPlan || pageChosenPlan || 'free';
+          const chosenPlan = (data.user && (data.user.chosen_plan || data.user.plan_id)) || data.chosenPlan || pageChosenPlan || 'starter';
           if (chosenPlan && chosenPlan !== 'free') {
             // Automatically open respective plan payment verification modal
             window.location.href = `billing.html?openPayment=${encodeURIComponent(chosenPlan)}`;

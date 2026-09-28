@@ -472,15 +472,22 @@ function wrapInDeliverableEmailShell(bodyHtml, subject, senderName) {
               'Precedence': 'personal'
             }
           });
-          results.push({ status: 'fulfilled', value: info });
+          results.push({ email: toEmail, status: 'fulfilled', value: info });
         } catch (err) {
           console.error(`Failed to send to ${toEmail}:`, err.message);
-          results.push({ status: 'rejected', reason: err });
+          results.push({ email: toEmail, status: 'rejected', reason: err });
         }
       }
 
       const successful = results.filter(r => r.status === 'fulfilled');
       const failed = results.filter(r => r.status === 'rejected');
+
+      const detailedResults = results.map((r, idx) => ({
+        index: idx + 1,
+        email: recipients[idx].trim(),
+        success: r.status === 'fulfilled',
+        error: r.status === 'rejected' ? (r.reason && r.reason.message ? r.reason.message : 'Send failed') : null
+      }));
 
       if (successful.length === 0 && failed.length > 0) {
         const errorMsg = failed[0].reason ? failed[0].reason.message : 'Failed to send emails via Gmail.';
@@ -498,7 +505,8 @@ function wrapInDeliverableEmailShell(bodyHtml, subject, senderName) {
         success: true,
         sentCount: successful.length,
         failedCount: failed.length,
-        totalCount: recipients.length
+        totalCount: recipients.length,
+        results: detailedResults
       }));
     } catch (err) {
       console.error('Send email error:', err);

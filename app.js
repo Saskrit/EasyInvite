@@ -453,18 +453,39 @@ let currentUserUsage = null;
 
 function getUserPlan() {
   if (currentUser && currentUser.role === 'admin') return 'admin';
-  if (currentUserUsage && currentUserUsage.planId) return String(currentUserUsage.planId).toLowerCase();
+  if (!currentUserUsage) return 'free';
+  if (currentUserUsage.hasApprovedPaidPlan && currentUserUsage.planId) {
+    return String(currentUserUsage.planId).toLowerCase();
+  }
+  if (currentUserUsage.isLifetime && currentUserUsage.hasApprovedPaidPlan) {
+    return 'lifetime';
+  }
   return 'free';
 }
 
 function canUseEmailTemplates() {
   const plan = getUserPlan();
-  return ['growth', 'pro', 'lifetime', 'admin'].includes(plan);
+  return ['growth', 'pro', 'scale', 'lifetime', 'admin'].includes(plan);
 }
 
 function canCreateCustomTemplates() {
   const plan = getUserPlan();
-  return ['pro', 'lifetime', 'admin'].includes(plan);
+  return ['pro', 'scale', 'lifetime', 'admin'].includes(plan);
+}
+
+function canSaveMultipleTesters() {
+  const plan = getUserPlan();
+  return ['scale', 'lifetime', 'admin'].includes(plan);
+}
+
+function canViewSentHistory() {
+  const plan = getUserPlan();
+  return ['scale', 'lifetime', 'admin'].includes(plan);
+}
+
+function canUseItemizedDispatch() {
+  const plan = getUserPlan();
+  return ['scale', 'lifetime', 'admin'].includes(plan);
 }
 
 function showPlanUpgradePrompt(featureName, requiredPlanName) {
@@ -591,31 +612,33 @@ function renderSidebarUserSection() {
     const initial = (currentUser.name ? currentUser.name[0] : 'U').toUpperCase();
     const isAdmin = currentUser.role === 'admin';
     const hasPending = currentUserUsage && currentUserUsage.hasPendingPayment;
-    const isLifetime = currentUserUsage && currentUserUsage.isLifetime;
-    const planId = (currentUserUsage && currentUserUsage.planId) ? currentUserUsage.planId.toLowerCase() : 'free';
+    const isApprovedLifetime = isAdmin || (currentUserUsage && currentUserUsage.isLifetime && currentUserUsage.hasApprovedPaidPlan);
+    const activePlan = getUserPlan();
 
     let planLabel = 'Free Plan';
     if (isAdmin) {
       planLabel = 'Admin';
     } else if (hasPending) {
       planLabel = 'Free · Payment Pending ⏳';
-    } else if (planId && planId !== 'free') {
-      planLabel = planId.charAt(0).toUpperCase() + planId.slice(1) + ' Plan';
+    } else if (activePlan !== 'free') {
+      planLabel = activePlan.charAt(0).toUpperCase() + activePlan.slice(1) + ' Plan';
     }
 
     let balanceText = '0 Sends left';
-    if (isLifetime) {
+    if (isApprovedLifetime) {
       balanceText = 'Unlimited (Lifetime)';
     } else if (hasPending) {
       balanceText = 'Free Tier (Payment Pending)';
-    } else if (currentUserUsage) {
+    } else if (currentUserUsage && activePlan !== 'free') {
       balanceText = `${currentUserUsage.sendsRemaining} Sends left`;
+    } else {
+      balanceText = '0 Sends left (Free Tier)';
     }
 
     const balancePillHtml = isAdmin ? '' : `
-      <a href="billing.html" class="user-balance-pill ${isLifetime ? 'lifetime' : ''} ${hasPending ? 'pending' : ''}" title="View plans & order status">
+      <a href="billing.html" class="user-balance-pill ${isApprovedLifetime ? 'lifetime' : ''} ${hasPending ? 'pending' : ''}" title="View plans & order status">
         <span>⚡ ${balanceText}</span>
-        <span style="font-size: 0.72rem; opacity: 0.8;">${hasPending ? 'Pending &rarr;' : (isLifetime ? 'Lifetime &rarr;' : 'Top up &rarr;')}</span>
+        <span style="font-size: 0.72rem; opacity: 0.8;">${hasPending ? 'Pending &rarr;' : (isApprovedLifetime ? 'Lifetime &rarr;' : (activePlan !== 'free' ? 'Top up &rarr;' : 'Upgrade &rarr;'))}</span>
       </a>
     `;
 
@@ -805,6 +828,17 @@ function ensureAuthModal() {
                   </div>
                 </div>
 
+                <div class="auth-plan-card" onclick="selectModalPlan('scale')">
+                  <input type="radio" name="modal-register-plan" value="scale" class="auth-plan-radio" />
+                  <div class="auth-plan-content">
+                    <div class="auth-plan-top">
+                      <span class="auth-plan-name">Scale</span>
+                      <span class="auth-plan-price">NPR 500/mo</span>
+                    </div>
+                    <div class="auth-plan-sub">500 send actions · Saved testers &amp; sent history</div>
+                  </div>
+                </div>
+
                 <div class="auth-plan-card" onclick="selectModalPlan('lifetime')">
                   <input type="radio" name="modal-register-plan" value="lifetime" class="auth-plan-radio" />
                   <div class="auth-plan-content">
@@ -961,6 +995,7 @@ const AUTH_PLAN_METADATA = {
   starter: { name: 'Starter Plan', price: 'NPR 100/mo', sub: '50 send actions · Saved settings' },
   growth: { name: 'Growth Plan', price: 'NPR 200/mo', sub: '100 send actions · Use email templates' },
   pro: { name: 'Pro Plan', price: 'NPR 300/mo', sub: '300 send actions · Make own templates' },
+  scale: { name: 'Scale Plan', price: 'NPR 500/mo', sub: '500 send actions · Saved testers & sent history' },
   lifetime: { name: 'Lifetime Deal', price: 'NPR 1,000 once', sub: 'Unlimited sends forever · All features' }
 };
 
@@ -1244,7 +1279,7 @@ async function submitVerification(e) {
       showToast("Account activated successfully! You are now logged in.", "success");
       await initAuth();
 
-      const chosenPlan = (data.user && data.user.plan_id) || data.chosenPlan || modalChosenPlan || 'free';
+      const chosenPlan = (data.user && (data.user.chosen_plan || data.user.plan_id)) || data.chosenPlan || modalChosenPlan || 'starter';
       if (chosenPlan && chosenPlan !== 'free') {
         const currentPage = getCurrentPage();
         if (currentPage === 'billing' || window.location.pathname.includes('billing')) {
@@ -1338,6 +1373,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Load any configured defaults or credentials from .env
   loadServerEnvConfig();
+
+  // If navigated from another page to view history, trigger modal
+  if (localStorage.getItem("easyinvite_open_history") === "1") {
+    localStorage.removeItem("easyinvite_open_history");
+    setTimeout(() => {
+      openSentHistoryModal();
+    }, 300);
+  }
 });
 
 // ==========================================================================
@@ -1762,6 +1805,25 @@ function setupEventListeners() {
       switchView("settings");
     });
   }
+
+  // Scale Plan: Testers Directory & Sent History event listeners
+  const btnOpenTesters = document.getElementById("btn-open-testers-directory");
+  if (btnOpenTesters) {
+    btnOpenTesters.addEventListener("click", openTestersDirectoryModal);
+  }
+
+  const btnSaveTesters = document.getElementById("btn-save-current-testers");
+  if (btnSaveTesters) {
+    btnSaveTesters.addEventListener("click", saveCurrentRecipientsToTesters);
+  }
+
+  const navSentHistory = document.getElementById("nav-sent-history");
+  if (navSentHistory) {
+    navSentHistory.addEventListener("click", (e) => {
+      e.preventDefault();
+      openSentHistoryModal();
+    });
+  }
 }
 
 // ==========================================================================
@@ -2100,8 +2162,6 @@ async function handleSendInvitations() {
         guestSends++;
         localStorage.setItem("easyinvite_guest_sends", String(guestSends));
         renderSidebarUserSection();
-        const left = data.guestSendsRemaining !== undefined ? data.guestSendsRemaining : Math.max(0, 5 - guestSends);
-        showToast(`Successfully sent ${data.sentCount} invitation${data.sentCount === 1 ? "" : "s"}! (${left} free guest sends left)`, "success");
       } else {
         if (data.usage) {
           currentUserUsage = {
@@ -2111,8 +2171,10 @@ async function handleSendInvitations() {
           };
           renderSidebarUserSection();
         }
-        showToast(`Successfully sent ${data.sentCount} invitation${data.sentCount === 1 ? "" : "s"} via Gmail!`, "success");
       }
+
+      // Capture snapshot before clearing
+      const dispatchedEmails = [...(state.recipients || [])];
 
       // Clear recipients for the next batch
       state.recipients = [];
@@ -2121,6 +2183,66 @@ async function handleSendInvitations() {
 
       if (elements.recipientsTextarea) {
         elements.recipientsTextarea.value = "";
+      }
+
+      // Display per-recipient success toasts followed by final all sent toast
+      const results = Array.isArray(data.results) ? data.results : null;
+      const totalSent = data.sentCount !== undefined ? data.sentCount : recipientCount;
+      const stepDelay = totalSent > 15 ? 200 : totalSent > 8 ? 300 : 420;
+
+      if (results && results.length > 0) {
+        let sentIdx = 0;
+        for (let i = 0; i < results.length; i++) {
+          const item = results[i];
+          if (item.success) {
+            sentIdx++;
+            const msg = sentIdx === 1 ? "Sent 1 mail Successfull" : `Sent ${sentIdx} Successfull`;
+            showToast(msg, "success", 2400);
+            if (elements.sendButtonText) {
+              elements.sendButtonText.textContent = `Sent ${sentIdx} of ${totalSent}...`;
+            }
+          } else {
+            showToast(`Failed sending to ${item.email || 'recipient'}`, "error", 2800);
+          }
+          if (i < results.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, stepDelay));
+          }
+        }
+      } else {
+        for (let i = 1; i <= totalSent; i++) {
+          const msg = i === 1 ? "Sent 1 mail Successfull" : `Sent ${i} Successfull`;
+          showToast(msg, "success", 2400);
+          if (elements.sendButtonText) {
+            elements.sendButtonText.textContent = `Sent ${i} of ${totalSent}...`;
+          }
+          if (i < totalSent) {
+            await new Promise(resolve => setTimeout(resolve, stepDelay));
+          }
+        }
+      }
+
+      // Final completion toast: "All Mail Successfully sent"
+      await new Promise(resolve => setTimeout(resolve, stepDelay + 80));
+      if (!data.failedCount || data.failedCount === 0) {
+        showToast("All Mail Successfully sent", "success", 4000);
+      } else {
+        showToast(`Sent ${data.sentCount} of ${data.totalCount} emails (${data.failedCount} failed)`, "warning", 4000);
+      }
+
+      // Live Itemized Multi-Send Dispatch Popup (Scale, Lifetime, Admin plan feature)
+      const totalDispatched = (results && results.length > 0) ? results.length : totalSent;
+      if (totalDispatched > 1 || dispatchedEmails.length > 1) {
+        if (canUseItemizedDispatch()) {
+          const finalResults = (results && results.length > 0)
+            ? results
+            : dispatchedEmails.map(em => ({ email: em, success: true }));
+          showItemizedDispatchModal({
+            results: finalResults,
+            sentCount: data.sentCount !== undefined ? data.sentCount : totalSent,
+            totalCount: data.totalCount !== undefined ? data.totalCount : totalDispatched,
+            failedCount: data.failedCount || 0
+          });
+        }
       }
     } else {
       updateSmtpUI(false, "Offline (Auth Failed)");
@@ -3206,8 +3328,21 @@ function handleCsvUpload(e) {
   e.target.value = "";
 }
 
-function showToast(message, type = "info") {
+function showToast(message, type = "info", duration = 3200) {
   if (!elements.toastContainer) return;
+
+  // Prune older toasts if more than 4 are visible so the screen stays clean
+  const activeToasts = elements.toastContainer.querySelectorAll(".toast:not(.toast-closing)");
+  if (activeToasts.length >= 4) {
+    for (let i = 0; i <= activeToasts.length - 4; i++) {
+      const old = activeToasts[i];
+      old.classList.add("toast-closing");
+      old.style.opacity = "0";
+      old.style.transform = "translateY(-16px)";
+      old.style.transition = "all 0.2s ease";
+      setTimeout(() => old.remove(), 220);
+    }
+  }
 
   const toast = document.createElement("div");
   toast.className = `toast ${type}`;
@@ -3220,11 +3355,12 @@ function showToast(message, type = "info") {
   elements.toastContainer.appendChild(toast);
 
   setTimeout(() => {
+    toast.classList.add("toast-closing");
     toast.style.opacity = "0";
     toast.style.transform = "translateY(-20px)";
     toast.style.transition = "all 0.25s ease";
     setTimeout(() => toast.remove(), 260);
-  }, 3200);
+  }, duration);
 }
 
 function escapeHtml(str) {
@@ -3331,3 +3467,606 @@ async function handleAdminChangePassword(e) {
     }
   }
 }
+
+// ==========================================================================
+// Scale Plan: Live Itemized Multi-Email Dispatch Modal
+// Displays sequential/itemized progress: "1. Email sent to ___, 2nd Email sent to ___..."
+// ==========================================================================
+function getOrdinalDispatchLabel(num, isSuccess) {
+  let prefix = "";
+  if (num === 1) prefix = "1. Email";
+  else if (num === 2) prefix = "2nd Email";
+  else if (num === 3) prefix = "3rd Email";
+  else {
+    const rem = num % 10;
+    const rem100 = num % 100;
+    if (rem === 1 && rem100 !== 11) prefix = `${num}st Email`;
+    else if (rem === 2 && rem100 !== 12) prefix = `${num}nd Email`;
+    else if (rem === 3 && rem100 !== 13) prefix = `${num}rd Email`;
+    else prefix = `${num}th Email`;
+  }
+  return isSuccess ? `${prefix} sent to` : `${prefix} failed to`;
+}
+
+function showItemizedDispatchModal(details) {
+  const existing = document.getElementById("itemized-dispatch-modal");
+  if (existing) existing.remove();
+
+  const results = details.results || [];
+  const totalCount = details.totalCount || results.length;
+  const sentCount = details.sentCount !== undefined ? details.sentCount : results.filter(r => r.success !== false).length;
+  const failedCount = details.failedCount || (totalCount - sentCount);
+
+  const modal = document.createElement("div");
+  modal.className = "modal-backdrop";
+  modal.id = "itemized-dispatch-modal";
+  modal.style.display = "flex";
+  modal.style.alignItems = "center";
+  modal.style.justifyContent = "center";
+  modal.style.zIndex = "10000";
+
+  let listHtml = "";
+  if (results && results.length > 0) {
+    listHtml = results.map((item, idx) => {
+      const num = idx + 1;
+      const isSuccess = item.success !== false;
+      const label = getOrdinalDispatchLabel(num, isSuccess);
+      const email = item.email || (typeof item === 'string' ? item : `recipient #${num}`);
+      const bg = isSuccess ? '#f0fdf4' : '#fef2f2';
+      const border = isSuccess ? '#bbf7d0' : '#fecaca';
+      const color = isSuccess ? '#166534' : '#991b1b';
+      const badgeBg = isSuccess ? '#dcfce7' : '#fee2e2';
+      const badgeColor = isSuccess ? '#15803d' : '#b91c1c';
+      const icon = isSuccess
+        ? `<svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>`
+        : `<svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#ef4444" stroke-width="2.5"><line x1="15" y1="5" x2="5" y2="15"/><line x1="5" y1="5" x2="15" y2="15"/></svg>`;
+
+      return `
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; background: ${bg}; border: 1px solid ${border}; border-radius: 8px; font-size: 0.88rem; color: ${color}; margin-bottom: 8px;">
+          <div style="display: flex; align-items: center; gap: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+            <div style="flex-shrink: 0; display: flex; align-items: center;">${icon}</div>
+            <span style="font-size: 0.87rem; line-height: 1.4;">${label} <strong style="font-weight: 600;">${escapeHtml(email)}</strong></span>
+          </div>
+          <span style="flex-shrink: 0; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; background: ${badgeBg}; color: ${badgeColor}; border: 1px solid ${border};">${isSuccess ? 'Delivered' : 'Failed'}</span>
+        </div>
+      `;
+    }).join("");
+  } else {
+    const items = [];
+    for (let i = 1; i <= totalCount; i++) {
+      const label = getOrdinalDispatchLabel(i, true);
+      items.push(`
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; font-size: 0.88rem; color: #166534; margin-bottom: 8px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
+            <span>${label} <strong>recipient #${i}</strong></span>
+          </div>
+          <span style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0;">Delivered</span>
+        </div>
+      `);
+    }
+    listHtml = items.join("");
+  }
+
+  modal.innerHTML = `
+    <div class="modal-card" style="max-width: 520px; width: 92%; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.18); max-height: 85vh; display: flex; flex-direction: column;">
+      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 14px; margin-bottom: 16px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 36px; height: 36px; border-radius: 8px; background: #ecfdf5; color: #10b981; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div>
+            <h3 style="font-size: 1.15rem; font-weight: 700; color: #0f172a; margin: 0;">Live Dispatch Progress &amp; Status</h3>
+            <p style="font-size: 0.8rem; color: #64748b; margin: 2px 0 0;">${sentCount} of ${totalCount} emails successfully sent${failedCount > 0 ? ` (${failedCount} failed)` : ''}</p>
+          </div>
+        </div>
+        <button type="button" id="btn-close-dispatch-modal-x" style="background: none; border: none; font-size: 1.4rem; color: #94a3b8; cursor: pointer; line-height: 1;">&times;</button>
+      </div>
+
+      <div style="overflow-y: auto; max-height: 380px; padding-right: 4px; margin-bottom: 16px;">
+        ${listHtml}
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; padding-top: 12px; border-top: 1px solid #f1f5f9;">
+        <button type="button" class="btn-primary" id="btn-close-dispatch-modal" style="padding: 9px 22px; font-weight: 600;">
+          Done
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  const closeBtn = modal.querySelector("#btn-close-dispatch-modal");
+  const closeX = modal.querySelector("#btn-close-dispatch-modal-x");
+  if (closeBtn) closeBtn.addEventListener("click", () => modal.remove());
+  if (closeX) closeX.addEventListener("click", () => modal.remove());
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) modal.remove();
+  });
+}
+
+// ==========================================================================
+// Scale Plan: Saved Multiple Testers Directory
+// Save multiple tester emails and reuse anytime in Compose
+// ==========================================================================
+function getCurrentlyEnteredEmails() {
+  const list = [...(state.recipients || [])];
+  if (elements.recipientsTextarea && elements.recipientsTextarea.value) {
+    const raw = elements.recipientsTextarea.value;
+    const split = raw.split(/[\n,;]+/).map(s => s.trim().toLowerCase()).filter(s => s && s.includes('@'));
+    split.forEach(em => {
+      if (!list.includes(em)) list.push(em);
+    });
+  }
+  const inline = document.getElementById('chip-inline-input');
+  if (inline && inline.value) {
+    const v = inline.value.trim().toLowerCase();
+    if (v && v.includes('@') && !list.includes(v)) list.push(v);
+  }
+  return list;
+}
+
+async function saveCurrentRecipientsToTesters() {
+  if (!canSaveMultipleTesters()) {
+    showPlanUpgradePrompt("Saving multiple tester emails", "Scale (Rs 500/mo)");
+    return;
+  }
+
+  const token = localStorage.getItem("easyinvite_auth_token");
+  if (!token) {
+    showToast("Please log in to save tester emails.", "warning");
+    showAuthModal("signin");
+    return;
+  }
+
+  const emails = getCurrentlyEnteredEmails();
+  if (emails.length === 0) {
+    showToast("No recipient emails found. Add emails to recipients first.", "warning");
+    return;
+  }
+
+  try {
+    const res = await fetch("/api/user/testers", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ emails })
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      const count = data.count !== undefined ? data.count : emails.length;
+      showToast(`Successfully saved ${count} tester email(s) to directory!`, "success");
+    } else {
+      showToast(data.error || "Failed to save testers.", "error");
+    }
+  } catch (err) {
+    showToast("Network error saving testers.", "error");
+  }
+}
+
+async function openTestersDirectoryModal() {
+  if (!canSaveMultipleTesters()) {
+    showPlanUpgradePrompt("Saved Tester Directory & reusable contacts", "Scale (Rs 500/mo)");
+    return;
+  }
+
+  const token = localStorage.getItem("easyinvite_auth_token");
+  if (!token) {
+    showToast("Please log in to view saved testers.", "warning");
+    showAuthModal("signin");
+    return;
+  }
+
+  const existing = document.getElementById("testers-directory-modal");
+  if (existing) existing.remove();
+
+  const modal = document.createElement("div");
+  modal.className = "modal-backdrop";
+  modal.id = "testers-directory-modal";
+  modal.style.display = "flex";
+  modal.style.alignItems = "center";
+  modal.style.justifyContent = "center";
+  modal.style.zIndex = "10000";
+
+  modal.innerHTML = `
+    <div class="modal-card" style="max-width: 600px; width: 94%; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.18); max-height: 88vh; display: flex; flex-direction: column;">
+      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 14px; margin-bottom: 16px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 38px; height: 38px; border-radius: 8px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <div>
+            <h3 style="font-size: 1.18rem; font-weight: 700; color: #0f172a; margin: 0;">Saved Testers Directory</h3>
+            <p style="font-size: 0.82rem; color: #64748b; margin: 2px 0 0;">Select testers to insert into your compose form, or add new ones.</p>
+          </div>
+        </div>
+        <button type="button" id="btn-close-testers-modal-x" style="background: none; border: none; font-size: 1.4rem; color: #94a3b8; cursor: pointer; line-height: 1;">&times;</button>
+      </div>
+
+      <!-- Quick Add Tester Form -->
+      <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+        <input type="email" id="quick-tester-input" class="form-control" placeholder="Add tester email (e.g. john@gmail.com)" style="flex: 1; padding: 8px 12px; font-size: 0.88rem;" />
+        <button type="button" class="btn-primary" id="btn-quick-add-tester" style="padding: 8px 16px; font-size: 0.85rem; font-weight: 600; white-space: nowrap;">
+          + Add Tester
+        </button>
+      </div>
+
+      <!-- Search & Bulk Action Bar -->
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; padding: 8px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+        <input type="text" id="filter-tester-input" placeholder="Search saved testers..." style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 5px 10px; font-size: 0.82rem; width: 180px; background: #ffffff;" />
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button type="button" id="btn-select-all-testers" class="btn-outline-small" style="font-size: 0.78rem; padding: 4px 10px;">Select All</button>
+          <button type="button" id="btn-deselect-all-testers" class="btn-outline-small" style="font-size: 0.78rem; padding: 4px 10px;">Deselect All</button>
+        </div>
+      </div>
+
+      <!-- Testers List Container -->
+      <div id="testers-list-container" style="overflow-y: auto; max-height: 320px; border: 1px solid #f1f5f9; border-radius: 8px; padding: 6px; margin-bottom: 16px;">
+        <div style="text-align: center; padding: 24px; color: #94a3b8; font-size: 0.88rem;">Loading saved testers...</div>
+      </div>
+
+      <!-- Footer Actions -->
+      <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 14px; border-top: 1px solid #f1f5f9;">
+        <span id="testers-selected-count-label" style="font-size: 0.82rem; color: #64748b; font-weight: 500;">0 selected</span>
+        <div style="display: flex; gap: 10px;">
+          <button type="button" class="btn-secondary" id="btn-close-testers-modal" style="padding: 8px 16px; font-size: 0.85rem;">Cancel</button>
+          <button type="button" class="btn-primary" id="btn-insert-testers-compose" style="padding: 8px 18px; font-size: 0.85rem; font-weight: 600;" disabled>
+            Insert into Compose
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  const container = modal.querySelector("#testers-list-container");
+  const countLabel = modal.querySelector("#testers-selected-count-label");
+  const insertBtn = modal.querySelector("#btn-insert-testers-compose");
+  const filterInput = modal.querySelector("#filter-tester-input");
+  const quickInput = modal.querySelector("#quick-tester-input");
+  const quickAddBtn = modal.querySelector("#btn-quick-add-tester");
+  const selectAllBtn = modal.querySelector("#btn-select-all-testers");
+  const deselectAllBtn = modal.querySelector("#btn-deselect-all-testers");
+  const closeBtn = modal.querySelector("#btn-close-testers-modal");
+  const closeX = modal.querySelector("#btn-close-testers-modal-x");
+
+  let allTesters = [];
+  let selectedEmails = new Set();
+
+  function updateSelectedCount() {
+    countLabel.textContent = `${selectedEmails.size} of ${allTesters.length} selected`;
+    insertBtn.disabled = selectedEmails.size === 0;
+    insertBtn.textContent = selectedEmails.size > 0 ? `Insert Selected (${selectedEmails.size})` : `Insert into Compose`;
+  }
+
+  function renderTestersList(filterText = "") {
+    const query = filterText.trim().toLowerCase();
+    const filtered = allTesters.filter(t => !query || (t.email && t.email.toLowerCase().includes(query)) || (t.name && t.name.toLowerCase().includes(query)));
+
+    if (filtered.length === 0) {
+      container.innerHTML = `
+        <div style="text-align: center; padding: 32px 16px; color: #94a3b8; font-size: 0.88rem;">
+          ${allTesters.length === 0 ? 'No saved testers yet. Add tester emails using the input above or save from Compose.' : 'No testers matching your search.'}
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = filtered.map(t => {
+      const email = t.email;
+      const isChecked = selectedEmails.has(email);
+      const dateStr = t.created_at ? new Date(t.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+
+      return `
+        <div class="tester-row-item" data-email="${escapeHtml(email)}" style="display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 12px; border-bottom: 1px solid #f8fafc; border-radius: 6px; transition: background 0.1s ease; cursor: pointer;">
+          <div style="display: flex; align-items: center; gap: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+            <input type="checkbox" class="tester-checkbox" value="${escapeHtml(email)}" ${isChecked ? 'checked' : ''} style="cursor: pointer; width: 16px; height: 16px;" />
+            <div>
+              <div style="font-size: 0.88rem; font-weight: 500; color: #1e293b;">${escapeHtml(email)}</div>
+              ${dateStr ? `<div style="font-size: 0.73rem; color: #94a3b8;">Added ${dateStr}</div>` : ''}
+            </div>
+          </div>
+          <button type="button" class="btn-delete-tester" data-email="${escapeHtml(email)}" title="Delete tester" style="background: none; border: none; color: #94a3b8; cursor: pointer; padding: 4px 6px; border-radius: 4px; font-size: 0.85rem; line-height: 1;">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          </button>
+        </div>
+      `;
+    }).join("");
+
+    container.querySelectorAll(".tester-checkbox").forEach(cb => {
+      cb.addEventListener("change", (e) => {
+        if (e.target.checked) selectedEmails.add(e.target.value);
+        else selectedEmails.delete(e.target.value);
+        updateSelectedCount();
+      });
+    });
+
+    container.querySelectorAll(".btn-delete-tester").forEach(btn => {
+      btn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        const emailToDelete = btn.getAttribute("data-email");
+        if (!emailToDelete) return;
+        try {
+          const delRes = await fetch(`/api/user/testers/${encodeURIComponent(emailToDelete)}`, {
+            method: "DELETE",
+            headers: { "Authorization": `Bearer ${token}` }
+          });
+          const delData = await delRes.json();
+          if (delData.success) {
+            allTesters = allTesters.filter(t => t.email !== emailToDelete);
+            selectedEmails.delete(emailToDelete);
+            renderTestersList(filterInput.value);
+            updateSelectedCount();
+            showToast("Tester deleted", "info");
+          }
+        } catch (err) {
+          showToast("Failed to delete tester", "error");
+        }
+      });
+    });
+  }
+
+  async function loadTesters() {
+    try {
+      const res = await fetch("/api/user/testers", {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success && Array.isArray(data.testers)) {
+        allTesters = data.testers;
+        renderTestersList();
+        updateSelectedCount();
+      } else {
+        container.innerHTML = `<div style="text-align: center; padding: 24px; color: #ef4444;">${data.error || 'Failed to load testers.'}</div>`;
+      }
+    } catch (err) {
+      container.innerHTML = `<div style="text-align: center; padding: 24px; color: #ef4444;">Network error loading testers.</div>`;
+    }
+  }
+
+  quickAddBtn.addEventListener("click", async () => {
+    const val = quickInput.value.trim().toLowerCase();
+    if (!val || !val.includes('@')) {
+      showToast("Please enter a valid email address.", "warning");
+      return;
+    }
+    quickAddBtn.disabled = true;
+    try {
+      const res = await fetch("/api/user/testers", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ email: val })
+      });
+      const data = await res.json();
+      if (data.success) {
+        quickInput.value = "";
+        showToast("Tester added successfully!", "success");
+        await loadTesters();
+      } else {
+        showToast(data.error || "Failed to add tester.", "error");
+      }
+    } catch (err) {
+      showToast("Network error adding tester.", "error");
+    } finally {
+      quickAddBtn.disabled = false;
+    }
+  });
+
+  filterInput.addEventListener("input", () => {
+    renderTestersList(filterInput.value);
+  });
+
+  selectAllBtn.addEventListener("click", () => {
+    allTesters.forEach(t => selectedEmails.add(t.email));
+    renderTestersList(filterInput.value);
+    updateSelectedCount();
+  });
+
+  deselectAllBtn.addEventListener("click", () => {
+    selectedEmails.clear();
+    renderTestersList(filterInput.value);
+    updateSelectedCount();
+  });
+
+  insertBtn.addEventListener("click", () => {
+    if (selectedEmails.size === 0) return;
+    let addedCount = 0;
+    selectedEmails.forEach(email => {
+      if (!state.recipients.includes(email)) {
+        state.recipients.push(email);
+        addedCount++;
+      }
+    });
+    saveState();
+    renderRecipients();
+    showToast(`Inserted ${selectedEmails.size} tester(s) into Compose (${addedCount} new)!`, "success");
+    modal.remove();
+  });
+
+  if (closeBtn) closeBtn.addEventListener("click", () => modal.remove());
+  if (closeX) closeX.addEventListener("click", () => modal.remove());
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) modal.remove();
+  });
+
+  loadTesters();
+}
+
+// ==========================================================================
+// Scale Plan: Sent Mail History Modal
+// Audit past email invitation dispatches, timestamps, and recipient lists
+// ==========================================================================
+async function openSentHistoryModal() {
+  if (!canViewSentHistory()) {
+    showPlanUpgradePrompt("Sent mail history & delivery audit logs", "Scale (Rs 500/mo)");
+    return;
+  }
+
+  const token = localStorage.getItem("easyinvite_auth_token");
+  if (!token) {
+    showToast("Please log in to view sent mail history.", "warning");
+    showAuthModal("signin");
+    return;
+  }
+
+  const existing = document.getElementById("sent-history-modal");
+  if (existing) existing.remove();
+
+  const modal = document.createElement("div");
+  modal.className = "modal-backdrop";
+  modal.id = "sent-history-modal";
+  modal.style.display = "flex";
+  modal.style.alignItems = "center";
+  modal.style.justifyContent = "center";
+  modal.style.zIndex = "10000";
+
+  modal.innerHTML = `
+    <div class="modal-card" style="max-width: 660px; width: 95%; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.18); max-height: 88vh; display: flex; flex-direction: column;">
+      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 14px; margin-bottom: 16px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 38px; height: 38px; border-radius: 8px; background: #f0fdf4; color: #16a34a; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div>
+            <h3 style="font-size: 1.18rem; font-weight: 700; color: #0f172a; margin: 0;">Sent Mail History</h3>
+            <p style="font-size: 0.82rem; color: #64748b; margin: 2px 0 0;">View delivery logs, timestamps, and recipient lists from your campaigns.</p>
+          </div>
+        </div>
+        <button type="button" id="btn-close-history-modal-x" style="background: none; border: none; font-size: 1.4rem; color: #94a3b8; cursor: pointer; line-height: 1;">&times;</button>
+      </div>
+
+      <div id="history-list-container" style="overflow-y: auto; max-height: 480px; padding-right: 4px; margin-bottom: 16px;">
+        <div style="text-align: center; padding: 32px; color: #94a3b8; font-size: 0.88rem;">Loading campaign history...</div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; padding-top: 14px; border-top: 1px solid #f1f5f9;">
+        <button type="button" class="btn-primary" id="btn-close-history-modal" style="padding: 8px 22px; font-weight: 600;">
+          Close
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  const container = modal.querySelector("#history-list-container");
+  const closeBtn = modal.querySelector("#btn-close-history-modal");
+  const closeX = modal.querySelector("#btn-close-history-modal-x");
+
+  if (closeBtn) closeBtn.addEventListener("click", () => modal.remove());
+  if (closeX) closeX.addEventListener("click", () => modal.remove());
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) modal.remove();
+  });
+
+  try {
+    const res = await fetch("/api/user/campaigns", {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (data.success && Array.isArray(data.campaigns)) {
+      const campaigns = data.campaigns;
+      if (campaigns.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 48px 20px; color: #94a3b8;">
+            <p style="font-size: 1rem; font-weight: 600; color: #334155; margin-bottom: 6px;">No Sent Campaigns Yet</p>
+            <p style="font-size: 0.84rem; margin: 0;">Dispatched invitations will be recorded here with complete recipient details.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = campaigns.map((c, idx) => {
+        const dateStr = new Date(c.created_at).toLocaleDateString(undefined, {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        const recipients = Array.isArray(c.recipients) ? c.recipients : [];
+        const recipientCount = c.recipient_count || recipients.length || 1;
+        const details = Array.isArray(c.detailed_results) ? c.detailed_results : [];
+        const isSuccess = c.status === 'completed';
+
+        let recipientsDropdownHtml = "";
+        if (details.length > 0) {
+          recipientsDropdownHtml = details.map((d, dIdx) => {
+            const num = dIdx + 1;
+            const ok = d.success !== false;
+            const label = getOrdinalDispatchLabel(num, ok);
+            return `
+              <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.8rem; padding: 4px 0; border-bottom: 1px dashed #f1f5f9; color: ${ok ? '#334155' : '#b91c1c'};">
+                <span>${label} <strong>${escapeHtml(d.email || '')}</strong></span>
+                <span style="font-size: 0.72rem; font-weight: 600;">${ok ? '✓ Sent' : '✗ Failed'}</span>
+              </div>
+            `;
+          }).join("");
+        } else if (recipients.length > 0) {
+          recipientsDropdownHtml = recipients.map((em, dIdx) => {
+            const num = dIdx + 1;
+            const label = getOrdinalDispatchLabel(num, true);
+            return `
+              <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.8rem; padding: 4px 0; border-bottom: 1px dashed #f1f5f9; color: #334155;">
+                <span>${label} <strong>${escapeHtml(em)}</strong></span>
+                <span style="font-size: 0.72rem; font-weight: 600; color: #16a34a;">✓ Sent</span>
+              </div>
+            `;
+          }).join("");
+        }
+
+        return `
+          <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; margin-bottom: 12px; background: #ffffff; transition: box-shadow 0.15s ease;">
+            <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 8px;">
+              <div>
+                <h4 style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin: 0 0 4px;">${escapeHtml(c.subject || 'Testing Invitation')}</h4>
+                <div style="font-size: 0.78rem; color: #64748b;">
+                  <span>${dateStr}</span>
+                  ${c.app_name ? ` · <span>App: <strong>${escapeHtml(c.app_name)}</strong></span>` : ''}
+                </div>
+              </div>
+              <div style="text-align: right; flex-shrink: 0;">
+                <span style="display: inline-block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; background: ${isSuccess ? '#ecfdf5' : '#fffbeb'}; color: ${isSuccess ? '#059669' : '#b45309'}; border: 1px solid ${isSuccess ? '#a7f3d0' : '#fde68a'}; margin-bottom: 4px;">
+                  ${escapeHtml(c.status || 'completed')}
+                </span>
+                <div style="font-size: 0.78rem; font-weight: 600; color: #475569;">${recipientCount} Recipient${recipientCount === 1 ? '' : 's'}</div>
+              </div>
+            </div>
+
+            ${recipientsDropdownHtml ? `
+              <details style="margin-top: 8px; border-top: 1px solid #f1f5f9; padding-top: 8px;">
+                <summary style="font-size: 0.78rem; font-weight: 600; color: #2563eb; cursor: pointer; user-select: none;">
+                  View Sent Recipients (${recipientCount})
+                </summary>
+                <div style="margin-top: 8px; padding: 8px 12px; background: #f8fafc; border-radius: 6px;">
+                  ${recipientsDropdownHtml}
+                </div>
+              </details>
+            ` : ''}
+          </div>
+        `;
+      }).join("");
+    } else {
+      container.innerHTML = `<div style="text-align: center; padding: 24px; color: #ef4444;">${data.error || 'Failed to load campaigns.'}</div>`;
+    }
+  } catch (err) {
+    container.innerHTML = `<div style="text-align: center; padding: 24px; color: #ef4444;">Network error loading campaigns.</div>`;
+  }
+}
+

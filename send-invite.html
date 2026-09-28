@@ -57,6 +57,14 @@
             <span>Settings</span>
           </a>
 
+          <a href="javascript:void(0)" class="nav-item" id="nav-sent-history" onclick="openSentHistoryModal()">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span>Sent History</span>
+          </a>
+
           <a href="billing.html" class="nav-item" data-view="billing">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="2" y="4" width="20" height="16" rx="2"/>
@@ -100,6 +108,23 @@
                   <span class="label-hint">(multiple emails supported)</span>
                 </label>
                 <div class="header-action-group">
+                  <button type="button" class="btn-outline-small" id="btn-open-testers-directory" onclick="openTestersDirectoryModal()" title="View and reuse saved tester emails">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                      <circle cx="9" cy="7" r="4"/>
+                      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    Saved Testers
+                  </button>
+                  <button type="button" class="btn-outline-small" id="btn-save-current-testers" onclick="saveCurrentRecipientsToTesters()" title="Save current recipients to directory">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                      <polyline points="17 21 17 13 7 13 7 21"/>
+                      <polyline points="7 3 7 8 15 8"/>
+                    </svg>
+                    Save to Testers
+                  </button>
                   <button type="button" class="btn-outline-small" id="btn-import-csv">
                     <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -625,6 +650,6 @@
     </div>
   </div>
 
-  <script src="app.js?v=3.0"></script>
+  <script src="app.js?v=3.1"></script>
 </body>
 </html>

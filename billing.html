@@ -57,6 +57,14 @@
             <span>Settings</span>
           </a>
 
+          <a href="index.html" class="nav-item" id="nav-sent-history" onclick="localStorage.setItem('easyinvite_open_history', '1')">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span>Sent History</span>
+          </a>
+
           <a href="billing.html" class="nav-item active">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="2" y="4" width="20" height="16" rx="2"/>
@@ -121,63 +129,49 @@
               <p>No recurring subscriptions or hidden fees. Pay once via bank transfer, top up whenever you need, or get Lifetime unlimited outreach.</p>
             </div>
 
-            <!-- Horizontal Free Plan -->
-            <div class="plan-card-horizontal" id="plan-card-free">
-              <div class="plan-horizontal-left">
-                <span class="plan-badge-guest">Free Guest Tier · No Signup Required</span>
-                <div class="plan-horizontal-title-row">
-                  <h3 class="plan-name">Free Plan</h3>
-                  <div class="plan-price-wrap horizontal">
+            <!-- 3x3 Pricing Grid: All 6 Plans -->
+            <div class="pricing-grid-3x3">
+              <!-- Plan 1: Free -->
+              <div class="plan-card" id="plan-card-free">
+                <div class="plan-header">
+                  <h3 class="plan-name">Free</h3>
+                  <p class="plan-desc">Send up to 5 times without an account. Test your setup instantly.</p>
+                  <div class="plan-price-wrap">
                     <span class="plan-currency">NPR</span>
                     <span class="plan-amount">0</span>
                     <span class="plan-billing-type">/ guest session</span>
                   </div>
+                  <div class="plan-quota-pill">5 Send Actions</div>
+                  <ul class="plan-features-list">
+                    <li class="plan-feature-item">
+                      <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
+                      <span><strong>5 Send Actions Total</strong></span>
+                    </li>
+                    <li class="plan-feature-item">
+                      <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
+                      <span>Unlimited recipients per send</span>
+                    </li>
+                    <li class="plan-feature-item">
+                      <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
+                      <span>No account or signup needed</span>
+                    </li>
+                    <li class="plan-feature-item">
+                      <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
+                      <span>Configure App &amp; SMTP in form</span>
+                    </li>
+                    <li class="plan-feature-item">
+                      <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#94a3b8" stroke-width="2.5"><line x1="5" y1="10" x2="15" y2="10"/></svg>
+                      <span style="color: #94a3b8;">No saved templates or history</span>
+                    </li>
+                  </ul>
                 </div>
-                <p class="plan-desc">Send up to 5 times without an account. Configure App name, package ID &amp; SMTP directly in the form.</p>
+                <div id="free-card-action">
+                  <a href="index.html" class="btn-plan-select" id="btn-select-free" style="text-decoration: none; display: flex; align-items: center; justify-content: center; width: 100%; box-sizing: border-box;">
+                    <span>Start Free as Guest</span>
+                  </a>
+                </div>
               </div>
 
-              <div class="plan-horizontal-features">
-                <ul class="plan-features-list horizontal-grid">
-                  <li class="plan-feature-item">
-                    <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
-                    <span><strong>5 Send Actions Total</strong></span>
-                  </li>
-                  <li class="plan-feature-item">
-                    <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
-                    <span>Unlimited recipients per send</span>
-                  </li>
-                  <li class="plan-feature-item">
-                    <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
-                    <span>No account or signup needed</span>
-                  </li>
-                  <li class="plan-feature-item">
-                    <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
-                    <span>Configure App &amp; SMTP in form</span>
-                  </li>
-                  <li class="plan-feature-item">
-                    <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#94a3b8" stroke-width="2.5"><line x1="5" y1="10" x2="15" y2="10"/></svg>
-                    <span style="color: #94a3b8;">No saved templates or settings</span>
-                  </li>
-                </ul>
-              </div>
-
-              <div class="plan-horizontal-action">
-                <a href="index.html" class="btn-plan-select btn-free-horizontal" id="btn-select-free">
-                  <span>Start Free as Guest</span>
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-                </a>
-              </div>
-            </div>
-
-            <!-- Subheading Divider between Free and Account Plans -->
-            <div class="pricing-subheading">
-              <div class="subheading-line"></div>
-              <span>Or Choose An Account Plan With Saved Settings &amp; Templates</span>
-              <div class="subheading-line"></div>
-            </div>
-
-            <!-- 4 Vertical Account Plans -->
-            <div class="pricing-grid-4">
               <!-- Plan 2: Starter -->
               <div class="plan-card" id="plan-card-starter">
                 <div class="plan-header">
@@ -296,12 +290,52 @@
                 </button>
               </div>
 
-              <!-- Plan 5: Lifetime -->
+              <!-- Plan 5: Scale (New Plan!) -->
+              <div class="plan-card scale" id="plan-card-scale">
+                <span class="scale-pill">High Volume</span>
+                <div class="plan-header">
+                  <h3 class="plan-name">Scale</h3>
+                  <p class="plan-desc">For serious release workflows with saved tester directories and full sent audit history.</p>
+                  <div class="plan-price-wrap">
+                    <span class="plan-currency">NPR</span>
+                    <span class="plan-amount">500</span>
+                    <span class="plan-billing-type">/ month</span>
+                  </div>
+                  <div class="plan-quota-pill scale">500 Send Actions</div>
+                  <ul class="plan-features-list">
+                    <li class="plan-feature-item">
+                      <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
+                      <span><strong>500 Send Actions</strong></span>
+                    </li>
+                    <li class="plan-feature-item">
+                      <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
+                      <span><strong>Save &amp; reuse multiple testers</strong></span>
+                    </li>
+                    <li class="plan-feature-item">
+                      <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
+                      <span><strong>View sent mail history &amp; logs</strong></span>
+                    </li>
+                    <li class="plan-feature-item">
+                      <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
+                      <span><strong>Live itemized dispatch popup</strong></span>
+                    </li>
+                    <li class="plan-feature-item">
+                      <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
+                      <span>Preset &amp; custom email templates</span>
+                    </li>
+                  </ul>
+                </div>
+                <button type="button" class="btn-plan-select" id="btn-select-scale" onclick="handleChoosePlan('scale', 'Scale', 500, 500, false)">
+                  Choose Scale
+                </button>
+              </div>
+
+              <!-- Plan 6: Lifetime -->
               <div class="plan-card lifetime" id="plan-card-lifetime">
                 <span class="lifetime-pill">Lifetime Deal</span>
                 <div class="plan-header">
                   <h3 class="plan-name">Lifetime</h3>
-                  <p class="plan-desc">Pay once, send unlimited invitations forever with zero restrictions.</p>
+                  <p class="plan-desc">Pay once, send unlimited invitations forever with all features unlocked.</p>
                   <div class="plan-price-wrap">
                     <span class="plan-currency">NPR</span>
                     <span class="plan-amount">1,000</span>
@@ -315,19 +349,19 @@
                     </li>
                     <li class="plan-feature-item">
                       <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
-                      <span>Never expires</span>
+                      <span><strong>All Scale features included</strong></span>
                     </li>
                     <li class="plan-feature-item">
                       <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
-                      <span>All email templates + create own</span>
+                      <span>Saved tester directory &amp; history</span>
                     </li>
                     <li class="plan-feature-item">
                       <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
-                      <span>Saved login &amp; settings data</span>
+                      <span>Preset &amp; custom email templates</span>
                     </li>
                     <li class="plan-feature-item">
                       <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
-                      <span>VIP priority support</span>
+                      <span>Never expires · VIP support</span>
                     </li>
                   </ul>
                 </div>
@@ -615,10 +649,27 @@
             if (emailEl) emailEl.textContent = storedUser.email || '';
             if (initialEl) initialEl.textContent = (storedUser.name || 'U').charAt(0).toUpperCase();
 
-            const planNameFormatted = usage.isLifetime ? 'Lifetime Deal' : (usage.planId && usage.planId !== 'free' ? `${usage.planId.toUpperCase()} PLAN` : 'FREE TIER');
-            if (planEl) planEl.textContent = planNameFormatted;
+            const pendingPayment = payments.find(p => p.status === 'PENDING');
+            const isApprovedPaid = Boolean(usage.hasApprovedPaidPlan || (storedUser && storedUser.role === 'admin'));
 
-            const sendsFormatted = usage.isLifetime ? 'Unlimited ⚡' : `${usage.sendsRemaining ?? 5}⚡ sends left`;
+            let planNameFormatted = 'FREE TIER';
+            let sendsFormatted = '0⚡ sends left';
+
+            if (usage.isLifetime && isApprovedPaid) {
+              planNameFormatted = 'LIFETIME PLAN';
+              sendsFormatted = 'Unlimited ⚡';
+            } else if (isApprovedPaid && usage.planId && usage.planId !== 'free') {
+              planNameFormatted = `${usage.planId.toUpperCase()} PLAN`;
+              sendsFormatted = `${usage.sendsRemaining ?? 0}⚡ sends left`;
+            } else if (pendingPayment) {
+              planNameFormatted = `FREE TIER (${(pendingPayment.plan_name || pendingPayment.plan_id || 'PLAN').toUpperCase()} PENDING ⏳)`;
+              sendsFormatted = '0⚡ sends left (Awaiting Admin Approval)';
+            } else {
+              planNameFormatted = 'FREE TIER';
+              sendsFormatted = '0⚡ sends left';
+            }
+
+            if (planEl) planEl.textContent = planNameFormatted;
             if (sendsEl) sendsEl.textContent = sendsFormatted;
           }
 
@@ -661,41 +712,47 @@
           }
 
           // 3. Update Plan Buttons: "Current Plan" instead of "Choose {Plan}"
-          // Note: Until admin approval, user account still remains in Free version.
+          // Note: Until admin approval, user account strictly remains on Free plan!
+          let storedUser = {};
+          try { storedUser = JSON.parse(localStorage.getItem('easyinvite_user') || '{}'); } catch(e){}
+          const isApprovedPaid = Boolean(usage.hasApprovedPaidPlan || (storedUser && storedUser.role === 'admin'));
+
           let activePlan = 'free';
-          if (usage.isLifetime) {
-            activePlan = 'lifetime';
-          } else if (usage.planId && usage.planId !== 'free') {
-            activePlan = usage.planId.toLowerCase();
+          if (isApprovedPaid) {
+            if (usage.isLifetime) {
+              activePlan = 'lifetime';
+            } else if (usage.planId && usage.planId !== 'free') {
+              activePlan = usage.planId.toLowerCase();
+            }
           }
 
-          updatePlanButtons(activePlan);
+          const pendingPlanId = pendingPayment ? pendingPayment.plan_id : null;
+          updatePlanButtons(activePlan, pendingPlanId);
         }
       } catch (err) {
         console.error('Failed to load billing history:', err);
       }
     }
 
-    function updatePlanButtons(activePlan) {
+    function updatePlanButtons(activePlan, pendingPlanId = null) {
       // Clear current plan class from all cards
-      ['free', 'starter', 'growth', 'pro', 'lifetime'].forEach(id => {
+      ['free', 'starter', 'growth', 'pro', 'scale', 'lifetime'].forEach(id => {
         const card = document.getElementById(`plan-card-${id}`);
         if (card) card.classList.remove('is-current-plan');
       });
 
-      const freeCard = document.getElementById('plan-card-free');
-      const freeActionWrap = freeCard ? freeCard.querySelector('.plan-horizontal-action') : null;
+      const freeActionWrap = document.getElementById('free-card-action');
       const starterBtn = document.getElementById('btn-select-starter');
       const growthBtn = document.getElementById('btn-select-growth');
       const proBtn = document.getElementById('btn-select-pro');
+      const scaleBtn = document.getElementById('btn-select-scale');
       const lifetimeBtn = document.getElementById('btn-select-lifetime');
 
       if (activePlan === 'guest') {
         if (freeActionWrap) {
           freeActionWrap.innerHTML = `
-            <a href="index.html" class="btn-plan-select btn-free-horizontal" id="btn-select-free">
+            <a href="index.html" class="btn-plan-select" id="btn-select-free" style="text-decoration: none; display: flex; align-items: center; justify-content: center; width: 100%; box-sizing: border-box;">
               <span>Start Free as Guest</span>
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
             </a>
           `;
         }
@@ -714,6 +771,11 @@
           proBtn.disabled = false;
           proBtn.innerHTML = 'Choose Pro';
         }
+        if (scaleBtn) {
+          scaleBtn.className = 'btn-plan-select';
+          scaleBtn.disabled = false;
+          scaleBtn.innerHTML = 'Choose Scale';
+        }
         if (lifetimeBtn) {
           lifetimeBtn.className = 'btn-plan-select';
           lifetimeBtn.disabled = false;
@@ -730,71 +792,53 @@
       if (freeActionWrap) {
         if (activePlan === 'free') {
           freeActionWrap.innerHTML = `
-            <button type="button" class="btn-plan-select btn-free-horizontal current-plan" disabled id="btn-select-free" style="background: #0f172a; color: #ffffff; cursor: default;">
+            <button type="button" class="btn-plan-select current-plan" disabled id="btn-select-free" style="background: #0f172a; color: #ffffff; cursor: default; width: 100%; box-sizing: border-box;">
               <span>✓ Current Plan</span>
             </button>
           `;
         } else {
           freeActionWrap.innerHTML = `
-            <a href="index.html" class="btn-plan-select btn-free-horizontal" id="btn-select-free">
+            <a href="index.html" class="btn-plan-select" id="btn-select-free" style="text-decoration: none; display: flex; align-items: center; justify-content: center; width: 100%; box-sizing: border-box;">
               <span>Use Free Outreach</span>
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
             </a>
           `;
         }
       }
 
-      // Starter Plan button
-      if (starterBtn) {
-        if (activePlan === 'starter') {
-          starterBtn.className = 'btn-plan-select current-plan';
-          starterBtn.disabled = true;
-          starterBtn.innerHTML = '<span>✓ Current Plan</span>';
+      function renderPaidBtn(btn, planKey, label) {
+        if (!btn) return;
+        if (activePlan === planKey) {
+          btn.className = 'btn-plan-select current-plan';
+          btn.disabled = true;
+          btn.style.background = '';
+          btn.style.color = '';
+          btn.style.borderColor = '';
+          btn.style.cursor = 'default';
+          btn.innerHTML = '<span>✓ Current Plan</span>';
+        } else if (pendingPlanId === planKey) {
+          btn.className = 'btn-plan-select';
+          btn.disabled = true;
+          btn.style.background = '#fef3c7';
+          btn.style.color = '#92400e';
+          btn.style.borderColor = '#fde68a';
+          btn.style.cursor = 'default';
+          btn.innerHTML = '<span>⏳ Payment Pending</span>';
         } else {
-          starterBtn.className = 'btn-plan-select';
-          starterBtn.disabled = false;
-          starterBtn.innerHTML = 'Choose Starter';
+          btn.className = 'btn-plan-select';
+          btn.disabled = false;
+          btn.style.background = '';
+          btn.style.color = '';
+          btn.style.borderColor = '';
+          btn.style.cursor = 'pointer';
+          btn.innerHTML = label;
         }
       }
 
-      // Growth Plan button
-      if (growthBtn) {
-        if (activePlan === 'growth') {
-          growthBtn.className = 'btn-plan-select current-plan';
-          growthBtn.disabled = true;
-          growthBtn.innerHTML = '<span>✓ Current Plan</span>';
-        } else {
-          growthBtn.className = 'btn-plan-select';
-          growthBtn.disabled = false;
-          growthBtn.innerHTML = 'Choose Growth';
-        }
-      }
-
-      // Pro Plan button
-      if (proBtn) {
-        if (activePlan === 'pro') {
-          proBtn.className = 'btn-plan-select current-plan';
-          proBtn.disabled = true;
-          proBtn.innerHTML = '<span>✓ Current Plan</span>';
-        } else {
-          proBtn.className = 'btn-plan-select';
-          proBtn.disabled = false;
-          proBtn.innerHTML = 'Choose Pro';
-        }
-      }
-
-      // Lifetime Plan button
-      if (lifetimeBtn) {
-        if (activePlan === 'lifetime') {
-          lifetimeBtn.className = 'btn-plan-select current-plan';
-          lifetimeBtn.disabled = true;
-          lifetimeBtn.innerHTML = '<span>✓ Current Plan</span>';
-        } else {
-          lifetimeBtn.className = 'btn-plan-select';
-          lifetimeBtn.disabled = false;
-          lifetimeBtn.innerHTML = 'Get Lifetime Access';
-        }
-      }
+      renderPaidBtn(starterBtn, 'starter', 'Choose Starter');
+      renderPaidBtn(growthBtn, 'growth', 'Choose Growth');
+      renderPaidBtn(proBtn, 'pro', 'Choose Pro');
+      renderPaidBtn(scaleBtn, 'scale', 'Choose Scale');
+      renderPaidBtn(lifetimeBtn, 'lifetime', 'Get Lifetime Access');
     }
 
     function renderPaymentsTable(payments) {
