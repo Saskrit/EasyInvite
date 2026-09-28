@@ -609,6 +609,22 @@ async function initAuth() {
       updatePlayConfigStatus();
       updateAppIdBadge();
       if (elements.fullTemplatesGrid) renderTemplatesGrid();
+
+      // Payment gate: redirect unpaid non-admin users to billing page
+      // (exempt: billing.html itself, admin-payments.html, login.html)
+      const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+      const exemptPages = ['billing.html', 'admin-payments.html', 'login.html'];
+      if (!exemptPages.includes(currentPage)) {
+        const isAdmin = currentUser && currentUser.role === 'admin';
+        const hasApproved = currentUserUsage && currentUserUsage.hasApprovedPaidPlan;
+        const hasPending = currentUserUsage && currentUserUsage.hasPendingPayment;
+        if (!isAdmin && !hasApproved && !hasPending) {
+          const planToPay = (currentUser && (currentUser.chosen_plan || currentUser.plan_id)) || (currentUserUsage && currentUserUsage.pendingPlanId) || 'starter';
+          localStorage.setItem('easyinvite_chosen_plan', planToPay);
+          window.location.href = `billing.html?openPayment=${encodeURIComponent(planToPay)}&isNew=1`;
+          return;
+        }
+      }
     }
   } catch (err) {
     console.warn("Could not sync user cloud profile:", err);
@@ -1153,12 +1169,27 @@ async function submitSignIn(e) {
     if (data.success) {
       localStorage.setItem("easyinvite_auth_token", data.token);
       currentUser = data.user;
+      currentUserUsage = data.usage || null;
       if (data.usage && (data.usage.hasPendingPayment || data.usage.hasApprovedPaidPlan)) {
         localStorage.removeItem("easyinvite_is_new_registration");
         localStorage.removeItem("easyinvite_pending_payment");
       }
       closeAuthModal();
       showToast(`Welcome back, ${currentUser.name}!`, "success");
+
+      // Payment gate on login: redirect to billing if no approved/pending payment
+      const isAdmin = currentUser && currentUser.role === 'admin';
+      const hasApproved = data.usage && data.usage.hasApprovedPaidPlan;
+      const hasPending = data.usage && data.usage.hasPendingPayment;
+      const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+      const onBilling = currentPage === 'billing.html';
+      if (!isAdmin && !hasApproved && !hasPending && !onBilling) {
+        const planToPay = (currentUser && (currentUser.chosen_plan || currentUser.plan_id)) || (data.usage && data.usage.pendingPlanId) || 'starter';
+        localStorage.setItem('easyinvite_chosen_plan', planToPay);
+        window.location.href = `billing.html?openPayment=${encodeURIComponent(planToPay)}&isNew=1`;
+        return;
+      }
+
       await initAuth();
     } else if (data.requiresVerification) {
       showToast("Please enter the 4-digit code sent to your email.", "info");
@@ -1306,14 +1337,16 @@ async function submitVerification(e) {
       const requiresPayment = chosenPlan !== 'free';
 
       if (requiresPayment) {
+        localStorage.setItem("easyinvite_chosen_plan", chosenPlan);
         localStorage.setItem("easyinvite_pending_payment", "true");
         localStorage.setItem("easyinvite_is_new_registration", "true");
-        showToast("Email verified! Please complete payment to create your account.", "info");
+        showToast("Email verified! Please complete payment to activate your account.", "info");
 
         const currentPage = getCurrentPage();
         if (currentPage === 'billing' || window.location.pathname.includes('billing')) {
-          if (typeof openPaymentModalForPlanId === 'function') {
-            openPaymentModalForPlanId(chosenPlan);
+          if (typeof renderChosenPlanCard === 'function') {
+            renderChosenPlanCard(chosenPlan);
+            if (typeof showChosenPlanView === 'function') showChosenPlanView();
           }
         } else {
           window.location.href = `billing.html?openPayment=${encodeURIComponent(chosenPlan)}&isNew=1`;

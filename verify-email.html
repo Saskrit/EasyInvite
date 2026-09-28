@@ -141,7 +141,10 @@
           desc.textContent = 'Your EasyInvite account has been verified and activated. You can now compose, preview, and send Google Play closed testing invitations.';
           const plan = (data.user && (data.user.chosen_plan || data.user.plan_id)) || data.chosenPlan || 'starter';
           if (plan && plan !== 'free') {
-            btnRedirect.href = `billing.html?openPayment=${encodeURIComponent(plan)}`;
+            localStorage.setItem('easyinvite_chosen_plan', plan);
+            localStorage.setItem('easyinvite_pending_payment', 'true');
+            localStorage.setItem('easyinvite_is_new_registration', 'true');
+            btnRedirect.href = `billing.html?openPayment=${encodeURIComponent(plan)}&isNew=1`;
             btnRedirect.textContent = 'Proceed to Payment Verification';
           } else {
             btnRedirect.href = 'index.html';

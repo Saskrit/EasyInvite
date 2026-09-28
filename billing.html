@@ -121,8 +121,38 @@
             </div>
           </div>
 
+          <!-- ============================================================ -->
+          <!-- CHOSEN PLAN SECTION (shown when redirected after registering)-->
+          <!-- Shows ONLY the box card of the chosen plan with 15min timer  -->
+          <!-- ============================================================ -->
+          <div id="chosen-plan-section" style="display: none; width: 100%; max-width: 440px; margin: 0 auto;">
+            <div class="pricing-header" style="margin-bottom: 24px;">
+              <span class="pricing-eyebrow" style="background: #eff6ff; color: #2563eb; border-color: #bfdbfe;">REGISTRATION STEP 2 OF 2</span>
+              <h1 style="font-size: 1.85rem; margin-bottom: 8px;">Selected Plan &amp; Payment</h1>
+              <p style="font-size: 0.95rem; max-width: 500px; margin: 0 auto; color: #64748b;">
+                Please complete your payment within the 15-minute window to activate your account.
+              </p>
+            </div>
+            <div id="chosen-plan-card-mount">
+              <!-- Rendered dynamically by renderChosenPlanCard(planKey) -->
+            </div>
+          </div>
+
           <!-- Pricing Plans Section -->
           <div id="plans-section">
+            <!-- Switch-back banner when user clicked "Others Plan" -->
+            <div id="others-plans-banner" style="display: none; align-items: center; justify-content: space-between; background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 12px; padding: 14px 20px; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 1.2rem;">💡</span>
+                <span style="font-size: 0.92rem; color: #1e40af; font-weight: 600;">
+                  Browsing all plans. Select any plan below to switch, or return to your selected plan.
+                </span>
+              </div>
+              <button type="button" onclick="showChosenPlanView()" style="background: #ffffff; color: #2563eb; border: 1.5px solid #93c5fd; font-size: 0.88rem; font-weight: 700; padding: 8px 16px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                &larr; Back to Selected Plan
+              </button>
+            </div>
+
             <div class="pricing-header">
               <span class="pricing-eyebrow">PREPAID &amp; LIFETIME USAGE</span>
               <h1>Simple, Transparent Pricing</h1>
@@ -379,217 +409,89 @@
           </div>
 
           <!-- ============================================================ -->
-          <!-- INLINE CHECKOUT SECTION (shown after plan is chosen)         -->
-          <!-- State A: Plan selected, not yet submitted ' show form        -->
-          <!-- State B: Payment pending ' show submitted info + actions     -->
+          <!-- PENDING ORDER / PAYMENT STATUS (Shown after payment submit)  -->
           <!-- ============================================================ -->
-          <div id="inline-checkout-section" style="display: none;">
+          <div id="checkout-pending-state" style="display: none;">
+            <div class="pending-payment-card">
+              <div class="pending-payment-header">
+                <div class="pending-payment-title-wrap">
+                  <span style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; display: inline-block;"></span>
+                  <h3>Active Order &amp; Payment Verification</h3>
+                </div>
+                <span class="pending-status-badge" id="pending-status-badge">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  PAYMENT PENDING · AWAITING ADMIN APPROVAL
+                </span>
+              </div>
 
-            <!-- STATE A: Plan Chosen — fill in payment details -->
-            <div id="checkout-form-state" style="display: none;">
-              <div class="pending-payment-card" style="border: 2px solid #2563eb20; background: linear-gradient(135deg, #f8faff 0%, #fff 100%);">
-
-                <!-- Header -->
-                <div class="pending-payment-header" style="border-bottom: 1px solid #e2e8f0; padding-bottom: 16px; margin-bottom: 0;">
-                  <div class="pending-payment-title-wrap">
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#2563eb" stroke-width="2" style="margin-right: 8px; flex-shrink: 0;"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                    <h3 style="color: #1e293b;">Complete Your Payment</h3>
-                  </div>
-                  <button type="button" onclick="handleInlineCheckoutClose()" style="background: none; border: none; cursor: pointer; color: #94a3b8; font-size: 1.4rem; line-height: 1; padding: 4px;" title="Cancel">&times;</button>
+              <div class="pending-payment-body">
+                <div class="pending-alert-box">
+                  <strong style="color: #78350f;">Account Status: Free Version (Payment Pending)</strong><br />
+                  Your manual bank transfer payment proof is currently under review. Until approval, your account remains on the <strong>Free tier</strong>. Once approved, your chosen plan will activate automatically.
                 </div>
 
-                <div class="pending-payment-body">
-
-                  <!-- Chosen Plan Summary Bar -->
-                  <div id="checkout-plan-summary" style="display: flex; align-items: center; justify-content: space-between; background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 14px 18px; margin-bottom: 22px; flex-wrap: wrap; gap: 10px;">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                      <div style="width: 42px; height: 42px; border-radius: 10px; background: #2563eb; display: flex; align-items: center; justify-content: center;">
-                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                      </div>
-                      <div>
-                        <div style="font-size: 0.78rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Selected Plan</div>
-                        <div style="font-size: 1.1rem; font-weight: 800; color: #1e293b;" id="checkout-plan-name-display">—</div>
-                      </div>
-                    </div>
-                    <div style="text-align: right;">
-                      <div style="font-size: 0.78rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Payable Amount</div>
-                      <div style="font-size: 1.5rem; font-weight: 800; color: #2563eb;" id="checkout-amount-display">NPR —</div>
-                    </div>
+                <!-- Chosen Plan Highlight -->
+                <div id="pending-plan-highlight" style="display: flex; align-items: center; justify-content: space-between; background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+                  <div>
+                    <div style="font-size: 0.78rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Chosen Plan</div>
+                    <div style="font-size: 1.15rem; font-weight: 800; color: #1e40af;" id="pending-plan-name">—</div>
                   </div>
-
-                  <!-- Bank Details Grid -->
-                  <div style="margin-bottom: 22px;">
-                    <div style="font-size: 0.78rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px;">Transfer To</div>
-                    <div class="bank-vertical-grid" style="grid-template-columns: repeat(2, 1fr);">
-                      <div class="bank-vertical-box">
-                        <span class="bvb-label">Bank Name</span>
-                        <span class="bvb-value">Nabil bank</span>
-                      </div>
-                      <div class="bank-vertical-box">
-                        <span class="bvb-label">Account Name</span>
-                        <span class="bvb-value">SASKRIT BHATTARAI</span>
-                      </div>
-                      <div class="bank-vertical-box">
-                        <span class="bvb-label">Account Number</span>
-                        <div class="bvb-value-row">
-                          <span class="bvb-value mono" id="inline-acc-number">08710017510564</span>
-                          <button type="button" class="btn-copy-mini" onclick="copyInlineAccountNumber()" id="btn-copy-inline-acc" title="Copy Account Number">
-                            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                            <span id="copy-inline-acc-text">Copy</span>
-                          </button>
-                        </div>
-                      </div>
-                      <div class="bank-vertical-box">
-                        <span class="bvb-label">Branch</span>
-                        <span class="bvb-value">Biratchowk Branch</span>
-                      </div>
-                    </div>
+                  <div style="text-align: right;">
+                    <div style="font-size: 0.78rem; font-weight: 600; color: #64748b; text-transform: uppercase;">Amount Paid</div>
+                    <div style="font-size: 1.4rem; font-weight: 800; color: #1e293b;" id="pending-amount">—</div>
                   </div>
+                </div>
 
-                  <!-- Payment Submission Form -->
-                  <form id="inline-payment-form" onsubmit="handleInlinePaymentSubmit(event)">
-                    <input type="hidden" id="inline-plan-id" value="" />
-
-                    <div style="font-size: 0.78rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px;">Proof of Transfer</div>
-
-                    <div class="form-group" style="margin-bottom: 16px;">
-                      <label class="form-label" for="inline-payment-reference">
-                        Transaction / Reference Number <span style="color: #ef4444;">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        id="inline-payment-reference"
-                        class="form-control"
-                        placeholder="e.g. 104928374920 or Fonepay Ref ID"
-                        required
-                      />
-                      <small style="font-size: 0.76rem; color: #64748b; margin-top: 4px; display: block;">
-                        Enter the exact transaction reference code from your mobile banking or receipt.
-                      </small>
-                    </div>
-
-                    <div class="form-group" style="margin-bottom: 22px;">
-                      <label class="form-label" for="inline-payment-screenshot">
-                        Payment Screenshot / Receipt <span style="color: #ef4444;">*</span>
-                      </label>
-                      <div class="upload-dropzone" onclick="document.getElementById('inline-payment-screenshot').click()">
-                        <input
-                          type="file"
-                          id="inline-payment-screenshot"
-                          accept="image/png, image/jpeg, image/webp"
-                          required
-                          style="position: absolute; width: 0; height: 0; opacity: 0; pointer-events: none;"
-                          onchange="handleInlineScreenshotPreview(event)"
-                        />
-                        <div id="inline-dropzone-empty">
-                          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#64748b" stroke-width="1.8" style="margin-bottom: 6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                          <div style="font-size: 0.88rem; font-weight: 600; color: #1e293b;">Click to upload bank transfer receipt</div>
-                          <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 2px;">PNG, JPG, or WEBP (Max 5MB)</div>
-                        </div>
-                        <div id="inline-screenshot-preview-wrap" style="display: none; margin-top: 6px;">
-                          <img id="inline-screenshot-preview-img" src="" alt="Screenshot Preview" style="max-height: 120px; border-radius: 6px; border: 1px solid #cbd5e1; object-fit: contain;" />
-                          <div style="font-size: 0.76rem; color: #2563eb; font-weight: 600; margin-top: 4px;">Click to change image</div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                      <button type="button" onclick="handleInlineCheckoutClose()" class="btn-secondary" style="flex: 1; min-width: 130px; padding: 12px 16px;">Cancel</button>
-                      <button type="submit" class="btn-primary" id="btn-inline-submit" style="flex: 2; min-width: 200px; padding: 12px 16px; font-size: 0.95rem;">
-                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px; vertical-align: middle;"><polyline points="20 6 9 17 4 12"/></svg>
-                        Submit Payment for Verification
+                <div class="pending-details-grid">
+                  <div class="pending-detail-item">
+                    <span class="label">Reference / Txn #</span>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                      <code id="pending-ref-num" style="font-size: 0.92rem; font-weight: 700; background: #ffffff; padding: 3px 6px; border-radius: 4px; border: 1px solid #cbd5e1; color: #b45309;">-</code>
+                      <button type="button" class="btn-copy-mini" onclick="copyPendingRef()" title="Copy Reference ID">
+                        <span id="copy-pending-ref-text">Copy</span>
                       </button>
                     </div>
-                  </form>
+                  </div>
+                  <div class="pending-detail-item">
+                    <span class="label">Payment Destination</span>
+                    <div class="val" id="pending-bank">Nabil bank</div>
+                  </div>
+                  <div class="pending-detail-item">
+                    <span class="label">Date Submitted</span>
+                    <div class="val" id="pending-date" style="font-size: 0.85rem; color: #64748b;">-</div>
+                  </div>
+                </div>
 
+                <!-- Screenshot Proof -->
+                <div id="pending-screenshot-container" class="pending-proof-row">
+                  <img id="pending-screenshot-img" src="" alt="Payment Proof" class="pending-thumb-img" onclick="window.open(this.src, '_blank')" title="Click to view full screenshot" />
+                  <div style="flex: 1; min-width: 220px;">
+                    <a id="pending-screenshot-link" href="#" target="_blank" class="btn-outline-small" style="text-decoration: none;">
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                      Open Full Receipt
+                    </a>
+                    <p style="margin: 8px 0 0; font-size: 0.82rem; color: #64748b; line-height: 1.5;">
+                      Your receipt has been delivered to the verification queue. An admin will review shortly.
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Change / Cancel Actions -->
+                <div style="display: flex; gap: 10px; margin-top: 20px; padding-top: 18px; border-top: 1px solid #fde68a; flex-wrap: wrap;">
+                  <button type="button" id="btn-change-plan" onclick="handleChangePlan()"
+                    style="flex: 1; min-width: 160px; background: #1e40af; color: #fff; border: none; border-radius: 10px; font-size: 0.9rem; padding: 10px 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    Change Plan
+                  </button>
+                  <button type="button" id="btn-cancel-pending" onclick="showCancelPendingConfirm()"
+                    style="flex: 1; min-width: 160px; background: #fff; color: #dc2626; border: 1.5px solid #fca5a5; border-radius: 10px; font-size: 0.9rem; padding: 10px 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='#fff'">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                    Cancel Pending Payment
+                  </button>
                 </div>
               </div>
             </div>
-
-            <!-- STATE B: Payment already submitted ' Pending review -->
-            <div id="checkout-pending-state" style="display: none;">
-              <div class="pending-payment-card">
-                <div class="pending-payment-header">
-                  <div class="pending-payment-title-wrap">
-                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; display: inline-block;"></span>
-                    <h3>Active Order &amp; Payment Verification</h3>
-                  </div>
-                  <span class="pending-status-badge" id="pending-status-badge">
-                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    PAYMENT PENDING · AWAITING ADMIN APPROVAL
-                  </span>
-                </div>
-
-                <div class="pending-payment-body">
-                  <div class="pending-alert-box">
-                    <strong style="color: #78350f;">Account Status: Free Version (Payment Pending)</strong><br />
-                    Your manual bank transfer payment proof is currently under review. Until approval, your account remains on the <strong>Free tier</strong>. Once approved, your chosen plan will activate automatically.
-                  </div>
-
-                  <!-- Chosen Plan Highlight -->
-                  <div id="pending-plan-highlight" style="display: flex; align-items: center; justify-content: space-between; background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
-                    <div>
-                      <div style="font-size: 0.78rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Chosen Plan</div>
-                      <div style="font-size: 1.15rem; font-weight: 800; color: #1e40af;" id="pending-plan-name">—</div>
-                    </div>
-                    <div style="text-align: right;">
-                      <div style="font-size: 0.78rem; font-weight: 600; color: #64748b; text-transform: uppercase;">Amount Paid</div>
-                      <div style="font-size: 1.4rem; font-weight: 800; color: #1e293b;" id="pending-amount">—</div>
-                    </div>
-                  </div>
-
-                  <div class="pending-details-grid">
-                    <div class="pending-detail-item">
-                      <span class="label">Reference / Txn #</span>
-                      <div style="display: flex; align-items: center; gap: 6px;">
-                        <code id="pending-ref-num" style="font-size: 0.92rem; font-weight: 700; background: #ffffff; padding: 3px 6px; border-radius: 4px; border: 1px solid #cbd5e1; color: #b45309;">-</code>
-                        <button type="button" class="btn-copy-mini" onclick="copyPendingRef()" title="Copy Reference ID">
-                          <span id="copy-pending-ref-text">Copy</span>
-                        </button>
-                      </div>
-                    </div>
-                    <div class="pending-detail-item">
-                      <span class="label">Payment Destination</span>
-                      <div class="val" id="pending-bank">Nabil bank</div>
-                    </div>
-                    <div class="pending-detail-item">
-                      <span class="label">Date Submitted</span>
-                      <div class="val" id="pending-date" style="font-size: 0.85rem; color: #64748b;">-</div>
-                    </div>
-                  </div>
-
-                  <!-- Screenshot Proof -->
-                  <div id="pending-screenshot-container" class="pending-proof-row">
-                    <img id="pending-screenshot-img" src="" alt="Payment Proof" class="pending-thumb-img" onclick="window.open(this.src, '_blank')" title="Click to view full screenshot" />
-                    <div style="flex: 1; min-width: 220px;">
-                      <a id="pending-screenshot-link" href="#" target="_blank" class="btn-outline-small" style="text-decoration: none;">
-                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                        Open Full Receipt
-                      </a>
-                      <p style="margin: 8px 0 0; font-size: 0.82rem; color: #64748b; line-height: 1.5;">
-                        Your receipt has been delivered to the verification queue. An admin will review shortly.
-                      </p>
-                    </div>
-                  </div>
-
-                  <!-- Change / Cancel Actions -->
-                  <div style="display: flex; gap: 10px; margin-top: 20px; padding-top: 18px; border-top: 1px solid #fde68a; flex-wrap: wrap;">
-                    <button type="button" id="btn-change-plan" onclick="handleChangePlan()"
-                      style="flex: 1; min-width: 160px; background: #1e40af; color: #fff; border: none; border-radius: 10px; font-size: 0.9rem; padding: 10px 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                      Change Plan
-                    </button>
-                    <button type="button" id="btn-cancel-pending" onclick="showCancelPendingConfirm()"
-                      style="flex: 1; min-width: 160px; background: #fff; color: #dc2626; border: 1.5px solid #fca5a5; border-radius: 10px; font-size: 0.9rem; padding: 10px 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='#fff'">
-                      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-                      Cancel Pending Payment
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-          </div><!-- /inline-checkout-section -->
+          </div>
 
           <!-- Card: Purchase & Payment History (Displayed only after payment) -->
           <div class="history-card" id="billing-history-section" style="display: none;">
@@ -631,7 +533,128 @@
     </main>
   </div>
 
-  <!-- Payment modal removed: inline checkout section is used instead -->
+  <!-- ============================================================ -->
+  <!-- MODAL: Payment Checkout (15-min countdown + bank transfer)   -->
+  <!-- ============================================================ -->
+  <div class="modal-backdrop" id="payment-modal" style="display: none; z-index: 1200;" onclick="if(event.target === this) closePaymentModal()">
+    <div class="modal-card checkout-modal-card" style="max-width: 520px; max-height: 92vh; overflow-y: auto; border-radius: 16px;">
+      <div class="modal-header" style="padding: 18px 22px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #ffffff;">
+        <div class="modal-title-wrap" style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 36px; height: 36px; border-radius: 8px; background: #eff6ff; display: flex; align-items: center; justify-content: center;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#2563eb" stroke-width="2">
+              <rect x="2" y="4" width="20" height="16" rx="2"/>
+              <line x1="2" y1="10" x2="22" y2="10"/>
+            </svg>
+          </div>
+          <h3 id="modal-plan-title" style="margin: 0; font-size: 1.12rem; font-weight: 700; color: #0f172a;">Complete Payment</h3>
+        </div>
+        <button type="button" class="modal-close-btn" onclick="closePaymentModal()" style="font-size: 1.5rem; line-height: 1; border: none; background: transparent; cursor: pointer; color: #94a3b8;" title="Close">&times;</button>
+      </div>
+
+      <div class="modal-body" style="padding: 22px 24px;">
+        <!-- 15-Min Timer Countdown Warning -->
+        <div style="display: flex; align-items: center; justify-content: space-between; background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 10px 16px; margin-bottom: 16px;">
+          <span style="font-size: 0.86rem; color: #92400e; font-weight: 700; display: flex; align-items: center; gap: 6px;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#d97706" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Pay Within:
+          </span>
+          <span id="modal-timer-badge" style="font-weight: 800; font-family: ui-monospace, monospace; font-size: 1.1rem; color: #b45309; background: #ffffff; padding: 3px 10px; border-radius: 6px; border: 1px solid #fcd34d;">15:00</span>
+        </div>
+
+        <!-- Payable Amount Row -->
+        <div class="modal-payable-row" style="display: flex; align-items: center; justify-content: space-between; background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 12px 18px; margin-bottom: 18px;">
+          <span class="label" style="font-size: 0.88rem; font-weight: 700; color: #1e40af;">Payable Amount:</span>
+          <span class="val highlight" id="modal-amount" style="font-size: 1.35rem; font-weight: 800; color: #2563eb;">NPR 100</span>
+        </div>
+
+        <!-- Bank Details (4 Boxes) -->
+        <div style="margin-bottom: 18px;">
+          <div style="font-size: 0.76rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px;">Transfer To</div>
+          <div class="bank-vertical-grid modal-style" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+            <div class="bank-vertical-box" style="padding: 10px 14px; text-align: left; align-items: flex-start;">
+              <span class="bvb-label">Bank Name</span>
+              <span class="bvb-value" id="modal-bank-name">Nabil bank</span>
+            </div>
+            <div class="bank-vertical-box" style="padding: 10px 14px; text-align: left; align-items: flex-start;">
+              <span class="bvb-label">Account Name</span>
+              <span class="bvb-value" id="modal-bank-acc-name">SASKRIT BHATTARAI</span>
+            </div>
+            <div class="bank-vertical-box" style="padding: 10px 14px; text-align: left; align-items: flex-start;">
+              <span class="bvb-label">Account Number</span>
+              <div class="bvb-value-row" style="justify-content: flex-start; gap: 6px;">
+                <span class="bvb-value mono" id="modal-bank-acc-number" style="font-size: 0.95rem;">08710017510564</span>
+                <button type="button" class="btn-copy-mini" onclick="copyModalAccountNumber()" id="btn-copy-modal-acc" title="Copy Account Number">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  <span id="copy-modal-acc-text">Copy</span>
+                </button>
+              </div>
+            </div>
+            <div class="bank-vertical-box" style="padding: 10px 14px; text-align: left; align-items: flex-start;">
+              <span class="bvb-label">Branch</span>
+              <span class="bvb-value" id="modal-bank-branch">Biratchowk Branch</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Submit Form -->
+        <form id="payment-submit-form" onsubmit="handlePaymentSubmit(event)">
+          <input type="hidden" id="modal-plan-id" value="" />
+
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label class="form-label" for="payment-reference" style="display: block; font-size: 0.82rem; font-weight: 700; color: #1e293b; margin-bottom: 6px;">
+              Transaction / Reference Number <span style="color: #ef4444;">*</span>
+            </label>
+            <input
+              type="text"
+              id="payment-reference"
+              class="form-control"
+              placeholder="e.g. 104928374920 or Fonepay Ref ID"
+              required
+              style="width: 100%; box-sizing: border-box; padding: 10px 14px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem;"
+            />
+            <small style="font-size: 0.74rem; color: #64748b; margin-top: 4px; display: block;">
+              Enter the exact transaction reference code from your mobile banking or receipt.
+            </small>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 20px;">
+            <label class="form-label" for="payment-screenshot" style="display: block; font-size: 0.82rem; font-weight: 700; color: #1e293b; margin-bottom: 6px;">
+              Payment Screenshot / Receipt <span style="color: #ef4444;">*</span>
+            </label>
+            <div class="upload-dropzone" onclick="document.getElementById('payment-screenshot').click()" style="cursor: pointer; border: 2px dashed #cbd5e1; border-radius: 10px; padding: 18px; text-align: center; background: #f8fafc; transition: all 0.15s ease;">
+              <input
+                type="file"
+                id="payment-screenshot"
+                accept="image/png, image/jpeg, image/webp"
+                required
+                style="position: absolute; width: 0; height: 0; opacity: 0; pointer-events: none;"
+                onchange="handleModalScreenshotPreview(event)"
+              />
+              <div id="modal-dropzone-empty">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#64748b" stroke-width="1.8" style="margin-bottom: 6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <div style="font-size: 0.86rem; font-weight: 600; color: #1e293b;">Click to upload bank transfer receipt</div>
+                <div style="font-size: 0.74rem; color: #94a3b8; margin-top: 2px;">PNG, JPG, or WEBP (Max 5MB)</div>
+              </div>
+              <div id="modal-screenshot-preview-wrap" style="display: none; margin-top: 6px;">
+                <img id="modal-screenshot-preview-img" src="" alt="Screenshot Preview" style="max-height: 120px; border-radius: 6px; border: 1px solid #cbd5e1; object-fit: contain;" />
+                <div style="font-size: 0.76rem; color: #2563eb; font-weight: 600; margin-top: 4px;">Click to change image</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 10px;">
+            <button type="button" onclick="closePaymentModal()" class="btn-secondary" style="flex: 1; padding: 12px 16px; border: 1.5px solid #cbd5e1; background: #fff; border-radius: 10px; font-weight: 600; color: #475569; cursor: pointer;">
+              Cancel
+            </button>
+            <button type="submit" class="btn-primary" id="btn-submit-payment" style="flex: 2; padding: 12px 16px; background: #2563eb; color: #ffffff; border: none; border-radius: 10px; font-weight: 700; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              Submit Payment for Verification
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 
   <!-- MODAL: Confirm Cancel Pending Payment -->
   <div class="modal-backdrop" id="cancel-pending-confirm-modal" style="display: none; z-index: 1300;" onclick="if(event.target === this) dismissCancelPendingConfirm()">
@@ -683,14 +706,225 @@
   <script>
     let selectedPlanData = null;
     let screenshotBase64 = null;
+    let currentChosenPlanKey = 'starter';
+    let payCountdownInterval = null;
 
     const PLAN_SPECS = {
-      starter: { name: 'Starter', amount: 100, sends: 50, isLifetime: false },
-      growth: { name: 'Growth', amount: 200, sends: 100, isLifetime: false },
-      pro: { name: 'Pro', amount: 300, sends: 300, isLifetime: false },
-      scale: { name: 'Scale', amount: 500, sends: 500, isLifetime: false },
-      lifetime: { name: 'Lifetime', amount: 1000, sends: -1, isLifetime: true }
+      starter: {
+        name: 'Starter',
+        amount: 100,
+        sends: 50,
+        isLifetime: false,
+        billingType: '/ month',
+        desc: 'Great for small apps and initial closed test rollout.',
+        quota: '50 Send Actions',
+        features: [
+          { text: '<strong>50 Send Actions</strong>' },
+          { text: 'Unlimited recipients per send' },
+          { text: 'User saved login account' },
+          { text: 'Saved settings & credentials' },
+          { text: 'Multi-device sync' }
+        ],
+        className: '',
+        pill: ''
+      },
+      growth: {
+        name: 'Growth',
+        amount: 200,
+        sends: 100,
+        isLifetime: false,
+        billingType: '/ month',
+        desc: 'Ideal for indie developers testing multiple release candidates.',
+        quota: '100 Send Actions',
+        features: [
+          { text: '<strong>100 Send Actions</strong>' },
+          { text: 'Unlimited recipients per send' },
+          { text: 'Saved login & settings data' },
+          { text: '<strong>Can use preset email templates</strong>' },
+          { text: 'Priority deliverability shell' }
+        ],
+        className: 'featured',
+        pill: 'Most Popular'
+      },
+      pro: {
+        name: 'Pro',
+        amount: 300,
+        sends: 300,
+        isLifetime: false,
+        billingType: '/ month',
+        desc: 'Best value for studios running continuous closed testing.',
+        quota: '300 Send Actions',
+        features: [
+          { text: '<strong>300 Send Actions</strong>' },
+          { text: 'Unlimited recipients per send' },
+          { text: 'Saved login & settings data' },
+          { text: 'Can use preset email templates' },
+          { text: '<strong>Make & save own templates</strong>' }
+        ],
+        className: '',
+        pill: ''
+      },
+      scale: {
+        name: 'Scale',
+        amount: 500,
+        sends: 500,
+        isLifetime: false,
+        billingType: '/ month',
+        desc: 'For serious release workflows with saved tester directories and full sent audit history.',
+        quota: '500 Send Actions',
+        features: [
+          { text: '<strong>500 Send Actions</strong>' },
+          { text: '<strong>Save & reuse multiple testers</strong>' },
+          { text: '<strong>View sent mail history & logs</strong>' },
+          { text: '<strong>Live itemized dispatch popup</strong>' },
+          { text: 'Preset & custom email templates' }
+        ],
+        className: 'scale',
+        pill: 'High Volume'
+      },
+      lifetime: {
+        name: 'Lifetime',
+        amount: 1000,
+        sends: -1,
+        isLifetime: true,
+        billingType: '/ once lifetime',
+        desc: 'Pay once, send unlimited invitations forever with all features unlocked.',
+        quota: 'Unlimited Sends',
+        features: [
+          { text: '<strong>Unlimited Send Actions</strong>' },
+          { text: '<strong>All Scale features included</strong>' },
+          { text: 'Saved tester directory & history' },
+          { text: 'Preset & custom email templates' },
+          { text: 'Never expires · VIP support' }
+        ],
+        className: 'lifetime',
+        pill: 'Lifetime Deal'
+      }
     };
+
+    function startPayTimer() {
+      if (payCountdownInterval) clearInterval(payCountdownInterval);
+
+      let startTime = localStorage.getItem('easyinvite_pay_timer_start');
+      if (!startTime) {
+        startTime = Date.now().toString();
+        localStorage.setItem('easyinvite_pay_timer_start', startTime);
+      }
+
+      function updateTimer() {
+        const elapsed = Math.floor((Date.now() - parseInt(startTime, 10)) / 1000);
+        const totalSec = 15 * 60; // 15 minutes
+        const remaining = Math.max(0, totalSec - elapsed);
+
+        const mins = Math.floor(remaining / 60);
+        const secs = remaining % 60;
+        const timeFormatted = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+        const timerLabel = document.getElementById('pay-timer-label');
+        const modalTimer = document.getElementById('modal-timer-badge');
+
+        if (remaining > 0) {
+          if (timerLabel) timerLabel.textContent = `Pay Within (${timeFormatted})`;
+          if (modalTimer) modalTimer.textContent = timeFormatted;
+        } else {
+          if (timerLabel) timerLabel.textContent = `Pay Within (Expired - Click to renew)`;
+          if (modalTimer) modalTimer.textContent = `00:00 (Expired)`;
+        }
+      }
+
+      updateTimer();
+      payCountdownInterval = setInterval(updateTimer, 1000);
+    }
+
+    function handlePayWithinTimerClick() {
+      const startTime = localStorage.getItem('easyinvite_pay_timer_start');
+      if (startTime) {
+        const elapsed = Math.floor((Date.now() - parseInt(startTime, 10)) / 1000);
+        if (elapsed >= 15 * 60) {
+          localStorage.setItem('easyinvite_pay_timer_start', Date.now().toString());
+          startPayTimer();
+          showToast('15-minute payment session renewed.', 'info');
+        }
+      }
+      openPaymentModalForChosenPlan();
+    }
+
+    function openPaymentModalForChosenPlan() {
+      const planKey = currentChosenPlanKey || 'starter';
+      const spec = PLAN_SPECS[planKey] || PLAN_SPECS.starter;
+      openPaymentModal(planKey, spec.name, spec.amount, spec.sends, spec.isLifetime);
+    }
+
+    function renderChosenPlanCard(planKey) {
+      const spec = PLAN_SPECS[planKey] || PLAN_SPECS.starter;
+      const mount = document.getElementById('chosen-plan-card-mount');
+      if (!mount) return;
+
+      const pillHtml = spec.pill
+        ? `<span class="${spec.className ? spec.className + '-pill' : 'featured-pill'}">${spec.pill}</span>`
+        : '';
+
+      const featuresHtml = spec.features.map(f => `
+        <li class="plan-feature-item">
+          <svg class="feature-icon-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="4 10 8 14 16 5"/></svg>
+          <span>${f.text}</span>
+        </li>
+      `).join('');
+
+      mount.innerHTML = `
+        <div class="plan-card ${spec.className}" style="max-width: 440px; margin: 0 auto; box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.05); border-radius: 16px;">
+          ${pillHtml}
+          <div class="plan-header">
+            <h3 class="plan-name">${spec.name}</h3>
+            <p class="plan-desc">${spec.desc}</p>
+            <div class="plan-price-wrap">
+              <span class="plan-currency">NPR</span>
+              <span class="plan-amount">${spec.amount.toLocaleString()}</span>
+              <span class="plan-billing-type">${spec.billingType}</span>
+            </div>
+            <div class="plan-quota-pill ${spec.className}">${spec.quota}</div>
+            <ul class="plan-features-list">
+              ${featuresHtml}
+            </ul>
+          </div>
+          <div class="chosen-card-actions" style="margin-top: 24px; display: flex; flex-direction: column; gap: 10px;">
+            <button type="button" class="btn-plan-select" id="btn-pay-within-timer" onclick="handlePayWithinTimerClick()" style="background: #2563eb; color: #ffffff; border: none; font-weight: 700; font-size: 1rem; padding: 13px 20px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28);">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span id="pay-timer-label">Pay Within (15:00)</span>
+            </button>
+            <button type="button" class="btn-others-plan" id="btn-show-others-plans" onclick="showAllPlans()" style="background: #ffffff; color: #334155; border: 1.5px solid #cbd5e1; font-weight: 600; font-size: 0.92rem; padding: 11px 18px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; width: 100%;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              <span>Others Plan</span>
+            </button>
+          </div>
+        </div>
+      `;
+
+      startPayTimer();
+    }
+
+    function showAllPlans() {
+      const chosenSection = document.getElementById('chosen-plan-section');
+      const plansSection = document.getElementById('plans-section');
+      const othersBanner = document.getElementById('others-plans-banner');
+
+      if (chosenSection) chosenSection.style.display = 'none';
+      if (plansSection) plansSection.style.display = 'block';
+      if (othersBanner) othersBanner.style.display = 'flex';
+      const checkoutPending = document.getElementById('checkout-pending-state');
+      if (checkoutPending) checkoutPending.style.display = 'none';
+    }
+
+    function showChosenPlanView() {
+      const chosenSection = document.getElementById('chosen-plan-section');
+      const plansSection = document.getElementById('plans-section');
+      const othersBanner = document.getElementById('others-plans-banner');
+
+      if (chosenSection) chosenSection.style.display = 'block';
+      if (plansSection) plansSection.style.display = 'none';
+      if (othersBanner) othersBanner.style.display = 'none';
+      renderChosenPlanCard(currentChosenPlanKey || 'starter');
+    }
 
     function openPaymentModalForPlanId(planId) {
       const normalized = (planId || '').toLowerCase();
@@ -700,15 +934,6 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       loadBillingData();
-
-      // Automatically open payment modal if redirected with ?openPayment={planId}
-      const urlParams = new URLSearchParams(window.location.search);
-      const openPaymentPlan = urlParams.get('openPayment');
-      if (openPaymentPlan && openPaymentPlan !== 'free') {
-        setTimeout(() => {
-          openPaymentModalForPlanId(openPaymentPlan);
-        }, 200);
-      }
     });
 
     async function loadBillingData() {
@@ -722,7 +947,11 @@
       if (!token) {
         if (userBanner) userBanner.style.display = 'none';
         if (historyCard) historyCard.style.display = 'none';
-        if (checkoutSection) checkoutSection.style.display = 'none';
+        if (checkoutPendingState) checkoutPendingState.style.display = 'none';
+        const chosenSec = document.getElementById('chosen-plan-section');
+        const plansSec = document.getElementById('plans-section');
+        if (chosenSec) chosenSec.style.display = 'none';
+        if (plansSec) plansSec.style.display = 'block';
         updatePlanButtons('guest');
         return;
       }
@@ -749,6 +978,8 @@
           if (pendingPayment) {
             localStorage.removeItem('easyinvite_is_new_registration');
             localStorage.removeItem('easyinvite_pending_payment');
+            localStorage.removeItem('easyinvite_pay_timer_start');
+            if (payCountdownInterval) clearInterval(payCountdownInterval);
           }
 
           // 0. Update User Status Banner at top
@@ -786,10 +1017,8 @@
             if (sendsEl) sendsEl.textContent = sendsFormatted;
           }
 
-          // 1. Check for any active PENDING payment → show inline pending state
+          // 1. Check for any active PENDING payment → show pending review state
           if (pendingPayment) {
-            if (checkoutSection) checkoutSection.style.display = 'block';
-            if (checkoutFormState) checkoutFormState.style.display = 'none';
             if (checkoutPendingState) checkoutPendingState.style.display = 'block';
 
             document.getElementById('pending-plan-name').textContent = (pendingPayment.plan_name || pendingPayment.plan_id || 'Plan').toUpperCase() + ' PLAN';
@@ -813,12 +1042,7 @@
               if (ssWrap) ssWrap.style.display = 'none';
             }
           } else {
-            // No pending payment → hide the checkout section (unless user is mid-selection)
             if (checkoutPendingState) checkoutPendingState.style.display = 'none';
-            // Only hide the whole section if the form state is also not open
-            if (checkoutFormState && checkoutFormState.style.display === 'none') {
-              if (checkoutSection) checkoutSection.style.display = 'none';
-            }
           }
 
           // 2. Render Order & Payment History Table
@@ -832,8 +1056,6 @@
           }
 
           // 3. Update Plan Buttons: "Current Plan" instead of "Choose {Plan}"
-          // Note: Until admin approval, user account strictly remains on Free plan!
-          // (storedUser and isApprovedPaid already declared at top of this block)
           let activePlan = 'free';
           if (isApprovedPaid) {
             if (usage.isLifetime) {
@@ -845,6 +1067,38 @@
 
           const pendingPlanId = pendingPayment ? pendingPayment.plan_id : null;
           updatePlanButtons(activePlan, pendingPlanId);
+
+          // 4. Registration flow: Show ONLY the box card of the chosen plan with 15m timer
+          const chosenSec = document.getElementById('chosen-plan-section');
+          const plansSec = document.getElementById('plans-section');
+          const othersBanner = document.getElementById('others-plans-banner');
+
+          if (!pendingPayment && !isApprovedPaid) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const openPaymentPlan = urlParams.get('openPayment') || urlParams.get('plan') || urlParams.get('chosenPlan');
+            const storedPlan = localStorage.getItem('easyinvite_chosen_plan');
+            const userPlan = (storedUser && (storedUser.chosen_plan || storedUser.plan_id)) || (usage && usage.pendingPlanId);
+            const targetPlan = (openPaymentPlan || storedPlan || userPlan || '').toLowerCase();
+
+            if (targetPlan && PLAN_SPECS[targetPlan]) {
+              currentChosenPlanKey = targetPlan;
+              localStorage.setItem('easyinvite_chosen_plan', targetPlan);
+              if (chosenSec) chosenSec.style.display = 'block';
+              if (plansSec) plansSec.style.display = 'none';
+              if (othersBanner) othersBanner.style.display = 'none';
+              renderChosenPlanCard(targetPlan);
+            } else {
+              if (chosenSec) chosenSec.style.display = 'none';
+              if (plansSec) plansSec.style.display = 'block';
+            }
+          } else {
+            if (chosenSec) chosenSec.style.display = 'none';
+            if (pendingPayment) {
+              if (plansSec) plansSec.style.display = 'none';
+            } else {
+              if (plansSec) plansSec.style.display = 'block';
+            }
+          }
         }
       } catch (err) {
         console.error('Failed to load billing history:', err);
@@ -1010,10 +1264,13 @@
         }
         return;
       }
-      openInlineCheckout(planId, name, amount, sends, isLifetime);
+      currentChosenPlanKey = planId;
+      localStorage.setItem('easyinvite_chosen_plan', planId);
+      renderChosenPlanCard(planId);
+      openPaymentModal(planId, name, amount, sends, isLifetime);
     }
 
-    function openInlineCheckout(planId, name, amount, sends, isLifetime) {
+    function openPaymentModal(planId, name, amount, sends, isLifetime) {
       const token = localStorage.getItem('easyinvite_auth_token');
       if (!token) {
         if (typeof showAuthModal === 'function') {
@@ -1026,134 +1283,138 @@
 
       selectedPlanData = { planId, name, amount, sends, isLifetime };
 
-      // Populate plan summary
-      const nameEl = document.getElementById('checkout-plan-name-display');
-      const amountEl = document.getElementById('checkout-amount-display');
-      if (nameEl) nameEl.textContent = `${name} Plan`;
-      if (amountEl) amountEl.textContent = `NPR ${amount.toLocaleString()}`;
+      const titleEl = document.getElementById('modal-plan-title');
+      const amountEl = document.getElementById('modal-amount');
+      const planIdInput = document.getElementById('modal-plan-id');
+      const refInput = document.getElementById('payment-reference');
+      const ssInput = document.getElementById('payment-screenshot');
+      const emptyState = document.getElementById('modal-dropzone-empty');
+      const previewWrap = document.getElementById('modal-screenshot-preview-wrap');
 
-      // Reset the form
-      const planIdInput = document.getElementById('inline-plan-id');
-      const refInput = document.getElementById('inline-payment-reference');
-      const ssInput = document.getElementById('inline-payment-screenshot');
+      if (titleEl) titleEl.textContent = `${name} Plan — Bank Transfer`;
+      if (amountEl) amountEl.textContent = `NPR ${amount.toLocaleString()}`;
       if (planIdInput) planIdInput.value = planId;
       if (refInput) refInput.value = '';
       if (ssInput) ssInput.value = '';
-      const emptyState = document.getElementById('inline-dropzone-empty');
-      const previewWrap = document.getElementById('inline-screenshot-preview-wrap');
       if (emptyState) emptyState.style.display = 'block';
       if (previewWrap) previewWrap.style.display = 'none';
       screenshotBase64 = null;
 
-      // Show checkout section in form state
-      const checkoutSection = document.getElementById('inline-checkout-section');
-      const formState = document.getElementById('checkout-form-state');
-      const pendingState = document.getElementById('checkout-pending-state');
-      if (checkoutSection) checkoutSection.style.display = 'block';
-      if (formState) formState.style.display = 'block';
-      if (pendingState) pendingState.style.display = 'none';
-
-      // Scroll into view
-      if (checkoutSection) checkoutSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const modal = document.getElementById('payment-modal');
+      if (modal) modal.style.display = 'flex';
     }
 
-    // Compatibility alias (used by ?openPayment= URL param flow)
-    function openPaymentModal(planId, name, amount, sends, isLifetime) {
-      openInlineCheckout(planId, name, amount, sends, isLifetime);
-    }
-
-    function isUserPendingAccountCreation() {
-      // If user has already submitted a payment (pending or approved), do NOT cancel registration
-      if (window.userHasSubmittedPayment || window.userHasApprovedPlan) {
-        return false;
-      }
-
-      // ONLY true if user just verified email and has NOT yet submitted any payment proof
-      const urlParams = new URLSearchParams(window.location.search);
-      const isNewParam = urlParams.get('isNew') === '1';
-      const isNewFlag = localStorage.getItem('easyinvite_is_new_registration') === 'true';
-      const pendingFlag = localStorage.getItem('easyinvite_pending_payment') === 'true';
-
-      let storedUser = {};
-      try { storedUser = JSON.parse(localStorage.getItem('easyinvite_user') || '{}'); } catch(e){}
-      if (storedUser && storedUser.role === 'admin') return false;
-
-      return (isNewParam || isNewFlag || pendingFlag);
-    }
-
-    function handleInlineCheckoutClose() {
-      if (isUserPendingAccountCreation()) {
-        const confirmModal = document.getElementById('cancel-payment-confirm-modal');
-        if (confirmModal) {
-          confirmModal.style.display = 'flex';
-          return;
-        }
-      }
-      // Just hide the checkout section
-      const checkoutSection = document.getElementById('inline-checkout-section');
-      const formState = document.getElementById('checkout-form-state');
-      if (checkoutSection) checkoutSection.style.display = 'none';
-      if (formState) formState.style.display = 'none';
-      selectedPlanData = null;
-      screenshotBase64 = null;
-    }
-
-    // Legacy alias
-    function handlePaymentModalClose() { handleInlineCheckoutClose(); }
     function closePaymentModal() {
-      const checkoutSection = document.getElementById('inline-checkout-section');
-      const formState = document.getElementById('checkout-form-state');
-      if (checkoutSection) checkoutSection.style.display = 'none';
-      if (formState) formState.style.display = 'none';
+      const modal = document.getElementById('payment-modal');
+      if (modal) modal.style.display = 'none';
       selectedPlanData = null;
       screenshotBase64 = null;
     }
 
-    function dismissCancelPaymentModal() {
-      const confirmModal = document.getElementById('cancel-payment-confirm-modal');
-      if (confirmModal) confirmModal.style.display = 'none';
+    function handleModalScreenshotPreview(event) {
+      const file = event.target.files[0];
+      const emptyState = document.getElementById('modal-dropzone-empty');
+      const previewWrap = document.getElementById('modal-screenshot-preview-wrap');
+
+      if (!file) {
+        screenshotBase64 = null;
+        if (previewWrap) previewWrap.style.display = 'none';
+        if (emptyState) emptyState.style.display = 'block';
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        screenshotBase64 = e.target.result;
+        const img = document.getElementById('modal-screenshot-preview-img');
+        if (img) img.src = screenshotBase64;
+        if (emptyState) emptyState.style.display = 'none';
+        if (previewWrap) previewWrap.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
     }
 
-    async function confirmCancelPaymentAndExit() {
-      dismissCancelPaymentModal();
-      closePaymentModal();
+    function copyModalAccountNumber() {
+      const accNumber = '08710017510564';
+      navigator.clipboard.writeText(accNumber).then(() => {
+        const textSpan = document.getElementById('copy-modal-acc-text');
+        if (textSpan) textSpan.textContent = 'Copied!';
+        setTimeout(() => {
+          if (textSpan) textSpan.textContent = 'Copy';
+        }, 2000);
+      }).catch(() => {
+        showToast('Account Number: 08710017510564', 'info');
+      });
+    }
+
+    function copyAccountNumber() {
+      copyModalAccountNumber();
+    }
+
+    async function handlePaymentSubmit(event) {
+      event.preventDefault();
+      const token = localStorage.getItem('easyinvite_auth_token');
+      if (!token) {
+        showToast('Please log in to submit a payment.', 'warning');
+        return;
+      }
+
+      const planId = document.getElementById('modal-plan-id').value;
+      const referenceNumber = document.getElementById('payment-reference').value.trim();
+
+      if (!referenceNumber) {
+        showToast('Please enter your transaction reference number.', 'warning');
+        return;
+      }
+
+      if (!screenshotBase64) {
+        showToast('Payment screenshot is required. Please upload your payment receipt or transfer proof.', 'error');
+        const fileInput = document.getElementById('payment-screenshot');
+        if (fileInput) fileInput.focus();
+        return;
+      }
+
+      const submitBtn = document.getElementById('btn-submit-payment');
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting...'; }
 
       try {
-        const token = localStorage.getItem('easyinvite_auth_token');
-        let storedUser = {};
-        try { storedUser = JSON.parse(localStorage.getItem('easyinvite_user') || '{}'); } catch(e){}
-
-        await fetch('/api/auth/cancel-pending-registration', {
+        const res = await fetch('/api/billing/purchase', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+            'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify({ email: storedUser.email || '' })
-        }).catch(() => {});
+          body: JSON.stringify({
+            planId,
+            referenceNumber,
+            screenshotBase64,
+            bankName: 'Nabil bank'
+          })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          window.userHasSubmittedPayment = true;
+          localStorage.removeItem('easyinvite_pending_payment');
+          localStorage.removeItem('easyinvite_is_new_registration');
+          localStorage.removeItem('easyinvite_pay_timer_start');
+          if (payCountdownInterval) clearInterval(payCountdownInterval);
+
+          closePaymentModal();
+          window.history.replaceState({}, document.title, 'billing.html');
+          showToast('Payment submitted! Your account will be activated once verified.', 'success');
+          loadBillingData();
+        } else {
+          showToast(data.error || 'Failed to submit payment.', 'error');
+        }
       } catch (err) {
-        console.warn('Cancel registration error:', err);
+        showToast('Network error while submitting payment.', 'error');
+      } finally {
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Submit Payment for Verification'; }
       }
-
-      // Clear all authentication credentials so user reverts back to existing guest profile
-      localStorage.removeItem('easyinvite_auth_token');
-      localStorage.removeItem('easyinvite_user');
-      localStorage.removeItem('easyinvite_pending_payment');
-      localStorage.removeItem('easyinvite_is_new_registration');
-
-      showToast('Registration cancelled. Existing guest profile loaded.', 'info');
-      // Reload page cleanly without openPayment parameter
-      window.location.href = 'billing.html';
-    }
-
-    function closePaymentModal() {
-      document.getElementById('payment-modal').style.display = 'none';
     }
 
     function handleChangePlan() {
-      // Hide the pending section and scroll user to pricing plans to pick a new plan
-      // The old pending payment is still in place; if they select a new plan we'll need to cancel first
-      // For UX: show a note then open cancel flow then open plan picker
       if (confirm('To change your plan, your current pending payment submission will be cancelled. You\'ll need to resubmit with the new plan. Continue?')) {
         confirmCancelPending(true);
       }
@@ -1186,9 +1447,9 @@
         const data = await res.json();
         if (data.success) {
           showToast('Pending payment cancelled. You can now select a new plan.', 'success');
-          // Reload billing data to reflect the removed pending payment
           await loadBillingData();
           if (scrollToPricing) {
+            showAllPlans();
             const plansSection = document.getElementById('plans-section');
             if (plansSection) plansSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }
@@ -1201,33 +1462,6 @@
         if (btn) { btn.disabled = false; btn.textContent = 'Yes, Cancel It'; }
       }
     }
-
-    function copyAccountNumber() {
-      const accNumber = '08710017510564';
-      navigator.clipboard.writeText(accNumber).then(() => {
-        const textSpan = document.getElementById('copy-acc-text');
-        if (textSpan) textSpan.textContent = 'Copied!';
-        setTimeout(() => {
-          if (textSpan) textSpan.textContent = 'Copy';
-        }, 2000);
-      }).catch(() => {
-        showToast('Account Number: 08710017510564', 'info');
-      });
-    }
-
-    function copyInlineAccountNumber() {
-      const accNumber = '08710017510564';
-      navigator.clipboard.writeText(accNumber).then(() => {
-        const textSpan = document.getElementById('copy-inline-acc-text');
-        if (textSpan) textSpan.textContent = 'Copied!';
-        setTimeout(() => {
-          if (textSpan) textSpan.textContent = 'Copy';
-        }, 2000);
-      }).catch(() => {
-        showToast('Account Number: 08710017510564', 'info');
-      });
-    }
-
 
     function copyPendingRef() {
       const refEl = document.getElementById('pending-ref-num');
@@ -1242,95 +1476,42 @@
       });
     }
 
-    function handleInlineScreenshotPreview(event) {
-      const file = event.target.files[0];
-      const emptyState = document.getElementById('inline-dropzone-empty');
-      const previewWrap = document.getElementById('inline-screenshot-preview-wrap');
-
-      if (!file) {
-        screenshotBase64 = null;
-        if (previewWrap) previewWrap.style.display = 'none';
-        if (emptyState) emptyState.style.display = 'block';
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        screenshotBase64 = e.target.result;
-        document.getElementById('inline-screenshot-preview-img').src = screenshotBase64;
-        if (emptyState) emptyState.style.display = 'none';
-        if (previewWrap) previewWrap.style.display = 'block';
-      };
-      reader.readAsDataURL(file);
+    // Compatibility aliases
+    function openInlineCheckout(planId, name, amount, sends, isLifetime) { openPaymentModal(planId, name, amount, sends, isLifetime); }
+    function handleInlineCheckoutClose() { closePaymentModal(); }
+    function handlePaymentModalClose() { closePaymentModal(); }
+    function handleScreenshotPreview(event) { handleModalScreenshotPreview(event); }
+    function handleInlineScreenshotPreview(event) { handleModalScreenshotPreview(event); }
+    function handleInlinePaymentSubmit(event) { return handlePaymentSubmit(event); }
+    function copyInlineAccountNumber() { copyModalAccountNumber(); }
+    function dismissCancelPaymentModal() {
+      const confirmModal = document.getElementById('cancel-payment-confirm-modal');
+      if (confirmModal) confirmModal.style.display = 'none';
     }
-
-    // Legacy alias for any old references
-    function handleScreenshotPreview(event) { handleInlineScreenshotPreview(event); }
-
-    async function handleInlinePaymentSubmit(event) {
-      event.preventDefault();
-      const token = localStorage.getItem('easyinvite_auth_token');
-      if (!token) {
-        showToast('Please log in to submit a payment.', 'warning');
-        return;
-      }
-
-      const planId = document.getElementById('inline-plan-id').value;
-      const referenceNumber = document.getElementById('inline-payment-reference').value.trim();
-
-      if (!referenceNumber) {
-        showToast('Please enter your transaction reference number.', 'warning');
-        return;
-      }
-
-      if (!screenshotBase64) {
-        showToast('Payment screenshot is required. Please upload your payment receipt or transfer proof.', 'error');
-        const fileInput = document.getElementById('inline-payment-screenshot');
-        if (fileInput) fileInput.focus();
-        return;
-      }
-
-      const submitBtn = document.getElementById('btn-inline-submit');
-      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting...'; }
-
+    async function confirmCancelPaymentAndExit() {
+      dismissCancelPaymentModal();
+      closePaymentModal();
       try {
-        const res = await fetch('/api/billing/purchase', {
+        const token = localStorage.getItem('easyinvite_auth_token');
+        let storedUser = {};
+        try { storedUser = JSON.parse(localStorage.getItem('easyinvite_user') || '{}'); } catch(e){}
+        await fetch('/api/auth/cancel-pending-registration', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
           },
-          body: JSON.stringify({
-            planId,
-            referenceNumber,
-            screenshotBase64,
-            bankName: 'Nabil bank'
-          })
-        });
-
-        const data = await res.json();
-        if (data.success) {
-          window.userHasSubmittedPayment = true;
-          localStorage.removeItem('easyinvite_pending_payment');
-          localStorage.removeItem('easyinvite_is_new_registration');
-          window.history.replaceState({}, document.title, 'billing.html');
-          showToast('Payment submitted! Your account will be activated once verified.', 'success');
-          // Hide form state, show pending state via data reload
-          const formState = document.getElementById('checkout-form-state');
-          if (formState) formState.style.display = 'none';
-          loadBillingData();
-        } else {
-          showToast(data.error || 'Failed to submit payment.', 'error');
-        }
-      } catch (err) {
-        showToast('Network error while submitting payment.', 'error');
-      } finally {
-        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Submit Payment for Verification'; }
-      }
+          body: JSON.stringify({ email: storedUser.email || '' })
+        }).catch(() => {});
+      } catch (err) {}
+      localStorage.removeItem('easyinvite_auth_token');
+      localStorage.removeItem('easyinvite_user');
+      localStorage.removeItem('easyinvite_pending_payment');
+      localStorage.removeItem('easyinvite_is_new_registration');
+      localStorage.removeItem('easyinvite_chosen_plan');
+      localStorage.removeItem('easyinvite_pay_timer_start');
+      window.location.href = 'billing.html';
     }
-
-    // Legacy alias
-    async function handlePaymentSubmit(event) { return handleInlinePaymentSubmit(event); }
   </script>
 </body>
 </html>
