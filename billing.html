@@ -378,84 +378,218 @@
             </div>
           </div>
 
-          <!-- Section: Active Payment Verification Details (Shown when payment is PENDING) -->
-          <div class="pending-payment-card" id="pending-payment-section" style="display: none;">
-            <div class="pending-payment-header">
-              <div class="pending-payment-title-wrap">
-                <span style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; display: inline-block;"></span>
-                <h3>Active Order &amp; Payment Verification</h3>
+          <!-- ============================================================ -->
+          <!-- INLINE CHECKOUT SECTION (shown after plan is chosen)         -->
+          <!-- State A: Plan selected, not yet submitted ' show form        -->
+          <!-- State B: Payment pending ' show submitted info + actions     -->
+          <!-- ============================================================ -->
+          <div id="inline-checkout-section" style="display: none;">
+
+            <!-- STATE A: Plan Chosen — fill in payment details -->
+            <div id="checkout-form-state" style="display: none;">
+              <div class="pending-payment-card" style="border: 2px solid #2563eb20; background: linear-gradient(135deg, #f8faff 0%, #fff 100%);">
+
+                <!-- Header -->
+                <div class="pending-payment-header" style="border-bottom: 1px solid #e2e8f0; padding-bottom: 16px; margin-bottom: 0;">
+                  <div class="pending-payment-title-wrap">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#2563eb" stroke-width="2" style="margin-right: 8px; flex-shrink: 0;"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                    <h3 style="color: #1e293b;">Complete Your Payment</h3>
+                  </div>
+                  <button type="button" onclick="handleInlineCheckoutClose()" style="background: none; border: none; cursor: pointer; color: #94a3b8; font-size: 1.4rem; line-height: 1; padding: 4px;" title="Cancel">&times;</button>
+                </div>
+
+                <div class="pending-payment-body">
+
+                  <!-- Chosen Plan Summary Bar -->
+                  <div id="checkout-plan-summary" style="display: flex; align-items: center; justify-content: space-between; background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 14px 18px; margin-bottom: 22px; flex-wrap: wrap; gap: 10px;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                      <div style="width: 42px; height: 42px; border-radius: 10px; background: #2563eb; display: flex; align-items: center; justify-content: center;">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                      </div>
+                      <div>
+                        <div style="font-size: 0.78rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Selected Plan</div>
+                        <div style="font-size: 1.1rem; font-weight: 800; color: #1e293b;" id="checkout-plan-name-display">—</div>
+                      </div>
+                    </div>
+                    <div style="text-align: right;">
+                      <div style="font-size: 0.78rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Payable Amount</div>
+                      <div style="font-size: 1.5rem; font-weight: 800; color: #2563eb;" id="checkout-amount-display">NPR —</div>
+                    </div>
+                  </div>
+
+                  <!-- Bank Details Grid -->
+                  <div style="margin-bottom: 22px;">
+                    <div style="font-size: 0.78rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px;">Transfer To</div>
+                    <div class="bank-vertical-grid" style="grid-template-columns: repeat(2, 1fr);">
+                      <div class="bank-vertical-box">
+                        <span class="bvb-label">Bank Name</span>
+                        <span class="bvb-value">Nabil bank</span>
+                      </div>
+                      <div class="bank-vertical-box">
+                        <span class="bvb-label">Account Name</span>
+                        <span class="bvb-value">SASKRIT BHATTARAI</span>
+                      </div>
+                      <div class="bank-vertical-box">
+                        <span class="bvb-label">Account Number</span>
+                        <div class="bvb-value-row">
+                          <span class="bvb-value mono" id="inline-acc-number">08710017510564</span>
+                          <button type="button" class="btn-copy-mini" onclick="copyInlineAccountNumber()" id="btn-copy-inline-acc" title="Copy Account Number">
+                            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                            <span id="copy-inline-acc-text">Copy</span>
+                          </button>
+                        </div>
+                      </div>
+                      <div class="bank-vertical-box">
+                        <span class="bvb-label">Branch</span>
+                        <span class="bvb-value">Biratchowk Branch</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Payment Submission Form -->
+                  <form id="inline-payment-form" onsubmit="handleInlinePaymentSubmit(event)">
+                    <input type="hidden" id="inline-plan-id" value="" />
+
+                    <div style="font-size: 0.78rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px;">Proof of Transfer</div>
+
+                    <div class="form-group" style="margin-bottom: 16px;">
+                      <label class="form-label" for="inline-payment-reference">
+                        Transaction / Reference Number <span style="color: #ef4444;">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="inline-payment-reference"
+                        class="form-control"
+                        placeholder="e.g. 104928374920 or Fonepay Ref ID"
+                        required
+                      />
+                      <small style="font-size: 0.76rem; color: #64748b; margin-top: 4px; display: block;">
+                        Enter the exact transaction reference code from your mobile banking or receipt.
+                      </small>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 22px;">
+                      <label class="form-label" for="inline-payment-screenshot">
+                        Payment Screenshot / Receipt <span style="color: #ef4444;">*</span>
+                      </label>
+                      <div class="upload-dropzone" onclick="document.getElementById('inline-payment-screenshot').click()">
+                        <input
+                          type="file"
+                          id="inline-payment-screenshot"
+                          accept="image/png, image/jpeg, image/webp"
+                          required
+                          style="position: absolute; width: 0; height: 0; opacity: 0; pointer-events: none;"
+                          onchange="handleInlineScreenshotPreview(event)"
+                        />
+                        <div id="inline-dropzone-empty">
+                          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#64748b" stroke-width="1.8" style="margin-bottom: 6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                          <div style="font-size: 0.88rem; font-weight: 600; color: #1e293b;">Click to upload bank transfer receipt</div>
+                          <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 2px;">PNG, JPG, or WEBP (Max 5MB)</div>
+                        </div>
+                        <div id="inline-screenshot-preview-wrap" style="display: none; margin-top: 6px;">
+                          <img id="inline-screenshot-preview-img" src="" alt="Screenshot Preview" style="max-height: 120px; border-radius: 6px; border: 1px solid #cbd5e1; object-fit: contain;" />
+                          <div style="font-size: 0.76rem; color: #2563eb; font-weight: 600; margin-top: 4px;">Click to change image</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                      <button type="button" onclick="handleInlineCheckoutClose()" class="btn-secondary" style="flex: 1; min-width: 130px; padding: 12px 16px;">Cancel</button>
+                      <button type="submit" class="btn-primary" id="btn-inline-submit" style="flex: 2; min-width: 200px; padding: 12px 16px; font-size: 0.95rem;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px; vertical-align: middle;"><polyline points="20 6 9 17 4 12"/></svg>
+                        Submit Payment for Verification
+                      </button>
+                    </div>
+                  </form>
+
+                </div>
               </div>
-              <span class="pending-status-badge" id="pending-status-badge">
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                PAYMENT PENDING · AWAITING ADMIN APPROVAL
-              </span>
             </div>
 
-            <div class="pending-payment-body">
-              <div class="pending-alert-box">
-                <strong style="color: #78350f;">Account Status: Free Version (Payment Pending)</strong><br />
-                Your manual bank transfer payment proof is currently under review by our administration team. Until approval, your account remains active on the <strong>Free tier</strong>. Once approved, your chosen plan benefits and send balance will activate automatically.
-              </div>
+            <!-- STATE B: Payment already submitted ' Pending review -->
+            <div id="checkout-pending-state" style="display: none;">
+              <div class="pending-payment-card">
+                <div class="pending-payment-header">
+                  <div class="pending-payment-title-wrap">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; display: inline-block;"></span>
+                    <h3>Active Order &amp; Payment Verification</h3>
+                  </div>
+                  <span class="pending-status-badge" id="pending-status-badge">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    PAYMENT PENDING · AWAITING ADMIN APPROVAL
+                  </span>
+                </div>
 
-              <div class="pending-details-grid">
-                <div class="pending-detail-item">
-                  <span class="label">Selected Plan</span>
-                  <div class="val" id="pending-plan-name" style="color: #2563eb;">-</div>
-                </div>
-                <div class="pending-detail-item">
-                  <span class="label">Payable Amount</span>
-                  <div class="val" id="pending-amount">-</div>
-                </div>
-                <div class="pending-detail-item">
-                  <span class="label">Reference / Txn #</span>
-                  <div style="display: flex; align-items: center; gap: 6px;">
-                    <code id="pending-ref-num" style="font-size: 0.92rem; font-weight: 700; background: #ffffff; padding: 3px 6px; border-radius: 4px; border: 1px solid #cbd5e1; color: #b45309;">-</code>
-                    <button type="button" class="btn-copy-mini" onclick="copyPendingRef()" title="Copy Reference ID">
-                      <span id="copy-pending-ref-text">Copy</span>
+                <div class="pending-payment-body">
+                  <div class="pending-alert-box">
+                    <strong style="color: #78350f;">Account Status: Free Version (Payment Pending)</strong><br />
+                    Your manual bank transfer payment proof is currently under review. Until approval, your account remains on the <strong>Free tier</strong>. Once approved, your chosen plan will activate automatically.
+                  </div>
+
+                  <!-- Chosen Plan Highlight -->
+                  <div id="pending-plan-highlight" style="display: flex; align-items: center; justify-content: space-between; background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                      <div style="font-size: 0.78rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Chosen Plan</div>
+                      <div style="font-size: 1.15rem; font-weight: 800; color: #1e40af;" id="pending-plan-name">—</div>
+                    </div>
+                    <div style="text-align: right;">
+                      <div style="font-size: 0.78rem; font-weight: 600; color: #64748b; text-transform: uppercase;">Amount Paid</div>
+                      <div style="font-size: 1.4rem; font-weight: 800; color: #1e293b;" id="pending-amount">—</div>
+                    </div>
+                  </div>
+
+                  <div class="pending-details-grid">
+                    <div class="pending-detail-item">
+                      <span class="label">Reference / Txn #</span>
+                      <div style="display: flex; align-items: center; gap: 6px;">
+                        <code id="pending-ref-num" style="font-size: 0.92rem; font-weight: 700; background: #ffffff; padding: 3px 6px; border-radius: 4px; border: 1px solid #cbd5e1; color: #b45309;">-</code>
+                        <button type="button" class="btn-copy-mini" onclick="copyPendingRef()" title="Copy Reference ID">
+                          <span id="copy-pending-ref-text">Copy</span>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="pending-detail-item">
+                      <span class="label">Payment Destination</span>
+                      <div class="val" id="pending-bank">Nabil bank</div>
+                    </div>
+                    <div class="pending-detail-item">
+                      <span class="label">Date Submitted</span>
+                      <div class="val" id="pending-date" style="font-size: 0.85rem; color: #64748b;">-</div>
+                    </div>
+                  </div>
+
+                  <!-- Screenshot Proof -->
+                  <div id="pending-screenshot-container" class="pending-proof-row">
+                    <img id="pending-screenshot-img" src="" alt="Payment Proof" class="pending-thumb-img" onclick="window.open(this.src, '_blank')" title="Click to view full screenshot" />
+                    <div style="flex: 1; min-width: 220px;">
+                      <a id="pending-screenshot-link" href="#" target="_blank" class="btn-outline-small" style="text-decoration: none;">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                        Open Full Receipt
+                      </a>
+                      <p style="margin: 8px 0 0; font-size: 0.82rem; color: #64748b; line-height: 1.5;">
+                        Your receipt has been delivered to the verification queue. An admin will review shortly.
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Change / Cancel Actions -->
+                  <div style="display: flex; gap: 10px; margin-top: 20px; padding-top: 18px; border-top: 1px solid #fde68a; flex-wrap: wrap;">
+                    <button type="button" id="btn-change-plan" onclick="handleChangePlan()"
+                      style="flex: 1; min-width: 160px; background: #1e40af; color: #fff; border: none; border-radius: 10px; font-size: 0.9rem; padding: 10px 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                      Change Plan
+                    </button>
+                    <button type="button" id="btn-cancel-pending" onclick="showCancelPendingConfirm()"
+                      style="flex: 1; min-width: 160px; background: #fff; color: #dc2626; border: 1.5px solid #fca5a5; border-radius: 10px; font-size: 0.9rem; padding: 10px 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='#fff'">
+                      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                      Cancel Pending Payment
                     </button>
                   </div>
                 </div>
-                <div class="pending-detail-item">
-                  <span class="label">Payment Destination</span>
-                  <div class="val" id="pending-bank">Nabil bank</div>
-                </div>
-                <div class="pending-detail-item">
-                  <span class="label">Date Submitted</span>
-                  <div class="val" id="pending-date" style="font-size: 0.85rem; color: #64748b;">-</div>
-                </div>
-              </div>
-
-              <!-- Payment Screenshot Proof Container -->
-              <div id="pending-screenshot-container" class="pending-proof-row">
-                <img id="pending-screenshot-img" src="" alt="Payment Proof" class="pending-thumb-img" onclick="window.open(this.src, '_blank')" title="Click to view full screenshot in new tab" />
-                <div style="flex: 1; min-width: 220px;">
-                  <a id="pending-screenshot-link" href="#" target="_blank" class="btn-outline-small" style="text-decoration: none;">
-                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                    Open Full Receipt
-                  </a>
-                  <p style="margin: 8px 0 0; font-size: 0.82rem; color: #64748b; line-height: 1.5;">
-                    Your uploaded receipt screenshot has been safely delivered to our verification queue. An administrator will verify the bank funds shortly.
-                  </p>
-                </div>
-              </div>
-
-              <!-- Pending Payment Actions -->
-              <div class="pending-actions-row" style="display: flex; gap: 10px; margin-top: 20px; padding-top: 18px; border-top: 1px solid #fde68a; flex-wrap: wrap;">
-                <button type="button" class="btn-plan-select" id="btn-change-plan"
-                  onclick="handleChangePlan()"
-                  style="flex: 1; min-width: 160px; background: #1e40af; color: #fff; border-color: #1e40af; font-size: 0.9rem; padding: 10px 16px;">
-                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px; vertical-align: middle;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                  Change Plan
-                </button>
-                <button type="button" id="btn-cancel-pending"
-                  onclick="showCancelPendingConfirm()"
-                  style="flex: 1; min-width: 160px; background: #fff; color: #dc2626; border: 1.5px solid #fca5a5; border-radius: 10px; font-size: 0.9rem; padding: 10px 16px; font-weight: 600; cursor: pointer; transition: background 0.18s;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='#fff'">
-                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-                  Cancel Pending Payment
-                </button>
               </div>
             </div>
-          </div>
+
+          </div><!-- /inline-checkout-section -->
 
           <!-- Card: Purchase & Payment History (Displayed only after payment) -->
           <div class="history-card" id="billing-history-section" style="display: none;">
@@ -497,118 +631,7 @@
     </main>
   </div>
 
-  <!-- MODAL: Manual Bank Transfer Payment -->
-  <div class="modal-backdrop" id="payment-modal" style="display: none;" onclick="if(event.target === this) handlePaymentModalClose()">
-    <div class="modal-card checkout-modal-card">
-      <div class="modal-header">
-        <div class="modal-title-wrap">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#2563eb" stroke-width="2">
-            <rect x="2" y="4" width="20" height="16" rx="2"/>
-            <line x1="2" y1="10" x2="22" y2="10"/>
-          </svg>
-          <h3 id="modal-plan-title">Bank Transfer Payment</h3>
-        </div>
-        <button type="button" class="modal-close-btn" onclick="handlePaymentModalClose()">&times;</button>
-      </div>
-
-      <div class="modal-body" style="padding: 24px;">
-        <!-- Payable Amount Row (Centered) -->
-        <div class="modal-payable-row">
-          <span class="label">Payable Amount:</span>
-          <span class="val highlight" id="modal-amount">NPR 100</span>
-        </div>
-
-        <!-- Bank Details 4 Vertical Boxes (Centered Content & Clean Style) -->
-        <div class="bank-vertical-grid modal-style">
-          <!-- Box 1: Bank Name -->
-          <div class="bank-vertical-box">
-            <span class="bvb-label">Bank Name</span>
-            <span class="bvb-value" id="bank-name">Nabil bank</span>
-          </div>
-
-          <!-- Box 2: Account Name -->
-          <div class="bank-vertical-box">
-            <span class="bvb-label">Account Name</span>
-            <span class="bvb-value" id="bank-acc-name">SASKRIT BHATTARAI</span>
-          </div>
-
-          <!-- Box 3: Account Number -->
-          <div class="bank-vertical-box">
-            <span class="bvb-label">Account Number</span>
-            <div class="bvb-value-row">
-              <span class="bvb-value mono" id="bank-acc-number">08710017510564</span>
-              <button type="button" class="btn-copy-mini" onclick="copyAccountNumber()" id="btn-copy-acc" title="Copy Account Number">
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                <span id="copy-acc-text">Copy</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Box 4: Branch -->
-          <div class="bank-vertical-box">
-            <span class="bvb-label">Branch</span>
-            <span class="bvb-value" id="bank-branch">Biratchowk Branch</span>
-          </div>
-        </div>
-
-        <form id="payment-submit-form" onsubmit="handlePaymentSubmit(event)">
-          <input type="hidden" id="modal-plan-id" value="" />
-
-          <div class="form-group">
-            <label class="form-label" for="payment-reference">
-              Transaction / Reference Number <span style="color: #ef4444;">*</span>
-            </label>
-            <input 
-              type="text" 
-              id="payment-reference" 
-              class="form-control" 
-              placeholder="e.g. 104928374920 or Fonepay Ref ID" 
-              required 
-            />
-            <small style="font-size: 0.76rem; color: #64748b; margin-top: 4px; display: block;">
-              Enter the exact transaction reference code from your mobile banking or receipt.
-            </small>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="payment-screenshot">
-              Payment Screenshot / Receipt <span style="color: #ef4444;">*</span>
-            </label>
-            <div class="upload-dropzone" onclick="document.getElementById('payment-screenshot').click()">
-              <input 
-                type="file" 
-                id="payment-screenshot" 
-                accept="image/png, image/jpeg, image/webp" 
-                required
-                style="position: absolute; width: 0; height: 0; opacity: 0; pointer-events: none;"
-                onchange="handleScreenshotPreview(event)"
-              />
-              <div id="dropzone-empty-state">
-                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#64748b" stroke-width="1.8" style="margin-bottom: 6px;">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                  <polyline points="17 8 12 3 7 8"/>
-                  <line x1="12" y1="3" x2="12" y2="15"/>
-                </svg>
-                <div style="font-size: 0.88rem; font-weight: 600; color: #1e293b;">Click to upload bank transfer receipt</div>
-                <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 2px;">PNG, JPG, or WEBP (Max 5MB)</div>
-              </div>
-              <div id="screenshot-preview-wrap" style="display: none; margin-top: 6px;">
-                <img id="screenshot-preview-img" src="" alt="Screenshot Preview" style="max-height: 120px; border-radius: 6px; border: 1px solid #cbd5e1; object-fit: contain;" />
-                <div style="font-size: 0.76rem; color: #2563eb; font-weight: 600; margin-top: 4px;">Click to change image</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="modal-footer" style="padding: 16px 0 0; margin-top: 20px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 10px;">
-            <button type="button" class="btn-secondary" onclick="handlePaymentModalClose()">Cancel</button>
-            <button type="submit" class="btn-primary" id="btn-submit-payment">
-              Submit Payment for Verification
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
+  <!-- Payment modal removed: inline checkout section is used instead -->
 
   <!-- MODAL: Confirm Cancel Pending Payment -->
   <div class="modal-backdrop" id="cancel-pending-confirm-modal" style="display: none; z-index: 1300;" onclick="if(event.target === this) dismissCancelPendingConfirm()">
@@ -692,12 +715,14 @@
       const token = localStorage.getItem('easyinvite_auth_token');
       const userBanner = document.getElementById('billing-user-banner');
       const historyCard = document.getElementById('billing-history-section');
-      const pendingSection = document.getElementById('pending-payment-section');
+      const checkoutSection = document.getElementById('inline-checkout-section');
+      const checkoutFormState = document.getElementById('checkout-form-state');
+      const checkoutPendingState = document.getElementById('checkout-pending-state');
 
       if (!token) {
         if (userBanner) userBanner.style.display = 'none';
         if (historyCard) historyCard.style.display = 'none';
-        if (pendingSection) pendingSection.style.display = 'none';
+        if (checkoutSection) checkoutSection.style.display = 'none';
         updatePlanButtons('guest');
         return;
       }
@@ -763,10 +788,12 @@
             if (sendsEl) sendsEl.textContent = sendsFormatted;
           }
 
-          // 1. Check for any active PENDING payment
-          const pendingPayment = payments.find(p => p.status === 'PENDING');
-          if (pendingPayment && pendingSection) {
-            pendingSection.style.display = 'block';
+          // 1. Check for any active PENDING payment → show inline pending state
+          if (pendingPayment) {
+            if (checkoutSection) checkoutSection.style.display = 'block';
+            if (checkoutFormState) checkoutFormState.style.display = 'none';
+            if (checkoutPendingState) checkoutPendingState.style.display = 'block';
+
             document.getElementById('pending-plan-name').textContent = (pendingPayment.plan_name || pendingPayment.plan_id || 'Plan').toUpperCase() + ' PLAN';
             document.getElementById('pending-amount').textContent = `NPR ${pendingPayment.amount_npr}`;
             document.getElementById('pending-ref-num').textContent = pendingPayment.reference_number || '-';
@@ -787,8 +814,13 @@
             } else {
               if (ssWrap) ssWrap.style.display = 'none';
             }
-          } else if (pendingSection) {
-            pendingSection.style.display = 'none';
+          } else {
+            // No pending payment → hide the checkout section (unless user is mid-selection)
+            if (checkoutPendingState) checkoutPendingState.style.display = 'none';
+            // Only hide the whole section if the form state is also not open
+            if (checkoutFormState && checkoutFormState.style.display === 'none') {
+              if (checkoutSection) checkoutSection.style.display = 'none';
+            }
           }
 
           // 2. Render Order & Payment History Table
@@ -983,10 +1015,10 @@
         }
         return;
       }
-      openPaymentModal(planId, name, amount, sends, isLifetime);
+      openInlineCheckout(planId, name, amount, sends, isLifetime);
     }
 
-    function openPaymentModal(planId, name, amount, sends, isLifetime) {
+    function openInlineCheckout(planId, name, amount, sends, isLifetime) {
       const token = localStorage.getItem('easyinvite_auth_token');
       if (!token) {
         if (typeof showAuthModal === 'function') {
@@ -998,19 +1030,41 @@
       }
 
       selectedPlanData = { planId, name, amount, sends, isLifetime };
-      document.getElementById('modal-plan-id').value = planId;
-      document.getElementById('modal-plan-title').textContent = `${name} Plan — Bank Transfer`;
-      document.getElementById('modal-amount').textContent = `NPR ${amount}`;
-      document.getElementById('payment-reference').value = '';
-      document.getElementById('payment-screenshot').value = '';
-      
-      const emptyState = document.getElementById('dropzone-empty-state');
-      const previewWrap = document.getElementById('screenshot-preview-wrap');
+
+      // Populate plan summary
+      const nameEl = document.getElementById('checkout-plan-name-display');
+      const amountEl = document.getElementById('checkout-amount-display');
+      if (nameEl) nameEl.textContent = `${name} Plan`;
+      if (amountEl) amountEl.textContent = `NPR ${amount.toLocaleString()}`;
+
+      // Reset the form
+      const planIdInput = document.getElementById('inline-plan-id');
+      const refInput = document.getElementById('inline-payment-reference');
+      const ssInput = document.getElementById('inline-payment-screenshot');
+      if (planIdInput) planIdInput.value = planId;
+      if (refInput) refInput.value = '';
+      if (ssInput) ssInput.value = '';
+      const emptyState = document.getElementById('inline-dropzone-empty');
+      const previewWrap = document.getElementById('inline-screenshot-preview-wrap');
       if (emptyState) emptyState.style.display = 'block';
       if (previewWrap) previewWrap.style.display = 'none';
       screenshotBase64 = null;
 
-      document.getElementById('payment-modal').style.display = 'flex';
+      // Show checkout section in form state
+      const checkoutSection = document.getElementById('inline-checkout-section');
+      const formState = document.getElementById('checkout-form-state');
+      const pendingState = document.getElementById('checkout-pending-state');
+      if (checkoutSection) checkoutSection.style.display = 'block';
+      if (formState) formState.style.display = 'block';
+      if (pendingState) pendingState.style.display = 'none';
+
+      // Scroll into view
+      if (checkoutSection) checkoutSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Compatibility alias (used by ?openPayment= URL param flow)
+    function openPaymentModal(planId, name, amount, sends, isLifetime) {
+      openInlineCheckout(planId, name, amount, sends, isLifetime);
     }
 
     function isUserPendingAccountCreation() {
@@ -1032,7 +1086,7 @@
       return (isNewParam || isNewFlag || pendingFlag);
     }
 
-    function handlePaymentModalClose() {
+    function handleInlineCheckoutClose() {
       if (isUserPendingAccountCreation()) {
         const confirmModal = document.getElementById('cancel-payment-confirm-modal');
         if (confirmModal) {
@@ -1040,7 +1094,24 @@
           return;
         }
       }
-      closePaymentModal();
+      // Just hide the checkout section
+      const checkoutSection = document.getElementById('inline-checkout-section');
+      const formState = document.getElementById('checkout-form-state');
+      if (checkoutSection) checkoutSection.style.display = 'none';
+      if (formState) formState.style.display = 'none';
+      selectedPlanData = null;
+      screenshotBase64 = null;
+    }
+
+    // Legacy alias
+    function handlePaymentModalClose() { handleInlineCheckoutClose(); }
+    function closePaymentModal() {
+      const checkoutSection = document.getElementById('inline-checkout-section');
+      const formState = document.getElementById('checkout-form-state');
+      if (checkoutSection) checkoutSection.style.display = 'none';
+      if (formState) formState.style.display = 'none';
+      selectedPlanData = null;
+      screenshotBase64 = null;
     }
 
     function dismissCancelPaymentModal() {
@@ -1149,6 +1220,20 @@
       });
     }
 
+    function copyInlineAccountNumber() {
+      const accNumber = '08710017510564';
+      navigator.clipboard.writeText(accNumber).then(() => {
+        const textSpan = document.getElementById('copy-inline-acc-text');
+        if (textSpan) textSpan.textContent = 'Copied!';
+        setTimeout(() => {
+          if (textSpan) textSpan.textContent = 'Copy';
+        }, 2000);
+      }).catch(() => {
+        showToast('Account Number: 08710017510564', 'info');
+      });
+    }
+
+
     function copyPendingRef() {
       const refEl = document.getElementById('pending-ref-num');
       const text = refEl ? refEl.textContent.trim() : '';
@@ -1162,10 +1247,10 @@
       });
     }
 
-    function handleScreenshotPreview(event) {
+    function handleInlineScreenshotPreview(event) {
       const file = event.target.files[0];
-      const emptyState = document.getElementById('dropzone-empty-state');
-      const previewWrap = document.getElementById('screenshot-preview-wrap');
+      const emptyState = document.getElementById('inline-dropzone-empty');
+      const previewWrap = document.getElementById('inline-screenshot-preview-wrap');
 
       if (!file) {
         screenshotBase64 = null;
@@ -1177,14 +1262,17 @@
       const reader = new FileReader();
       reader.onload = (e) => {
         screenshotBase64 = e.target.result;
-        document.getElementById('screenshot-preview-img').src = screenshotBase64;
+        document.getElementById('inline-screenshot-preview-img').src = screenshotBase64;
         if (emptyState) emptyState.style.display = 'none';
         if (previewWrap) previewWrap.style.display = 'block';
       };
       reader.readAsDataURL(file);
     }
 
-    async function handlePaymentSubmit(event) {
+    // Legacy alias for any old references
+    function handleScreenshotPreview(event) { handleInlineScreenshotPreview(event); }
+
+    async function handleInlinePaymentSubmit(event) {
       event.preventDefault();
       const token = localStorage.getItem('easyinvite_auth_token');
       if (!token) {
@@ -1192,8 +1280,8 @@
         return;
       }
 
-      const planId = document.getElementById('modal-plan-id').value;
-      const referenceNumber = document.getElementById('payment-reference').value.trim();
+      const planId = document.getElementById('inline-plan-id').value;
+      const referenceNumber = document.getElementById('inline-payment-reference').value.trim();
 
       if (!referenceNumber) {
         showToast('Please enter your transaction reference number.', 'warning');
@@ -1202,14 +1290,13 @@
 
       if (!screenshotBase64) {
         showToast('Payment screenshot is required. Please upload your payment receipt or transfer proof.', 'error');
-        const fileInput = document.getElementById('payment-screenshot');
+        const fileInput = document.getElementById('inline-payment-screenshot');
         if (fileInput) fileInput.focus();
         return;
       }
 
-      const submitBtn = document.getElementById('btn-submit-payment');
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Submitting...';
+      const submitBtn = document.getElementById('btn-inline-submit');
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting...'; }
 
       try {
         const res = await fetch('/api/billing/purchase', {
@@ -1232,8 +1319,10 @@
           localStorage.removeItem('easyinvite_pending_payment');
           localStorage.removeItem('easyinvite_is_new_registration');
           window.history.replaceState({}, document.title, 'billing.html');
-          showToast('Payment submitted successfully! Your account will be activated once verified by our team.', 'success');
-          closePaymentModal();
+          showToast('Payment submitted! Your account will be activated once verified.', 'success');
+          // Hide form state, show pending state via data reload
+          const formState = document.getElementById('checkout-form-state');
+          if (formState) formState.style.display = 'none';
           loadBillingData();
         } else {
           showToast(data.error || 'Failed to submit payment.', 'error');
@@ -1241,10 +1330,12 @@
       } catch (err) {
         showToast('Network error while submitting payment.', 'error');
       } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Submit Payment for Verification';
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Submit Payment for Verification'; }
       }
     }
+
+    // Legacy alias
+    async function handlePaymentSubmit(event) { return handleInlinePaymentSubmit(event); }
   </script>
 </body>
 </html>
