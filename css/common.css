@@ -1261,6 +1261,177 @@ body {
   font-size: 14px;
 }
 
+/* In-editor & in-modal CTA button styling (used across index.html and templates.html) */
+.message-editor .btn-cta a,
+.message-editor table.btn-cta td a,
+.tpl-wysiwyg-editor .btn-cta a,
+.tpl-wysiwyg-editor table.btn-cta td a,
+.template-picker-card-body .btn-cta a,
+.template-picker-card-body table.btn-cta td a {
+  display: inline-block;
+  background-color: #2563eb;
+  color: #ffffff !important;
+  border: 2px solid #2563eb;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  padding: 8px 18px;
+  text-decoration: none !important;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.message-editor .btn-cta-green a,
+.message-editor table.btn-cta-green td a,
+.tpl-wysiwyg-editor .btn-cta-green a,
+.tpl-wysiwyg-editor table.btn-cta-green td a,
+.template-picker-card-body .btn-cta-green a,
+.template-picker-card-body table.btn-cta-green td a {
+  display: inline-block;
+  background-color: #16a34a;
+  color: #ffffff !important;
+  border: 2px solid #16a34a;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  padding: 8px 18px;
+  text-decoration: none !important;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Template Selector Modal (for picking template directly on composer) */
+.template-picker-modal-card {
+  max-width: 880px;
+  width: 95%;
+}
+
+.template-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 16px;
+  margin-top: 8px;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.template-picker-card {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  transition: all 0.15s ease;
+}
+
+.template-picker-card:hover {
+  border-color: #94a3b8;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+.template-picker-card.active-tpl {
+  border-color: #2563eb;
+  background: #f8faff;
+  box-shadow: 0 0 0 1px #2563eb;
+}
+
+.template-picker-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.template-picker-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 4px 0;
+}
+
+.template-picker-desc {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.template-picker-subject {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #334155;
+  background: #f1f5f9;
+  padding: 6px 10px;
+  border-radius: 6px;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.template-picker-card-body {
+  font-size: 0.8rem;
+  color: #475569;
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 6px;
+  padding: 10px 12px;
+  max-height: 120px;
+  overflow-y: auto;
+  line-height: 1.5;
+}
+
+.template-picker-card-body table tr {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.template-picker-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 8px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.badge-tag-preset {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #475569;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  padding: 2px 7px;
+  border-radius: 10px;
+}
+
+.badge-tag-custom {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #7c3aed;
+  background: #f5f3ff;
+  border: 1px solid #ddd6fe;
+  padding: 2px 7px;
+  border-radius: 10px;
+}
+
+.badge-tag-active {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #059669;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  padding: 2px 7px;
+  border-radius: 10px;
+}
+
 /* ==========================================================================
    Toast Notification System (Fixed at Top Right)
    ========================================================================== */

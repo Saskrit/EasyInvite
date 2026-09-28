@@ -160,6 +160,8 @@
             <div class="header-action-group">
               <button type="button" class="btn-tpl-format" id="btn-tpl-bold" title="Bold selected text" onmousedown="event.preventDefault(); document.execCommand('bold')"><strong>B</strong></button>
               <button type="button" class="btn-tpl-format" id="btn-tpl-italic" title="Italic selected text" onmousedown="event.preventDefault(); document.execCommand('italic')"><em>I</em></button>
+              <button type="button" class="btn-outline-small" id="btn-tpl-insert-app-name" title="Insert App Name tag">+ {{app_name}}</button>
+              <button type="button" class="btn-outline-small" id="btn-tpl-insert-sender-name" title="Insert Sender Name tag">+ {{sender_name}}</button>
               <button type="button" class="btn-outline-small" id="btn-tpl-insert-link" title="Insert Step 1 Join Tester URL tag">+ {{link}}</button>
               <button type="button" class="btn-outline-small" id="btn-tpl-insert-direct-link" title="Insert Step 2 Play Store URL tag">+ {{direct_link}}</button>
               <button type="button" class="btn-outline-small" id="btn-tpl-insert-both-block" title="Insert 2-step button block">+ 2-Step Buttons</button>
@@ -173,7 +175,7 @@
                contenteditable="true"
                spellcheck="true"
                data-placeholder="Type your message here. Use Enter for a new line. Select text and press B to bold it."></div>
-          <small class="field-hint"><code>{{link}}</code> = Step 1 Join link &middot; <code>{{direct_link}}</code> = Step 2 Play Store link &mdash; auto-replaced on send.</small>
+          <small class="field-hint"><code>{{link}}</code> = Join link &middot; <code>{{direct_link}}</code> = Store link &middot; <code>{{app_name}}</code> = App name &middot; <code>{{sender_name}}</code> = Sender name &mdash; auto-replaced on send.</small>
         </div>
       </div>
 

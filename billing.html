@@ -672,14 +672,26 @@
         const data = await res.json();
 
         if (data.success) {
+          let storedUser = {};
+          try { storedUser = JSON.parse(localStorage.getItem('easyinvite_user') || '{}'); } catch(e){}
+
           const payments = data.payments || [];
           const usage = data.usage || {};
+          const pendingPayment = payments.find(p => p.status === 'PENDING');
+          const isApprovedPaid = Boolean(usage.hasApprovedPaidPlan || (storedUser && storedUser.role === 'admin'));
+
+          window.userHasSubmittedPayment = Boolean(pendingPayment);
+          window.userHasApprovedPlan = isApprovedPaid;
+
+          // If user already has a pending payment submitted, ensure registration flags are cleared
+          if (pendingPayment) {
+            localStorage.removeItem('easyinvite_is_new_registration');
+            localStorage.removeItem('easyinvite_pending_payment');
+          }
 
           // 0. Update User Status Banner at top
           if (userBanner) {
             userBanner.style.display = 'flex';
-            let storedUser = {};
-            try { storedUser = JSON.parse(localStorage.getItem('easyinvite_user') || '{}'); } catch(e){}
             const nameEl = document.getElementById('banner-user-name');
             const emailEl = document.getElementById('banner-user-email');
             const initialEl = document.getElementById('banner-user-initials');
@@ -965,15 +977,22 @@
     }
 
     function isUserPendingAccountCreation() {
+      // If user has already submitted a payment (pending or approved), do NOT cancel registration
+      if (window.userHasSubmittedPayment || window.userHasApprovedPlan) {
+        return false;
+      }
+
+      // ONLY true if user just verified email and has NOT yet submitted any payment proof
       const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get('isNew') === '1' || urlParams.get('openPayment')) return true;
-      if (localStorage.getItem('easyinvite_pending_payment') === 'true') return true;
+      const isNewParam = urlParams.get('isNew') === '1';
+      const isNewFlag = localStorage.getItem('easyinvite_is_new_registration') === 'true';
+      const pendingFlag = localStorage.getItem('easyinvite_pending_payment') === 'true';
 
       let storedUser = {};
       try { storedUser = JSON.parse(localStorage.getItem('easyinvite_user') || '{}'); } catch(e){}
       if (storedUser && storedUser.role === 'admin') return false;
 
-      return true;
+      return (isNewParam || isNewFlag || pendingFlag);
     }
 
     function handlePaymentModalClose() {
@@ -1120,6 +1139,7 @@
 
         const data = await res.json();
         if (data.success) {
+          window.userHasSubmittedPayment = true;
           localStorage.removeItem('easyinvite_pending_payment');
           localStorage.removeItem('easyinvite_is_new_registration');
           window.history.replaceState({}, document.title, 'billing.html');

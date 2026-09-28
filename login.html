@@ -510,6 +510,10 @@
           if (data.user) {
             localStorage.setItem('easyinvite_user', JSON.stringify(data.user));
           }
+          if (data.usage && (data.usage.hasPendingPayment || data.usage.hasApprovedPaidPlan)) {
+            localStorage.removeItem('easyinvite_is_new_registration');
+            localStorage.removeItem('easyinvite_pending_payment');
+          }
           window.location.href = getRedirectTarget();
         } else if (data.requiresVerification) {
           document.getElementById('verify-email-prompt').textContent = `We sent a 4-digit verification code to ${email}.`;

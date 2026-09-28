@@ -373,19 +373,41 @@ body[data-page="admin-payments"] .main-wrapper {
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 16px;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
   box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 4px 12px -2px rgba(15, 23, 42, 0.03);
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f8fafc;
+}
+
+.admin-table-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.admin-table-container::-webkit-scrollbar-track {
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.admin-table-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 8px;
+}
+
+.admin-table-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 .admin-table {
   width: 100%;
+  min-width: 1080px;
   border-collapse: collapse;
   text-align: left;
 }
 
 .admin-table th {
   background: #f8fafc;
-  padding: 13px 18px;
+  padding: 14px 16px;
   font-size: 0.76rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -396,11 +418,21 @@ body[data-page="admin-payments"] .main-wrapper {
 }
 
 .admin-table td {
-  padding: 15px 18px;
+  padding: 14px 16px;
   font-size: 0.88rem;
   border-bottom: 1px solid #f1f5f9;
   vertical-align: middle;
   color: #1e293b;
+}
+
+.admin-table th:first-child,
+.admin-table td:first-child {
+  padding-left: 20px;
+}
+
+.admin-table th:last-child,
+.admin-table td:last-child {
+  padding-right: 20px;
 }
 
 .admin-table tr:hover td {
@@ -470,6 +502,12 @@ body[data-page="admin-payments"] .main-wrapper {
   color: #7c3aed;
 }
 
+.plan-pill.scale {
+  background: #ecfeff;
+  border: 1px solid #a5f3fc;
+  color: #0891b2;
+}
+
 .plan-pill.lifetime {
   background: #fffbeb;
   border: 1px solid #fde68a;
@@ -487,6 +525,7 @@ body[data-page="admin-payments"] .main-wrapper {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.03em;
+  white-space: nowrap;
 }
 
 .status-pill-pro.pending {
@@ -519,6 +558,7 @@ body[data-page="admin-payments"] .main-wrapper {
   border-radius: 6px;
   border: 1px solid #e2e8f0;
   color: #334155;
+  white-space: nowrap;
 }
 
 .btn-copy-ref {
@@ -540,7 +580,10 @@ body[data-page="admin-payments"] .main-wrapper {
   position: relative;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   cursor: pointer;
+  border-radius: 8px;
+  background: #f8fafc;
 }
 
 .receipt-thumb-img {
@@ -549,6 +592,8 @@ body[data-page="admin-payments"] .main-wrapper {
   object-fit: cover;
   border-radius: 8px;
   border: 1px solid #cbd5e1;
+  background-color: #f1f5f9;
+  display: block;
   transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
@@ -561,8 +606,10 @@ body[data-page="admin-payments"] .main-wrapper {
 /* Action Buttons */
 .action-btn-group {
   display: inline-flex;
+  align-items: center;
   gap: 8px;
   justify-content: flex-end;
+  white-space: nowrap;
 }
 
 .btn-action-approve {
@@ -579,6 +626,8 @@ body[data-page="admin-payments"] .main-wrapper {
   gap: 6px;
   box-shadow: 0 2px 6px rgba(16, 185, 129, 0.2);
   transition: all 0.15s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .btn-action-approve:hover {
@@ -600,10 +649,12 @@ body[data-page="admin-payments"] .main-wrapper {
   align-items: center;
   gap: 6px;
   transition: all 0.15s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .btn-action-view {
-  background: #f1f5f9;
+  background: #f8fafc;
   color: #0f172a;
   border: 1px solid #cbd5e1;
   padding: 7px 13px;
@@ -615,6 +666,8 @@ body[data-page="admin-payments"] .main-wrapper {
   align-items: center;
   gap: 5px;
   transition: all 0.15s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .btn-action-view:hover {
@@ -624,20 +677,22 @@ body[data-page="admin-payments"] .main-wrapper {
 }
 
 .btn-view-details-subtle {
-  background: none;
-  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
   color: #2563eb;
   font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;
-  padding: 4px 10px;
+  padding: 5px 12px;
   border-radius: 6px;
   transition: all 0.15s ease;
+  white-space: nowrap;
 }
 
 .btn-view-details-subtle:hover {
   background: #eff6ff;
-  border-color: #bfdbfe;
+  border-color: #93c5fd;
+  color: #1d4ed8;
 }
 
 .btn-action-reject:hover {

@@ -110,11 +110,26 @@ body[data-page="email-templates"] #view-email-templates {
   border: 1px solid #f1f5f9;
   padding: 14px;
   border-radius: var(--radius-md);
-  min-height: 130px;
-  max-height: 180px;
+  min-height: 140px;
+  max-height: 220px;
   overflow-y: auto;
   overflow-x: hidden;
   word-break: break-word;
+}
+
+.template-card-body table {
+  max-width: 100% !important;
+}
+
+.template-card-body table tr {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+}
+
+.template-card-body table td {
+  display: inline-block !important;
+  padding: 0 !important;
 }
 
 .template-card-body::-webkit-scrollbar {
@@ -198,6 +213,26 @@ body[data-page="email-templates"] #view-email-templates {
   color: #059669;
   background-color: #ecfdf5;
   border: 1px solid #a7f3d0;
+  padding: 2px 7px;
+  border-radius: 12px;
+}
+
+.template-badge-preset {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #475569;
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  padding: 2px 7px;
+  border-radius: 12px;
+}
+
+.template-badge-custom {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #7c3aed;
+  background-color: #f5f3ff;
+  border: 1px solid #ddd6fe;
   padding: 2px 7px;
   border-radius: 12px;
 }

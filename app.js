@@ -35,12 +35,12 @@ const DEFAULT_STATE = {
   <tr>
     <td style="padding-right: 10px;">
       <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn-cta">
-        <tr><td><a href="{{link}}" target="_blank">1. JOIN AS A TESTER</a></td></tr>
+        <tr><td><a href="{{link}}" target="_blank" style="background-color: #2563eb; color: #ffffff !important; display: inline-block; padding: 12px 24px; border-radius: 6px; font-weight: 700; font-size: 14px; text-decoration: none; text-transform: uppercase; font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif; letter-spacing: 0.5px;">1. JOIN AS A TESTER</a></td></tr>
       </table>
     </td>
     <td>
       <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn-cta-green">
-        <tr><td><a href="{{direct_link}}" target="_blank">2. DOWNLOAD ON PLAY STORE</a></td></tr>
+        <tr><td><a href="{{direct_link}}" target="_blank" style="background-color: #16a34a; color: #ffffff !important; display: inline-block; padding: 12px 24px; border-radius: 6px; font-weight: 700; font-size: 14px; text-decoration: none; text-transform: uppercase; font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif; letter-spacing: 0.5px;">2. DOWNLOAD ON PLAY STORE</a></td></tr>
       </table>
     </td>
   </tr>
@@ -60,12 +60,12 @@ const DEFAULT_STATE = {
   <tr>
     <td style="padding-right: 10px;">
       <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn-cta">
-        <tr><td><a href="{{link}}" target="_blank">1. JOIN AS A TESTER</a></td></tr>
+        <tr><td><a href="{{link}}" target="_blank" style="background-color: #2563eb; color: #ffffff !important; display: inline-block; padding: 12px 24px; border-radius: 6px; font-weight: 700; font-size: 14px; text-decoration: none; text-transform: uppercase; font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif; letter-spacing: 0.5px;">1. JOIN AS A TESTER</a></td></tr>
       </table>
     </td>
     <td>
       <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn-cta-green">
-        <tr><td><a href="{{direct_link}}" target="_blank">2. DOWNLOAD ON PLAY STORE</a></td></tr>
+        <tr><td><a href="{{direct_link}}" target="_blank" style="background-color: #16a34a; color: #ffffff !important; display: inline-block; padding: 12px 24px; border-radius: 6px; font-weight: 700; font-size: 14px; text-decoration: none; text-transform: uppercase; font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif; letter-spacing: 0.5px;">2. DOWNLOAD ON PLAY STORE</a></td></tr>
       </table>
     </td>
   </tr>
@@ -86,12 +86,12 @@ const DEFAULT_STATE = {
   <tr>
     <td style="padding-right: 10px;">
       <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn-cta">
-        <tr><td><a href="{{link}}" target="_blank">1. JOIN AS A TESTER</a></td></tr>
+        <tr><td><a href="{{link}}" target="_blank" style="background-color: #2563eb; color: #ffffff !important; display: inline-block; padding: 12px 24px; border-radius: 6px; font-weight: 700; font-size: 14px; text-decoration: none; text-transform: uppercase; font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif; letter-spacing: 0.5px;">1. JOIN AS A TESTER</a></td></tr>
       </table>
     </td>
     <td>
       <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn-cta-green">
-        <tr><td><a href="{{direct_link}}" target="_blank">2. DOWNLOAD ON PLAY STORE</a></td></tr>
+        <tr><td><a href="{{direct_link}}" target="_blank" style="background-color: #16a34a; color: #ffffff !important; display: inline-block; padding: 12px 24px; border-radius: 6px; font-weight: 700; font-size: 14px; text-decoration: none; text-transform: uppercase; font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif; letter-spacing: 0.5px;">2. DOWNLOAD ON PLAY STORE</a></td></tr>
       </table>
     </td>
   </tr>
@@ -118,12 +118,12 @@ const DEFAULT_STATE = {
   <tr>
     <td style="padding-right: 10px;">
       <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn-cta">
-        <tr><td><a href="{{link}}" target="_blank">TESTING OPT-IN</a></td></tr>
+        <tr><td><a href="{{link}}" target="_blank" style="background-color: #2563eb; color: #ffffff !important; display: inline-block; padding: 12px 24px; border-radius: 6px; font-weight: 700; font-size: 14px; text-decoration: none; text-transform: uppercase; font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif; letter-spacing: 0.5px;">TESTING OPT-IN</a></td></tr>
       </table>
     </td>
     <td>
       <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn-cta-green">
-        <tr><td><a href="{{direct_link}}" target="_blank">PLAY STORE DOWNLOAD</a></td></tr>
+        <tr><td><a href="{{direct_link}}" target="_blank" style="background-color: #16a34a; color: #ffffff !important; display: inline-block; padding: 12px 24px; border-radius: 6px; font-weight: 700; font-size: 14px; text-decoration: none; text-transform: uppercase; font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif; letter-spacing: 0.5px;">PLAY STORE DOWNLOAD</a></td></tr>
       </table>
     </td>
   </tr>
@@ -137,7 +137,7 @@ const DEFAULT_STATE = {
 
 // Version stamp for built-in templates.
 // Bump this string whenever DEFAULT_STATE.templates changes to force a reset.
-const BUILTIN_TPL_VERSION = "v3-dual-button";
+const BUILTIN_TPL_VERSION = "v4-dual-button-styled";
 
 // Application State Initializer
 let state = loadState();
@@ -189,12 +189,17 @@ function loadState() {
       // Always start with fresh built-in templates
       const mergedTemplates = { ...DEFAULT_STATE.templates };
 
-      // Layer user-created (custom_*) templates on top — never reset those
+      // Layer user-created (custom_*) and user-edited templates on top
       for (const [key, tpl] of Object.entries(parsed.templates || {})) {
-        if (!builtInKeys.has(key)) {
-          mergedTemplates[key] = tpl; // preserve user-made templates
+        if (!tpl || typeof tpl !== "object") continue;
+        let cleanKey = key;
+        const match = key.match(/^(default|casual|detailed|thankyou)_\d+$/);
+        if (match) cleanKey = match[1];
+
+        if (!builtInKeys.has(cleanKey)) {
+          mergedTemplates[cleanKey] = tpl; // preserve user-made templates
         } else if (!needsReset) {
-          mergedTemplates[key] = tpl; // keep saved built-in only if version matches
+          mergedTemplates[cleanKey] = tpl; // keep saved built-in only if version matches
         }
       }
 
@@ -344,6 +349,10 @@ const elements = {
   btnQuickBothLinks: document.getElementById("btn-quick-both-links"),
   btnSaveCurrentAsTemplate: document.getElementById("btn-save-current-as-template"),
   btnOpenTemplateSelector: document.getElementById("btn-open-template-selector"),
+  templatePickerModal: document.getElementById("template-picker-modal"),
+  templatePickerGrid: document.getElementById("template-picker-grid"),
+  closeTemplatePickerModal: document.getElementById("close-template-picker-modal"),
+  closeTemplatePickerModalFooter: document.getElementById("close-template-picker-modal-footer"),
   btnSendInvitation: document.getElementById("btn-send-invitation"),
   sendButtonText: document.getElementById("send-button-text"),
   btnPreviewEmail: document.getElementById("btn-preview-email"),
@@ -424,6 +433,8 @@ const elements = {
   btnTplInsertLink: document.getElementById("btn-tpl-insert-link"),
   btnTplInsertDirectLink: document.getElementById("btn-tpl-insert-direct-link"),
   btnTplInsertBothBlock: document.getElementById("btn-tpl-insert-both-block"),
+  btnTplInsertAppName: document.getElementById("btn-tpl-insert-app-name"),
+  btnTplInsertSenderName: document.getElementById("btn-tpl-insert-sender-name"),
 
   toastContainer: document.getElementById("toast-container")
 };
@@ -574,12 +585,22 @@ async function initAuth() {
       // Sync database templates into state
       if (data.templates && Array.isArray(data.templates) && data.templates.length > 0) {
         data.templates.forEach(t => {
-          state.templates[t.id] = {
+          let cleanId = t.id;
+          const match = cleanId && cleanId.match(/^(default|casual|detailed|thankyou)_\d+$/);
+          if (match) cleanId = match[1];
+          state.templates[cleanId] = {
             name: t.name,
             desc: t.desc || '',
             subject: t.subject,
             body: t.body
           };
+        });
+
+        // Purge any legacy underscore-id keys from state.templates
+        Object.keys(state.templates).forEach(k => {
+          if (/^(default|casual|detailed|thankyou)_\d+$/.test(k)) {
+            delete state.templates[k];
+          }
         });
       }
 
@@ -1132,6 +1153,10 @@ async function submitSignIn(e) {
     if (data.success) {
       localStorage.setItem("easyinvite_auth_token", data.token);
       currentUser = data.user;
+      if (data.usage && (data.usage.hasPendingPayment || data.usage.hasApprovedPaidPlan)) {
+        localStorage.removeItem("easyinvite_is_new_registration");
+        localStorage.removeItem("easyinvite_pending_payment");
+      }
       closeAuthModal();
       showToast(`Welcome back, ${currentUser.name}!`, "success");
       await initAuth();
@@ -1378,6 +1403,15 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.removeItem("easyinvite_applied_toast");
   } catch (e) {}
 
+  // If navigated from Templates page after applying a template, show confirmation toast
+  const appliedTplName = sessionStorage.getItem("easyinvite_applied_tpl_name");
+  if (appliedTplName) {
+    sessionStorage.removeItem("easyinvite_applied_tpl_name");
+    setTimeout(() => {
+      showToast(`Applied template: "${appliedTplName}"`, "success");
+    }, 250);
+  }
+
   // Load any configured defaults or credentials from .env
   loadServerEnvConfig();
 
@@ -1428,7 +1462,24 @@ function setupEventListeners() {
         showPlanUpgradePrompt("Email templates", "Growth (Rs 200/mo)");
         return;
       }
-      switchView("email-templates");
+      if (elements.templatePickerModal) {
+        openTemplatePickerModal();
+      } else {
+        switchView("email-templates");
+      }
+    });
+  }
+
+  // Template Picker Modal Close Handlers
+  if (elements.closeTemplatePickerModal) {
+    elements.closeTemplatePickerModal.addEventListener("click", closeTemplatePickerModal);
+  }
+  if (elements.closeTemplatePickerModalFooter) {
+    elements.closeTemplatePickerModalFooter.addEventListener("click", closeTemplatePickerModal);
+  }
+  if (elements.templatePickerModal) {
+    elements.templatePickerModal.addEventListener("click", (e) => {
+      if (e.target === elements.templatePickerModal) closeTemplatePickerModal();
     });
   }
 
@@ -1441,7 +1492,13 @@ function setupEventListeners() {
         return;
       }
       const currentSubject = (elements.emailSubject && elements.emailSubject.value.trim()) || "";
-      const currentHtml = (elements.messageEditor && elements.messageEditor.innerHTML.trim()) || "";
+      let currentHtml = (elements.messageEditor && elements.messageEditor.innerHTML.trim()) || "";
+
+      // Reverse replace dynamic URLs and names back to placeholders so the template stays reusable
+      if (state.playStoreLink) currentHtml = currentHtml.replaceAll(state.playStoreLink, "{{link}}");
+      if (state.directPlayLink) currentHtml = currentHtml.replaceAll(state.directPlayLink, "{{direct_link}}");
+      if (state.appName) currentHtml = currentHtml.replaceAll(state.appName, "{{app_name}}");
+      if (state.senderName) currentHtml = currentHtml.replaceAll(state.senderName, "{{sender_name}}");
 
       openTemplateModal(null);
 
@@ -1713,31 +1770,36 @@ function setupEventListeners() {
   if (elements.btnSaveTemplateModal) {
     elements.btnSaveTemplateModal.addEventListener("click", handleSaveTemplateFromModal);
   }
+  const insertIntoTplEditor = (content, isHtml = false) => {
+    if (!elements.tplBodyEditor) return;
+    elements.tplBodyEditor.focus();
+    let success = false;
+    try {
+      success = isHtml
+        ? document.execCommand("insertHTML", false, content)
+        : document.execCommand("insertText", false, content);
+    } catch (_) {}
+    if (!success) {
+      elements.tplBodyEditor.innerHTML += content;
+    }
+  };
+
+  if (elements.btnTplInsertAppName) {
+    elements.btnTplInsertAppName.addEventListener("click", () => insertIntoTplEditor("{{app_name}}"));
+  }
+  if (elements.btnTplInsertSenderName) {
+    elements.btnTplInsertSenderName.addEventListener("click", () => insertIntoTplEditor("{{sender_name}}"));
+  }
   if (elements.btnTplInsertLink) {
-    elements.btnTplInsertLink.addEventListener("click", () => {
-      if (elements.tplBodyEditor) {
-        elements.tplBodyEditor.focus();
-        document.execCommand("insertText", false, "{{link}}");
-      }
-    });
+    elements.btnTplInsertLink.addEventListener("click", () => insertIntoTplEditor("{{link}}"));
   }
-
   if (elements.btnTplInsertDirectLink) {
-    elements.btnTplInsertDirectLink.addEventListener("click", () => {
-      if (elements.tplBodyEditor) {
-        elements.tplBodyEditor.focus();
-        document.execCommand("insertText", false, "{{direct_link}}");
-      }
-    });
+    elements.btnTplInsertDirectLink.addEventListener("click", () => insertIntoTplEditor("{{direct_link}}"));
   }
-
   if (elements.btnTplInsertBothBlock) {
     elements.btnTplInsertBothBlock.addEventListener("click", () => {
-      if (elements.tplBodyEditor) {
-        elements.tplBodyEditor.focus();
-        const block = `<table role="presentation" border="0" cellpadding="0" cellspacing="0" style="margin:16px 0 8px 0;"><tr><td style="padding-right:10px;"><table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn-cta"><tr><td><a href="{{link}}" target="_blank">1. JOIN AS A TESTER</a></td></tr></table></td><td><table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn-cta-green"><tr><td><a href="{{direct_link}}" target="_blank">2. DOWNLOAD ON PLAY STORE</a></td></tr></table></td></tr></table><p style="font-size:12px;color:#64748b;margin:4px 0 16px 0;">Step 1: Join test track &rarr; Step 2: Download on Google Play</p>`;
-        document.execCommand("insertHTML", false, block);
-      }
+      const block = `<table role="presentation" border="0" cellpadding="0" cellspacing="0" style="margin:16px 0 8px 0;"><tr><td style="padding-right:10px;"><table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn-cta"><tr><td><a href="{{link}}" target="_blank" style="background-color: #2563eb; color: #ffffff !important; display: inline-block; padding: 12px 24px; border-radius: 6px; font-weight: 700; font-size: 14px; text-decoration: none; text-transform: uppercase;">1. JOIN AS A TESTER</a></td></tr></table></td><td><table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn-cta-green"><tr><td><a href="{{direct_link}}" target="_blank" style="background-color: #16a34a; color: #ffffff !important; display: inline-block; padding: 12px 24px; border-radius: 6px; font-weight: 700; font-size: 14px; text-decoration: none; text-transform: uppercase;">2. DOWNLOAD ON PLAY STORE</a></td></tr></table></td></tr></table><p style="font-size:12px;color:#64748b;margin:4px 0 16px 0;">Step 1: Join test track &rarr; Step 2: Download on Google Play</p>`;
+      insertIntoTplEditor(block, true);
     });
   }
 
@@ -2034,10 +2096,96 @@ function applyTemplate(templateId, suppressToast = false) {
 
     elements.messageEditor.innerHTML = formattedBody;
   }
+
+  if (!suppressToast) {
+    showToast(`Applied template: "${template.name}"`, "success");
+  }
 }
 
 function updateEditorWithTestingLink(newUrl) {
   applyTemplate(currentTemplateId, true);
+}
+
+function openTemplatePickerModal() {
+  if (!elements.templatePickerModal || !elements.templatePickerGrid) return;
+  if (!canUseEmailTemplates()) {
+    showPlanUpgradePrompt("Applying email templates", "Growth (Rs 200/mo)");
+    return;
+  }
+
+  elements.templatePickerGrid.innerHTML = "";
+  const keys = Object.keys(state.templates);
+  const resolvedAppName = getResolvedAppName();
+  const resolvedSenderName = getResolvedSenderName();
+  const testingPlaceholder = state.playStoreLink || "{{link}}";
+  const directPlaceholder = state.directPlayLink || "{{direct_link}}";
+
+  keys.forEach(key => {
+    const t = state.templates[key];
+    if (!t) return;
+    const isPreset = ['default', 'casual', 'detailed', 'thankyou'].includes(key);
+    const isActive = key === currentTemplateId;
+
+    const previewSubject = escapeHtml(t.subject || "")
+      .replaceAll("{{app_name}}", escapeHtml(resolvedAppName))
+      .replaceAll("[App Name]", escapeHtml(resolvedAppName))
+      .replaceAll("{{sender_name}}", escapeHtml(resolvedSenderName))
+      .replaceAll("[Your Name]", escapeHtml(resolvedSenderName));
+
+    const previewBody = (t.body || "")
+      .replaceAll("{{app_name}}", escapeHtml(resolvedAppName))
+      .replaceAll("[App Name]", escapeHtml(resolvedAppName))
+      .replaceAll("{{sender_name}}", escapeHtml(resolvedSenderName))
+      .replaceAll("[Your Name]", escapeHtml(resolvedSenderName))
+      .replaceAll("{{link}}", testingPlaceholder)
+      .replaceAll("{{testing_link}}", testingPlaceholder)
+      .replaceAll("[Google Play Testing Link]", testingPlaceholder)
+      .replaceAll("{{direct_link}}", directPlaceholder);
+
+    const card = document.createElement("div");
+    card.className = `template-picker-card ${isActive ? 'active-tpl' : ''}`;
+    card.innerHTML = `
+      <div>
+        <div class="template-picker-card-header">
+          <div>
+            <h4 class="template-picker-title">${escapeHtml(t.name)}</h4>
+            ${t.desc ? `<p class="template-picker-desc">${escapeHtml(t.desc)}</p>` : ''}
+          </div>
+          <div style="display: flex; gap: 4px; align-items: center;">
+            <span class="${isPreset ? 'badge-tag-preset' : 'badge-tag-custom'}">${isPreset ? 'Preset' : 'Custom'}</span>
+            ${isActive ? '<span class="badge-tag-active">Active</span>' : ''}
+          </div>
+        </div>
+        <div style="margin: 8px 0;">
+          <div class="template-picker-subject"><strong>Subject:</strong> ${previewSubject}</div>
+        </div>
+        <div class="template-picker-card-body">
+          ${previewBody}
+        </div>
+      </div>
+      <div class="template-picker-card-footer">
+        <span style="font-size: 0.75rem; color: var(--text-muted);">${isActive ? 'Currently applied to composer' : 'Click to load into composer'}</span>
+        <button type="button" class="btn-primary-small btn-use-tpl" data-id="${key}">
+          ${isActive ? '✓ Selected' : 'Use Template'}
+        </button>
+      </div>
+    `;
+
+    card.querySelector(".btn-use-tpl").addEventListener("click", () => {
+      applyTemplate(key, false);
+      closeTemplatePickerModal();
+    });
+
+    elements.templatePickerGrid.appendChild(card);
+  });
+
+  elements.templatePickerModal.style.display = "flex";
+}
+
+function closeTemplatePickerModal() {
+  if (elements.templatePickerModal) {
+    elements.templatePickerModal.style.display = "none";
+  }
 }
 
 // ==========================================================================
@@ -2284,7 +2432,7 @@ function renderTemplatesGrid() {
       <div style="display: flex; align-items: center; gap: 10px;">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#2563eb" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
         <span style="font-size: 0.86rem; color: #475569;">
-          Email templates are available on <strong>Growth</strong> (Rs 200/mo), <strong>Pro</strong> (Rs 300/mo), and <strong>Lifetime</strong> plans. You are currently on the <strong>${userPlan === 'starter' ? 'Starter' : 'Free Guest'}</strong> plan.
+          Email templates are available on <strong>Growth</strong> (Rs 200/mo), <strong>Pro</strong> (Rs 300/mo), <strong>Scale</strong> (Rs 500/mo), and <strong>Lifetime</strong> plans. You are currently on the <strong>${userPlan === 'starter' ? 'Starter' : 'Free Guest'}</strong> plan.
         </span>
       </div>
       <a href="billing.html" class="btn-primary-small" style="text-decoration: none; white-space: nowrap; padding: 6px 14px; font-weight: 600;">Upgrade Plan</a>
@@ -2297,10 +2445,10 @@ function renderTemplatesGrid() {
       <div style="display: flex; align-items: center; gap: 10px;">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#16a34a" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
         <span style="font-size: 0.86rem; color: #166534;">
-          <strong>Growth Plan:</strong> You can apply all preset email templates. Upgrade to <strong>Pro</strong> (Rs 300/mo) or <strong>Lifetime</strong> to create and save custom templates.
+          <strong>Growth Plan:</strong> You can apply all preset email templates. Upgrade to <strong>Pro</strong> (Rs 300/mo), <strong>Scale</strong> (Rs 500/mo), or <strong>Lifetime</strong> to create and save custom templates.
         </span>
       </div>
-      <a href="billing.html" class="btn-secondary-small" style="text-decoration: none; white-space: nowrap; padding: 6px 14px; font-weight: 600;">Upgrade to Pro</a>
+      <a href="billing.html" class="btn-secondary-small" style="text-decoration: none; white-space: nowrap; padding: 6px 14px; font-weight: 600;">Upgrade Plan</a>
     `;
     elements.fullTemplatesGrid.appendChild(banner);
   }
@@ -2336,26 +2484,53 @@ function renderTemplatesGrid() {
 
   keys.forEach(key => {
     const t = state.templates[key];
+    if (!t) return;
+    const isPreset = ['default', 'casual', 'detailed', 'thankyou'].includes(key);
+    const isActive = key === currentTemplateId;
     const card = document.createElement("div");
     card.className = "template-card";
 
+    const resolvedAppName = getResolvedAppName();
+    const resolvedSenderName = getResolvedSenderName();
     const linkPlaceholder = state.playStoreLink || "{{link}}";
+    const directPlaceholder = state.directPlayLink || "{{direct_link}}";
+
+    const previewSubject = escapeHtml(t.subject || "")
+      .replaceAll("{{app_name}}", escapeHtml(resolvedAppName))
+      .replaceAll("[App Name]", escapeHtml(resolvedAppName))
+      .replaceAll("{{sender_name}}", escapeHtml(resolvedSenderName))
+      .replaceAll("[Your Name]", escapeHtml(resolvedSenderName));
+
+    const previewBody = (t.body || "")
+      .replaceAll("{{app_name}}", escapeHtml(resolvedAppName))
+      .replaceAll("[App Name]", escapeHtml(resolvedAppName))
+      .replaceAll("{{sender_name}}", escapeHtml(resolvedSenderName))
+      .replaceAll("[Your Name]", escapeHtml(resolvedSenderName))
+      .replaceAll("{{link}}", linkPlaceholder)
+      .replaceAll("{{testing_link}}", linkPlaceholder)
+      .replaceAll("[Google Play Testing Link]", linkPlaceholder)
+      .replaceAll("{{direct_link}}", directPlaceholder);
 
     card.innerHTML = `
       <div>
         <div class="template-card-header">
-          <h4 class="template-card-title">${escapeHtml(t.name)}</h4>
-          ${key === currentTemplateId ? '<span class="template-badge-active">Active</span>' : ''}
+          <div>
+            <h4 class="template-card-title">${escapeHtml(t.name)}</h4>
+          </div>
+          <div style="display: flex; gap: 5px; align-items: center;">
+            <span class="${isPreset ? 'template-badge-preset' : 'template-badge-custom'}">${isPreset ? 'Preset' : 'Custom'}</span>
+            ${isActive ? '<span class="template-badge-active">Active</span>' : ''}
+          </div>
         </div>
         ${t.desc ? `<p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 8px;">${escapeHtml(t.desc)}</p>` : ''}
-        <p style="font-size: 0.8rem; font-weight: 600; color: #334155; margin-bottom: 6px;">Subject: ${escapeHtml(t.subject)}</p>
+        <p style="font-size: 0.8rem; font-weight: 600; color: #334155; margin-bottom: 6px;">Subject: ${previewSubject}</p>
         <div class="template-card-body">
-          ${t.body.replaceAll("{{link}}", linkPlaceholder)}
+          ${previewBody}
         </div>
       </div>
       <div class="template-card-actions">
         <button type="button" class="btn-primary-small btn-apply-tpl" data-id="${key}" title="Apply this template to the invitation composer">
-          ${canUseTpl ? 'Apply to Form' : '🔒 Apply (Growth+)'}
+          ${canUseTpl ? (isActive ? '✓ Selected' : 'Apply to Form') : '🔒 Apply (Growth+)'}
         </button>
         <div class="template-action-icons">
           <button type="button" class="btn-icon-small btn-edit-tpl" data-id="${key}" title="${canCustomTpl ? 'Edit Template' : 'Edit (Pro required)'}">
@@ -2365,13 +2540,23 @@ function renderTemplatesGrid() {
             </svg>
             Edit
           </button>
-          <button type="button" class="btn-icon-small btn-delete-tpl text-danger" data-id="${key}" title="Delete Template">
-            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="3 6 5 6 21 6"/>
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-            </svg>
-            Delete
-          </button>
+          ${isPreset ? `
+            <button type="button" class="btn-icon-small btn-reset-tpl" data-id="${key}" title="Reset to default template content">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                <path d="M3 3v5h5"/>
+              </svg>
+              Reset
+            </button>
+          ` : `
+            <button type="button" class="btn-icon-small btn-delete-tpl text-danger" data-id="${key}" title="Delete Template">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+              </svg>
+              Delete
+            </button>
+          `}
         </div>
       </div>
     `;
@@ -2390,6 +2575,7 @@ function renderTemplatesGrid() {
         applyTemplate(key, false);
         switchView("send-invitation");
       } else {
+        sessionStorage.setItem("easyinvite_applied_tpl_name", t.name);
         window.location.href = "index.html";
       }
     });
@@ -2403,14 +2589,25 @@ function renderTemplatesGrid() {
       openTemplateModal(key);
     });
 
-    // Delete button
-    card.querySelector(".btn-delete-tpl").addEventListener("click", () => {
-      if (!canCreateCustomTemplates()) {
-        showPlanUpgradePrompt("Managing custom templates", "Pro (Rs 300/mo)");
-        return;
-      }
-      handleDeleteTemplate(key);
-    });
+    // Reset button (for presets)
+    const resetBtn = card.querySelector(".btn-reset-tpl");
+    if (resetBtn) {
+      resetBtn.addEventListener("click", () => {
+        resetTemplateToDefault(key);
+      });
+    }
+
+    // Delete button (for custom templates)
+    const deleteBtn = card.querySelector(".btn-delete-tpl");
+    if (deleteBtn) {
+      deleteBtn.addEventListener("click", () => {
+        if (!canCreateCustomTemplates()) {
+          showPlanUpgradePrompt("Managing custom templates", "Pro (Rs 300/mo)");
+          return;
+        }
+        handleDeleteTemplate(key);
+      });
+    }
 
     elements.fullTemplatesGrid.appendChild(card);
   });
@@ -2423,7 +2620,7 @@ function openTemplateModal(templateId = null) {
     return;
   }
 
-  const defaultBody = `<p>Hi there,</p><p>You're invited to test our closed beta on Google Play!</p><p>Download and join here:<br><a href="{{link}}" target="_blank">{{link}}</a></p><p>Thanks for your help testing!</p>`;
+  const defaultBody = `<p>Hi there,</p><p>I'm inviting you to test our app <strong>{{app_name}}</strong> on Google Play!</p><table role="presentation" border="0" cellpadding="0" cellspacing="0" style="margin:16px 0 8px 0;"><tr><td style="padding-right:10px;"><table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn-cta"><tr><td><a href="{{link}}" target="_blank" style="background-color: #2563eb; color: #ffffff !important; display: inline-block; padding: 12px 24px; border-radius: 6px; font-weight: 700; font-size: 14px; text-decoration: none; text-transform: uppercase;">1. JOIN AS A TESTER</a></td></tr></table></td><td><table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn-cta-green"><tr><td><a href="{{direct_link}}" target="_blank" style="background-color: #16a34a; color: #ffffff !important; display: inline-block; padding: 12px 24px; border-radius: 6px; font-weight: 700; font-size: 14px; text-decoration: none; text-transform: uppercase;">2. DOWNLOAD ON PLAY STORE</a></td></tr></table></td></tr></table><p>Thanks for testing!</p><p>Best regards,<br><strong>{{sender_name}}</strong></p>`;
 
   if (templateId && state.templates[templateId]) {
     const t = state.templates[templateId];
@@ -2438,7 +2635,7 @@ function openTemplateModal(templateId = null) {
     if (elements.tplEditId) elements.tplEditId.value = "";
     if (elements.tplEditName) elements.tplEditName.value = "";
     if (elements.tplEditDesc) elements.tplEditDesc.value = "";
-    if (elements.tplEditSubject) elements.tplEditSubject.value = "You're invited to test our app on Google Play";
+    if (elements.tplEditSubject) elements.tplEditSubject.value = "You're invited to test {{app_name}} on Google Play";
     if (elements.tplBodyEditor) elements.tplBodyEditor.innerHTML = defaultBody;
   }
 
@@ -2478,7 +2675,7 @@ function handleSaveTemplateFromModal() {
 
   if (!body) {
     showToast("Please enter the email template body content.", "warning");
-    if (elements.tplEditBody) elements.tplEditBody.focus();
+    if (elements.tplBodyEditor) elements.tplBodyEditor.focus();
     return;
   }
 
@@ -2487,7 +2684,7 @@ function handleSaveTemplateFromModal() {
     // Update existing template
     state.templates[id] = { name, desc, subject, body };
     if (currentTemplateId === id) {
-      applyTemplate(id);
+      applyTemplate(id, true);
     }
     showToast(`Template "${name}" updated successfully!`, "success");
   } else {
@@ -2522,9 +2719,48 @@ function handleSaveTemplateFromModal() {
   }
 }
 
+function resetTemplateToDefault(key) {
+  if (!DEFAULT_STATE.templates[key]) return;
+  const def = DEFAULT_STATE.templates[key];
+  if (!confirm(`Reset template "${def.name}" back to its original default content?`)) {
+    return;
+  }
+  state.templates[key] = { ...def };
+  if (currentTemplateId === key) {
+    applyTemplate(key, true);
+  }
+  saveState();
+  renderTemplatesGrid();
+
+  const authToken = localStorage.getItem("easyinvite_auth_token");
+  if (authToken) {
+    fetch("/api/user/templates", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${authToken}`
+      },
+      body: JSON.stringify({
+        id: key,
+        name: def.name,
+        desc: def.desc,
+        subject: def.subject,
+        body: def.body
+      })
+    }).catch(err => console.warn("Template cloud reset notice:", err));
+  }
+  showToast(`Reset template "${def.name}" to default`, "info");
+}
+
 function handleDeleteTemplate(key) {
   const tpl = state.templates[key];
   if (!tpl) return;
+
+  const isPreset = ['default', 'casual', 'detailed', 'thankyou'].includes(key);
+  if (isPreset) {
+    resetTemplateToDefault(key);
+    return;
+  }
 
   if (!confirm(`Are you sure you want to delete the template "${tpl.name}"?`)) {
     return;
@@ -2534,7 +2770,7 @@ function handleDeleteTemplate(key) {
 
   if (currentTemplateId === key) {
     const remainingKeys = Object.keys(state.templates);
-    currentTemplateId = remainingKeys.length > 0 ? remainingKeys[0] : "";
+    currentTemplateId = remainingKeys.length > 0 ? remainingKeys[0] : "default";
     if (currentTemplateId) {
       applyTemplate(currentTemplateId, true);
     }
