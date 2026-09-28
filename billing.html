@@ -764,9 +764,7 @@
             if (emailEl) emailEl.textContent = storedUser.email || '';
             if (initialEl) initialEl.textContent = (storedUser.name || 'U').charAt(0).toUpperCase();
 
-            const pendingPayment = payments.find(p => p.status === 'PENDING');
-            const isApprovedPaid = Boolean(usage.hasApprovedPaidPlan || (storedUser && storedUser.role === 'admin'));
-
+            // Use already-declared pendingPayment and isApprovedPaid from outer scope
             let planNameFormatted = 'FREE TIER';
             let sendsFormatted = '0⚡ sends left';
 
@@ -835,10 +833,7 @@
 
           // 3. Update Plan Buttons: "Current Plan" instead of "Choose {Plan}"
           // Note: Until admin approval, user account strictly remains on Free plan!
-          let storedUser = {};
-          try { storedUser = JSON.parse(localStorage.getItem('easyinvite_user') || '{}'); } catch(e){}
-          const isApprovedPaid = Boolean(usage.hasApprovedPaidPlan || (storedUser && storedUser.role === 'admin'));
-
+          // (storedUser and isApprovedPaid already declared at top of this block)
           let activePlan = 'free';
           if (isApprovedPaid) {
             if (usage.isLifetime) {
