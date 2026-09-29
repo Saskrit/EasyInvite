@@ -352,3 +352,230 @@ body[data-page="email-templates"] #view-email-templates {
   line-height: 1;
   white-space: nowrap;
 }
+
+/* ==========================================================================
+   Email Preview Modal
+   ========================================================================== */
+
+/* "Eye" preview button on template cards */
+.btn-preview-tpl {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  color: #0369a1;
+  border-radius: var(--radius-sm);
+  padding: 5px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-preview-tpl:hover {
+  background: #e0f2fe;
+  border-color: #7dd3fc;
+  color: #0c4a6e;
+}
+
+/* Full-screen preview backdrop */
+.tpl-preview-backdrop {
+  background: rgba(15, 23, 42, 0.75) !important;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  align-items: center;
+  justify-content: center;
+}
+
+/* Preview modal card */
+.tpl-preview-modal-card {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 32px 64px -12px rgba(15, 23, 42, 0.35), 0 0 0 1px rgba(255,255,255,0.05);
+  width: min(96vw, 900px);
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: previewSlideIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes previewSlideIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Preview modal header */
+.tpl-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 14px;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.tpl-preview-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.tpl-preview-icon-wrap {
+  width: 36px;
+  height: 36px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tpl-preview-title {
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 400px;
+}
+
+.tpl-preview-subject {
+  font-size: 0.76rem;
+  color: #64748b;
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 400px;
+}
+
+.tpl-preview-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* Desktop / Mobile toggle tabs */
+.tpl-preview-device-tabs {
+  display: flex;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.tpl-device-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tpl-device-tab.active {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1);
+}
+
+.tpl-device-tab:hover:not(.active) {
+  color: #0f172a;
+}
+
+/* Simulated email client chrome */
+.tpl-preview-client-chrome {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  margin: 16px;
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+}
+
+.tpl-preview-client-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.tpl-client-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.tpl-client-address {
+  font-size: 0.74rem;
+  color: #94a3b8;
+  margin-left: 8px;
+  font-family: monospace;
+}
+
+/* iframe wrapper — handles desktop/mobile sizing */
+.tpl-preview-iframe-wrap {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+  overflow-y: auto;
+  background: #f1f5f9;
+  padding: 0;
+  transition: all 0.25s ease;
+}
+
+.tpl-preview-iframe-wrap.mobile {
+  padding: 16px 0;
+  background: #f1f5f9;
+}
+
+.tpl-preview-iframe {
+  border: none;
+  width: 100%;
+  height: 100%;
+  min-height: 480px;
+  display: block;
+  background: #ffffff;
+  transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tpl-preview-iframe-wrap.mobile .tpl-preview-iframe {
+  width: 390px;
+  min-height: 600px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+  height: auto;
+}
+
+/* Preview button in card actions area */
+.template-card-actions .btn-preview-tpl {
+  order: -1;
+}

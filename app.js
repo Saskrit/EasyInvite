@@ -2562,6 +2562,10 @@ function renderTemplatesGrid() {
         </div>
       </div>
       <div class="template-card-actions">
+        <button type="button" class="btn-preview-tpl" data-id="${key}" title="Preview this email as it appears in an inbox">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          Preview
+        </button>
         <button type="button" class="btn-primary-small btn-apply-tpl" data-id="${key}" title="Apply this template to the invitation composer">
           ${canUseTpl ? (isActive ? '✓ Selected' : 'Apply to Form') : '🔒 Apply (Growth+)'}
         </button>
@@ -2593,6 +2597,11 @@ function renderTemplatesGrid() {
         </div>
       </div>
     `;
+
+    // Preview button
+    card.querySelector(".btn-preview-tpl").addEventListener("click", () => {
+      openTemplatePreview(key);
+    });
 
     // Apply button
     card.querySelector(".btn-apply-tpl").addEventListener("click", () => {
@@ -2644,6 +2653,136 @@ function renderTemplatesGrid() {
 
     elements.fullTemplatesGrid.appendChild(card);
   });
+}
+
+// ============================================================
+// Email Preview Modal
+// ============================================================
+function openTemplatePreview(templateId) {
+  const t = state.templates[templateId];
+  if (!t) return;
+
+  const modal     = document.getElementById('tpl-preview-modal');
+  const iframe    = document.getElementById('tpl-preview-iframe');
+  const nameEl    = document.getElementById('tpl-preview-name');
+  const subjectEl = document.getElementById('tpl-preview-subject-label');
+  if (!modal || !iframe) return;
+
+  const resolvedAppName    = getResolvedAppName()   || 'Your App';
+  const resolvedSenderName = getResolvedSenderName() || 'Developer';
+  const linkPlaceholder    = state.playStoreLink   || 'https://play.google.com/apps/testing/...';
+  const directPlaceholder  = state.directPlayLink  || 'https://play.google.com/store/apps/...';
+
+  // Resolve placeholders in subject and body
+  const resolvedSubject = (t.subject || '')
+    .replaceAll('{{app_name}}',    resolvedAppName)
+    .replaceAll('[App Name]',       resolvedAppName)
+    .replaceAll('{{sender_name}}', resolvedSenderName)
+    .replaceAll('[Your Name]',     resolvedSenderName);
+
+  const resolvedBody = (t.body || '')
+    .replaceAll('{{app_name}}',      resolvedAppName)
+    .replaceAll('[App Name]',         resolvedAppName)
+    .replaceAll('{{sender_name}}',   resolvedSenderName)
+    .replaceAll('[Your Name]',       resolvedSenderName)
+    .replaceAll('{{link}}',          linkPlaceholder)
+    .replaceAll('{{testing_link}}',  linkPlaceholder)
+    .replaceAll('[Google Play Testing Link]', linkPlaceholder)
+    .replaceAll('{{direct_link}}',   directPlaceholder);
+
+  // Build a proper deliverable email HTML shell (same as server-side)
+  const emailHtml = buildEmailShell(resolvedBody, resolvedSubject, resolvedSenderName);
+
+  // Update header info
+  if (nameEl)    nameEl.textContent    = t.name || 'Template Preview';
+  if (subjectEl) subjectEl.textContent = 'Subject: ' + resolvedSubject;
+
+  // Reset to desktop mode
+  setPreviewDevice('desktop', false);
+
+  // Write into iframe via srcdoc
+  iframe.srcdoc = emailHtml;
+
+  // Show modal
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+
+  // Keyboard close
+  document.addEventListener('keydown', _previewEscHandler);
+}
+
+function _previewEscHandler(e) {
+  if (e.key === 'Escape') closeTemplatePreview();
+}
+
+function closeTemplatePreview() {
+  const modal  = document.getElementById('tpl-preview-modal');
+  const iframe = document.getElementById('tpl-preview-iframe');
+  if (modal)  modal.style.display = 'none';
+  if (iframe) iframe.srcdoc = '';
+  document.body.style.overflow = '';
+  document.removeEventListener('keydown', _previewEscHandler);
+}
+
+function setPreviewDevice(device, animate = true) {
+  const wrap       = document.getElementById('tpl-preview-iframe-wrap');
+  const tabDesktop = document.getElementById('tpl-tab-desktop');
+  const tabMobile  = document.getElementById('tpl-tab-mobile');
+  if (!wrap) return;
+
+  if (device === 'mobile') {
+    wrap.classList.add('mobile');
+    if (tabDesktop) tabDesktop.classList.remove('active');
+    if (tabMobile)  tabMobile.classList.add('active');
+  } else {
+    wrap.classList.remove('mobile');
+    if (tabDesktop) tabDesktop.classList.add('active');
+    if (tabMobile)  tabMobile.classList.remove('active');
+  }
+}
+
+function buildEmailShell(bodyHtml, subject, senderName) {
+  const senderDisplay = senderName ? String(senderName).trim() : 'the developer';
+  return `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${subject || 'Email Preview'}</title>
+  <style type="text/css">
+    body,html{margin:0!important;padding:0!important;width:100%!important;background-color:#f1f5f9;}
+    *{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;box-sizing:border-box;}
+    table{border-collapse:collapse!important;mso-table-lspace:0pt!important;mso-table-rspace:0pt!important;}
+    img{border:0!important;height:auto!important;line-height:100%!important;outline:none!important;text-decoration:none!important;}
+    a{color:#2563eb;text-decoration:underline;}
+    p{margin:0 0 16px 0!important;line-height:1.65!important;}
+    ol,ul{margin:8px 0 16px 0!important;padding-left:20px!important;line-height:1.7!important;}
+    li{margin-bottom:6px!important;}
+    strong{font-weight:700!important;}
+    .btn-cta a{background-color:#2563eb!important;border:2px solid #2563eb!important;border-radius:8px!important;color:#ffffff!important;display:inline-block!important;font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif!important;font-size:15px!important;font-weight:700!important;letter-spacing:0.4px!important;line-height:1!important;padding:14px 32px!important;text-decoration:none!important;text-transform:uppercase!important;}
+    .btn-cta-green a{background-color:#16a34a!important;border:2px solid #16a34a!important;border-radius:8px!important;color:#ffffff!important;display:inline-block!important;font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif!important;font-size:15px!important;font-weight:700!important;letter-spacing:0.4px!important;line-height:1!important;padding:14px 32px!important;text-decoration:none!important;text-transform:uppercase!important;}
+  </style>
+</head>
+<body style="margin:0;padding:0;background-color:#f1f5f9;-webkit-font-smoothing:antialiased;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+  <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#f1f5f9;padding:36px 16px;">
+    <tr><td align="center">
+      <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width:600px;background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(15,23,42,0.08),0 1px 4px rgba(15,23,42,0.04);">
+        <tr><td style="background:linear-gradient(135deg,#2563eb 0%,#1d4ed8 50%,#1e40af 100%);padding:0;height:5px;font-size:0;line-height:0;">&nbsp;</td></tr>
+        <tr><td style="padding:36px 40px 28px 40px;font-size:15px;line-height:1.65;color:#1e293b;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">${bodyHtml}</td></tr>
+        <tr><td style="padding:20px 40px;background-color:#f8fafc;border-top:1px solid #e2e8f0;">
+          <p style="margin:0 0 6px 0!important;font-size:12px;color:#64748b;line-height:1.55;">
+            You received this invitation from <strong style="color:#475569;">${senderDisplay}</strong> to participate in official closed testing on Google Play.
+          </p>
+          <p style="margin:0!important;font-size:11px;color:#94a3b8;line-height:1.5;">If you did not expect this invitation, you can safely ignore this email.</p>
+        </td></tr>
+      </table>
+      <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width:600px;">
+        <tr><td style="padding:16px 8px 8px 8px;text-align:center;font-size:11px;color:#94a3b8;">Sent via EasyInvite &middot; Google Play Closed Testing Outreach</td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
 }
 
 function openTemplateModal(templateId = null) {
