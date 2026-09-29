@@ -1266,8 +1266,10 @@
       }
       currentChosenPlanKey = planId;
       localStorage.setItem('easyinvite_chosen_plan', planId);
-      renderChosenPlanCard(planId);
-      openPaymentModal(planId, name, amount, sends, isLifetime);
+      history.replaceState({}, document.title, `billing.html?openPayment=${encodeURIComponent(planId)}&isNew=1`);
+      showChosenPlanView();
+      const chosenSec = document.getElementById('chosen-plan-section');
+      if (chosenSec) chosenSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     function openPaymentModal(planId, name, amount, sends, isLifetime) {
